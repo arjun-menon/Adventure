@@ -1,8 +1,3 @@
-# Game Executable
-Adventure
-
-# Build Directory
-build
-
-# KDE Backup Files
-*~
+# Eclipse CDT Build Directories
+Debug
+Release

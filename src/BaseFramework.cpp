@@ -1,10 +1,10 @@
 #include <SFML/Graphics.hpp>
+#include "BaseFramework.hpp"
 
-int main()
-{
-    sf::RenderWindow *rw = new sf::RenderWindow(sf::VideoMode(800, 600, 32), "Adventure");
-    rw->clear(sf::Color(0, 0, 0));
-    
+int main() {
+	sf::RenderWindow *rw = new sf::RenderWindow(sf::VideoMode(800, 600, 32), "Adventure");
+	rw->clear(sf::Color(0, 0, 0));
+
     while(rw->isOpen()) {
         sf::Event event;
         while (rw->pollEvent(event))
@@ -15,16 +15,16 @@ int main()
 
                 // Resize event : adjust viewport
                 if (event.type == sf::Event::Resized) {
-                        //window_size = Cd(Event.Size.Width, Event.Size.Height);
-                        //rw->SetSize(Event.Size.Width, Event.Size.Height);
+					//window_size = Cd(Event.Size.Width, Event.Size.Height);
+					//rw->SetSize(Event.Size.Width, Event.Size.Height);
 
-                        //glViewport(0, 0, event.size.width, event.size.height);
+					//glViewport(0, 0, event.size.width, event.size.height);
                 }
         }
-                
+
         rw->clear();
         rw->display();
     }
-    
+
     return 0;
 }
