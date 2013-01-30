@@ -1,6 +1,29 @@
 #include "BaseFramework.hpp"
 #include <SFML/Graphics.hpp>
 
+class TexImpl : public Tex
+{
+    sf::Image image;
+public:
+    sf::Texture tex;
+    Dim sz;
+
+    TexImpl(string file) {
+        if( !image.loadFromFile(file) ) {
+            throw invalid_argument(string("Unable to open file: ") + file);
+        }
+        if( !tex.loadFromImage(image) ) {
+            throw runtime_error("Loading image from texture " + file + " failed.");
+        }
+        sf::Vector2u size = tex.getSize();
+        sz.w = size.x; sz.h = size.y;
+    }
+
+    Dim getDim() {
+        return sz;
+    }
+};
+
 class SystemImpl : public System
 {
     static SystemImpl* singleton;
@@ -9,8 +32,8 @@ class SystemImpl : public System
     friend System* getSystem();
 
     WindowProperties windowProperties;
-    Entity* master;
-    sf::RenderWindow* renderWindow;
+    unique_ptr<Entity> master;
+    unique_ptr<sf::RenderWindow> renderWindow;
 
     void handleCmdlineArgs(int argc, char *argv[])
     {
@@ -22,7 +45,7 @@ class SystemImpl : public System
             windowProperties.dim= Dim( atoi(argv[2]), atoi(argv[3]) );
         }
         else {
-            // Default windows height & width:
+            // Default window height & width:
             windowProperties.dim = Dim(1024, 600);
             windowProperties.fullscreen = false;
         }
@@ -43,9 +66,9 @@ class SystemImpl : public System
     void main(int argc, char *argv[])
     {
         handleCmdlineArgs(argc, argv);
-        master = getMaster(windowProperties);
-        renderWindow = createRenderWindow();
+        master = unique_ptr<Entity>( getMaster(windowProperties) );
 
+        renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
         renderWindow->clear();
         renderWindow->setFramerateLimit( 60 );
 
@@ -57,24 +80,43 @@ class SystemImpl : public System
             }
 
             renderWindow->clear();
-            master->step();
-            renderWindow->display();
+            try {
+                master->step();
+                renderWindow->display();
+            }
+            catch(exception &e) {
+                cerr<<e.what()<<endl;
+                renderWindow->close();
+            }
         }
-
-        delete renderWindow;
-        delete master;
     }
 
 public:
     SystemImpl() : master(nullptr), renderWindow(nullptr) {}
+    ~SystemImpl() {}
 
-    ~SystemImpl() {
-        delete renderWindow;
-        delete master;
+    shared_ptr<Tex> loadTexFromImage(string file) {
+        return shared_ptr<Tex>( new TexImpl(file) );
     }
 
     void setMouseCursorVisibility(bool visibility) {
         renderWindow->setMouseCursorVisible( visibility );
+    }
+
+    void drawTex(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
+        sf::Sprite sprite( dynamic_cast<TexImpl&>(tex).tex );
+        sprite.setPosition( sf::Vector2<float>(
+                static_cast<float>( pos.x + (flip ? tex.w() : 0) ),
+                static_cast<float>( windowProperties.dim.h - tex.h() - pos.y ) ) );
+        sprite.setRotation(angle);
+        if(flip) {
+            sprite.setScale(-1, 1);
+        }
+        renderWindow->draw(sprite);
+    }
+
+    void exit() {
+        renderWindow->close();
     }
 };
 

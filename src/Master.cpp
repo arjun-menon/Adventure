@@ -6,12 +6,29 @@
 
 class Master : public Entity
 {
+    System &sys;
+
+    bool loaded;
+    shared_ptr<Tex> brick;
+
 public:
-    Master(WindowProperties &windowProperties) {
+    Master(WindowProperties &windowProperties) :
+        sys(*getSystem()),
+        loaded(false),
+        brick(nullptr)
+    {
         windowProperties.title = "Adventure";
     }
     void step() {
-        //
+        if( !loaded ) {
+            brick = sys.loadTexFromImage("brick.bmp");
+            loaded = true;
+        }
+        else {
+            static float angle = 0.0f;
+            sys.drawTex(*brick, Pt(300, 300), false, angle);
+            angle += 7.5f;
+        }
     }
     ~Master() {
     }
