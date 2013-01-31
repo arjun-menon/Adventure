@@ -27,6 +27,7 @@ public:
         else {
             static float angle = 0.0f;
             sys.drawTex(*brick, Pt(300, 300), false, angle);
+            sys.drawText("hello", Pt(0,0));
             angle += 7.5f;
         }
     }

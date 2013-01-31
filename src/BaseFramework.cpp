@@ -1,35 +1,35 @@
 #include "BaseFramework.hpp"
 #include <SFML/Graphics.hpp>
 
-class TexImpl : public Tex
-{
-    sf::Image image;
-public:
-    sf::Texture tex;
-    Dim sz;
-
-    TexImpl(string file) {
-        if( !image.loadFromFile(file) ) {
-            throw invalid_argument(string("Unable to open file: ") + file);
-        }
-        if( !tex.loadFromImage(image) ) {
-            throw runtime_error("Loading image from texture " + file + " failed.");
-        }
-        sf::Vector2u size = tex.getSize();
-        sz.w = size.x; sz.h = size.y;
-    }
-
-    Dim getDim() {
-        return sz;
-    }
-};
-
 class SystemImpl : public System
 {
     static SystemImpl* singleton;
 
     friend int main(int argc, char *argv[]);
     friend System* getSystem();
+
+    class TexImpl : public Tex
+    {
+        sf::Image image;
+    public:
+        sf::Texture tex;
+        Dim sz;
+
+        TexImpl(string file) {
+            if( !image.loadFromFile(file) ) {
+                throw invalid_argument(string("Unable to open file: ") + file);
+            }
+            if( !tex.loadFromImage(image) ) {
+                throw runtime_error("Loading image from texture " + file + " failed.");
+            }
+            sf::Vector2u size = tex.getSize();
+            sz.w = size.x; sz.h = size.y;
+        }
+
+        Dim getDim() {
+            return sz;
+        }
+    };
 
     WindowProperties windowProperties;
     unique_ptr<Entity> master;
@@ -105,14 +105,20 @@ public:
 
     void drawTex(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
         sf::Sprite sprite( dynamic_cast<TexImpl&>(tex).tex );
-        sprite.setPosition( sf::Vector2<float>(
-                static_cast<float>( pos.x + (flip ? tex.w() : 0) ),
-                static_cast<float>( windowProperties.dim.h - tex.h() - pos.y ) ) );
+        sprite.setPosition( static_cast<float>( pos.x + (flip ? tex.w() : 0) ),
+                            static_cast<float>( windowProperties.dim.h - tex.h() - pos.y ) );
         sprite.setRotation(angle);
         if(flip) {
             sprite.setScale(-1, 1);
         }
         renderWindow->draw(sprite);
+    }
+
+    void drawText(string line, Pt pos, float size=15.0f) {
+        sf::Text textToDraw(line, sf::Font::getDefaultFont(), size);
+        //textToDraw.setColor(sf::Color(mod.r, mod.g, mod.b, mod.a));
+        textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
+        renderWindow->draw(textToDraw);
     }
 
     void exit() {

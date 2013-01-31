@@ -43,6 +43,7 @@ public:
     virtual shared_ptr<Tex> loadTexFromImage(string file) = 0;
     virtual void setMouseCursorVisibility(bool visibility) = 0;
     virtual void drawTex(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) = 0;
+    virtual void drawText(string line, Pt pos, float size=15.0f) = 0;
     virtual ~System() {}
 };
 
