@@ -1,0 +1,2 @@
+Don't use Box2D, just use you shoddy old collision detection system, and build a physics engine out of it.
+Think about tunelling, and if you can't come up with a quick-fix solution, FORGET about it!!!

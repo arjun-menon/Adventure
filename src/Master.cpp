@@ -7,15 +7,16 @@
 class Master : public Entity
 {
     System &sys;
-
     bool loaded;
+    Dim windowDim;
+
     shared_ptr<Tex> brick;
 
 public:
     Master(WindowProperties &windowProperties) :
         sys(*getSystem()),
         loaded(false),
-        brick(nullptr)
+        windowDim(windowProperties.dim)
     {
         windowProperties.title = "Adventure";
     }
@@ -25,10 +26,8 @@ public:
             loaded = true;
         }
         else {
-            static float angle = 0.0f;
-            sys.drawTex(*brick, Pt(300, 300), false, angle);
+            sys.drawTex(*brick, Pt(10, 10), false);
             sys.drawText("hello", Pt(0,0));
-            angle += 7.5f;
         }
     }
     ~Master() {
