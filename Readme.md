@@ -6,7 +6,7 @@ First get these packages:
 
 Then get SFML 2.0 RC from [this PPA](https://launchpad.net/~sonkun/+archive/sfml-stable), like so:
 
-        sudo add-apt-repository 
+        sudo add-apt-repository ppa:sonkun/sfml-stable
         sudo apt-get update
         sudo apt-get install libsfml-dev
 
