@@ -40,10 +40,10 @@ public: \
 };
 
 VEC2_CLASS_GENERATOR(PtPolymorphic, x, y)
-typedef PtPolymorphic<int> Pt;
+typedef PtPolymorphic<float> Pt;
 
 VEC2_CLASS_GENERATOR(DimPolymorphic, w, h)
-typedef DimPolymorphic<int> Dim;
+typedef DimPolymorphic<float> Dim;
 
 class Rect
 {

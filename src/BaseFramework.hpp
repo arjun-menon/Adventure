@@ -13,13 +13,7 @@
 using namespace std;
 
 #include "GeometricPrimitives.hpp"
-
-class Entity
-{
-public:
-    virtual void step() {};
-    virtual ~Entity() {}
-};
+#include "Entity.hpp"
 
 struct WindowProperties
 {
@@ -32,8 +26,8 @@ class Tex
 {
 public:
     virtual Dim getDim() = 0;
-    inline int w() { return getDim().w; }
-    inline int h() { return getDim().h; }
+    inline float w() { return getDim().w; }
+    inline float h() { return getDim().h; }
     virtual ~Tex() {}
 };
 
@@ -43,12 +37,15 @@ public:
     virtual shared_ptr<Tex> loadTexFromImage(string file) = 0;
     virtual void setMouseCursorVisibility(bool visibility) = 0;
     virtual void drawTex(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) = 0;
-    virtual void drawText(string line, Pt pos, float size=15.0f) = 0;
+    virtual void drawText(string line, Pt pos, Color color=Color(), float fontSize=15.0f) = 0;
+    virtual void drawBox(Pt pos, Dim size, Color fillColor=Color(255,255,255,0), Color outlineColor=Color(), float outlineThickness=1.0f) = 0;
+
+    virtual unsigned int random() = 0;
     virtual ~System() {}
 };
 
 Entity* getMaster(WindowProperties &windowProperties);
 
-System* getSystem();
+System* Sys(); // get pointer to concrete singleton System
 
 #endif /* BASEFRAMEWORK_HPP_ */
