@@ -4,33 +4,43 @@
 
 #include "BaseFramework.hpp"
 
+class Splash : public Entity
+{
+    //
+};
+
 class Master : public Entity
 {
-    System &sys;
     bool loaded;
     Dim windowDim;
 
     shared_ptr<Tex> brick;
+    PlaceholderEntityAABB *b;
 
 public:
     Master(WindowProperties &windowProperties) :
-        sys(*getSystem()),
         loaded(false),
-        windowDim(windowProperties.dim)
+        windowDim(windowProperties.dim),
+        b(nullptr)
     {
         windowProperties.title = "Adventure";
     }
     void step() {
         if( !loaded ) {
-            brick = sys.loadTexFromImage("brick.bmp");
+            brick = Sys()->loadTexFromImage("brick.bmp");
+            b = new PlaceholderEntityAABB( Pt(50,50), Dim(10,10) );
+            //ab = new PlaceholderEntityAABB(Pt(50,50), Dim(brick->w(), brick->h()));
             loaded = true;
         }
         else {
-            sys.drawTex(*brick, Pt(10, 10), false);
-            sys.drawText("hello", Pt(0,0));
+            //Sys()->drawTex(*brick, Pt(50, 50), false);
+            Sys()->drawText("hello", Pt(0,0));
+
+            b->step();
         }
     }
     ~Master() {
+        delete b;
     }
 };
 
