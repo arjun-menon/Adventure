@@ -18,6 +18,6 @@ You also need to have the g++ 4.7 or higher for full [C++11](http://en.wikipedia
 
 On Eclipse, it will be necessary to enable the `__GXX_EXPERIMENTAL_CXX0X__` flag in order to activate all C++11 features. The flag isn't necessary for some reason, when running g++ from the command-line.
 
-Additionally on Ubuntu and potentially other Linux system, g++ 4.7 will be installed as `g++-4.7` in order to not conflict with an existing older g++ installlation. You should configure your IDE or other tool such that it uses the right g++ version.
+Additionally, on Ubuntu and potentially other Linux distributions, g++ 4.7 might not be your default version of g++ especially if you had an older version of g++ when you installed *4.7*. In these cases, both versions will be installed side-by-side in order to prevent breaking existing dependencies on the other g++ version, and *4.7* will be accessible as `g++-4.7`. If that is the case, you should configure your IDE so that it uses the right version.
 
-By now you should have all the dependencies and necessary tools needed for compilation.
+By now everything should be setup and you should be able to compile & run the code.
