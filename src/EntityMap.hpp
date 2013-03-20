@@ -1,8 +1,5 @@
 /*
  * EntityMap.hpp
- *
- *  Created on: 08-Feb-2013
- *      Author: arjun
  */
 
 #include <vector>
@@ -12,33 +9,54 @@
 #ifndef ENTITYMAP_HPP_
 #define ENTITYMAP_HPP_
 
-/*
- * A row-major matrix template.
- */
 template<class T>
-class matrix
+struct matrix
 {
     Dim size;
     vector< vector<T> > m;
 
-    void set_size(const Dim size)
+    matrix() : size(Dim(0,0)) {}
+
+    void resize(const Dim &size)
     {
         this->size = size;
 
-        if(this->size.h != size.h)
-            m.resize(size.h);
+        if(size.w != m.size())
+            m.resize( static_cast<unsigned int>(size.w) );
 
-        if(this->size.w != size.w)
-            for(auto it = m.begin(); it != m.end(); it++)
-                it->resize(size.h);
+        for(auto col = m.begin(); col != m.end(); col++)
+            if(size.h != col->size())
+                col->resize( static_cast<unsigned int>(size.h) );
+
+        this->size = size;
     }
+
+    T& at(int x, int y) { return (m.at(x)).at(y); }
 };
 
 class EntityMap : public Entity
 {
+    Dim mapSize;
+
+    matrix< set<EntityAABB *> > mat;
+    const float optimizationFactor;
+
+    set<EntityAABB *> entities;
+
+    bool outside_bounds(const EntityAABB &e);
+
 public:
-    EntityMap();
-    ~EntityMap();
+    EntityMap(Dim newMapSize, unsigned int optimizationFactor) :
+        optimizationFactor( static_cast<float>(optimizationFactor) )
+    { setMapSize(newMapSize); }
+
+    void setMapSize(Dim newMapSize);
+
+    bool isInsideMap(const EntityAABB &e);
+
+    set<EntityAABB *> computeIntersectingEntities(const EntityAABB *e, const set<EntityAABB *> exclusionSet);
+
+    void place(EntityAABB *e);
 
     void step();
 };

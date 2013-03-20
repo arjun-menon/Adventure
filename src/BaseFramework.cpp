@@ -80,11 +80,12 @@ class SystemImpl : public System
     void main(int argc, char *argv[])
     {
         handleCmdlineArgs(argc, argv);
-        master = unique_ptr<Entity>( getMaster(windowProperties) );
 
         renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
         renderWindow->clear();
         renderWindow->setFramerateLimit( 60 );
+
+        master = unique_ptr<Entity>( getMaster(windowProperties) );
 
         while( renderWindow->isOpen() ) {
             sf::Event event;
@@ -113,7 +114,7 @@ public:
     ~SystemImpl() {
     }
 
-    shared_ptr<Tex> loadTexFromImage(string file) {
+    shared_ptr<Tex> loadTex(string file) {
         return shared_ptr<Tex>( new TexImpl(file) );
     }
 

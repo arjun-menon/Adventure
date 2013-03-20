@@ -14,21 +14,20 @@ struct Color
 /*
  * Entity - a class that implements `void step()`.
  */
-class Entity
+struct Entity
 {
-public:
     virtual void step() {}
     virtual ~Entity() {}
 };
 
 /*
- * Entity that is a Axis-Aligned Bounding Box (AABB).
+ * Axis-Aligned Bounding Box (AABB) entity
  */
-class EntityAABB : public Entity
+struct EntityAABB : public Entity
 {
-public:
-    virtual const Pt&  getPos () = 0;
-    virtual const Dim& getSize() = 0;
+    Rect rect;
+
+    inline EntityAABB(Rect rect) : rect(rect) {}
 };
 
 /*
@@ -36,20 +35,11 @@ public:
  */
 class PlaceholderEntityAABB : public EntityAABB
 {
-    Pt  pos;
-    Dim size;
-
     Color randomColor;
 
 public:
-    PlaceholderEntityAABB(Pt pos, Dim size);
+    PlaceholderEntityAABB(Rect rect);
     void step();
-
-    inline const Pt&  getPos () { return pos;  }
-    inline const Dim& getSize() { return size; }
-
-    inline void setPos (Pt  pos)  { this->pos = pos;   }
-    inline void setSize(Dim size) { this->size = size; }
 };
 
 #endif /* ENTITY_HPP_ */

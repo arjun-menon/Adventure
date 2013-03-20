@@ -6,7 +6,7 @@
 
 #include "BaseFramework.hpp"
 
-PlaceholderEntityAABB::PlaceholderEntityAABB(Pt pos, Dim size) : pos(pos), size(size) {
+PlaceholderEntityAABB::PlaceholderEntityAABB(Rect rect) : EntityAABB(rect) {
     std::function<unsigned char ()> pick_shade = []() { return Sys()->random() % 2 ? 255:0 ; };
     randomColor.r = pick_shade();
     randomColor.g = pick_shade();
@@ -17,5 +17,5 @@ PlaceholderEntityAABB::PlaceholderEntityAABB(Pt pos, Dim size) : pos(pos), size(
 }
 
 void PlaceholderEntityAABB::step() {
-    Sys()->drawBox( pos, size, Color(255,255,255,0), randomColor );
+    Sys()->drawBox( rect.pos, rect.sz, Color(255,255,255,0), randomColor );
 }
