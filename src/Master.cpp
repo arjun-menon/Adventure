@@ -29,11 +29,10 @@ public:
         if( !loaded ) {
             brick = Sys()->loadTexFromImage("brick.bmp");
             b = new PlaceholderEntityAABB( Pt(50,50), Dim(10,10) );
-            //ab = new PlaceholderEntityAABB(Pt(50,50), Dim(brick->w(), brick->h()));
             loaded = true;
         }
         else {
-            //Sys()->drawTex(*brick, Pt(50, 50), false);
+            Sys()->drawImage(*brick, Pt(0, 0), false);
             Sys()->drawText("hello", Pt(0,0));
 
             b->step();

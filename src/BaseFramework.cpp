@@ -25,7 +25,7 @@ class SystemImpl : public System
 
         TexImpl(string file) {
             if( !image.loadFromFile(file) ) {
-                throw invalid_argument(string("Unable to open file: ") + file);
+                throw invalid_argument("Unable to open file: " + file);
             }
             if( !tex.loadFromImage(image) ) {
                 throw runtime_error("Loading image from texture " + file + " failed.");
@@ -121,7 +121,7 @@ public:
         renderWindow->setMouseCursorVisible( visibility );
     }
 
-    void drawTex(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
+    void drawImage(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
         sf::Sprite sprite( dynamic_cast<TexImpl&>(tex).tex );
         sprite.setPosition( pos.x + (flip ? tex.w() : 0) , windowProperties.dim.h - tex.h() - pos.y );
         sprite.setRotation(angle);
