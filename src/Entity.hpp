@@ -35,7 +35,7 @@ struct EntityAABB : public Entity
  */
 class PlaceholderEntityAABB : public EntityAABB
 {
-    Color randomColor;
+    Color outlineColor, fillColor;
 
 public:
     PlaceholderEntityAABB(Rect rect);
