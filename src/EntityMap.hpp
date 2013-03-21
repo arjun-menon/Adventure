@@ -58,6 +58,8 @@ public:
 
     void place(EntityAABB *e);
 
+    void move(EntityAABB *e, Pt newPos);
+
     void step();
 };
 

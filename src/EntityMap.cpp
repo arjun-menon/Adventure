@@ -53,7 +53,7 @@ set<EntityAABB *> EntityMap::computeIntersectingEntities(const EntityAABB *e, co
 /*
  * Place an entity on the map
  */
-void EntityMap::place(EntityAABB *e)
+void EntityMap::place(EntityAABB *e) // throws `set<EntityAABB *> intersectingEntities` when there is a collision
 {
     if( entities.find(e) != entities.end() )
         throw logic_error("EntityMap::place -- attempt to place existing entity on map");
@@ -61,7 +61,7 @@ void EntityMap::place(EntityAABB *e)
     set<EntityAABB *> intersectingEntities = computeIntersectingEntities(e, set<EntityAABB *>());
 
     if(!intersectingEntities.empty())
-        throw logic_error("EntityMap::place -- entity placement location intersects with existing entities");
+        throw intersectingEntities;
 
     entities.insert(e);
 
@@ -73,6 +73,14 @@ void EntityMap::place(EntityAABB *e)
     for(int x = (int) bottomLeft.x ; x <= (int) topRight.x ; x++)
         for(int y = (int) bottomLeft.y ; y <= (int) topRight.y ; y++)
             mat.at(x,y).insert(e);
+}
+
+/*
+ * Move an existing entity `e` to a new position
+ */
+void move(EntityAABB *e, Pt newPos) // throws `set<EntityAABB *> intersectingEntities` when there is a collision
+{
+    //
 }
 
 void EntityMap::step()
