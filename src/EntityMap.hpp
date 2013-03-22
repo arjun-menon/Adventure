@@ -54,7 +54,7 @@ public:
 
     bool isInsideMap(const EntityAABB &e);
 
-    set<EntityAABB *> computeIntersectingEntities(const EntityAABB *e, const set<EntityAABB *> exclusionSet);
+    set<EntityAABB *> computeIntersectingEntities(const EntityAABB *e);
 
     void place(EntityAABB *e);
     void remove(EntityAABB *e);

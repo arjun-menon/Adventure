@@ -19,7 +19,7 @@ bool EntityMap::isInsideMap(const EntityAABB &e)
 /*
  * Computes which entities in the map intersect `EntityAABB *e`
  */
-set<EntityAABB *> EntityMap::computeIntersectingEntities(const EntityAABB *e, const set<EntityAABB *> exclusionSet)
+set<EntityAABB *> EntityMap::computeIntersectingEntities(const EntityAABB *e)
 {
     set<EntityAABB *> intersectingEntities;
 
@@ -33,13 +33,9 @@ set<EntityAABB *> EntityMap::computeIntersectingEntities(const EntityAABB *e, co
         for(int x = static_cast<int>(bottomLeft.x) ; x <= static_cast<int>(topRight.x) ; x++) {
         for(int y = static_cast<int>(bottomLeft.y) ; y <= static_cast<int>(topRight.y) ; y++) {
             if(!mat.at(x,y).empty()) {
-                // iterate through the entities in each non-empty cell of the matrix:
-                for(auto m_e : mat.at(x,y)) {
-                    // ignore the entities in `exclusionSet`
-                    if( exclusionSet.find(m_e) == exclusionSet.end() ) {
-                        if( e->rect.doesIntersect((m_e->rect)) ) {
-                            intersectingEntities.insert(m_e);
-                        }
+                for(auto m_e : mat.at(x,y)) { // iterate through the entities in each non-empty cell
+                    if( e->rect.doesIntersect((m_e->rect)) ) {
+                        intersectingEntities.insert(m_e);
                     }
                 }
             }
@@ -58,7 +54,7 @@ void EntityMap::place(EntityAABB *e) // throws `set<EntityAABB *> intersectingEn
     if( entities.find(e) != entities.end() )
         throw logic_error("EntityMap::place -- attempt to place an existing entity on the map");
 
-    set<EntityAABB *> intersectingEntities = computeIntersectingEntities(e, set<EntityAABB *>());
+    set<EntityAABB *> intersectingEntities = computeIntersectingEntities(e);
 
     if(!intersectingEntities.empty())
         throw intersectingEntities;
