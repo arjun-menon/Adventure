@@ -57,6 +57,7 @@ public:
     set<EntityAABB *> computeIntersectingEntities(const EntityAABB *e, const set<EntityAABB *> exclusionSet);
 
     void place(EntityAABB *e);
+    void remove(EntityAABB *e);
 
     void move(EntityAABB *e, Pt newPos);
 
