@@ -100,8 +100,9 @@ class SystemImpl : public System
                 renderWindow->display();
             }
             catch(exception &e) {
-                cerr<<e.what()<<endl;
+                cerr<<"Exception caught: "<<e.what()<<endl;
                 renderWindow->close();
+                cerr<<"Terminating..."<<endl;
             }
         }
     }
