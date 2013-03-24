@@ -81,29 +81,31 @@ class SystemImpl : public System
     {
         handleCmdlineArgs(argc, argv);
 
-        renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
-        renderWindow->clear();
-        renderWindow->setFramerateLimit( 60 );
-
-        master = unique_ptr<Entity>( getMaster(windowProperties) );
-
-        while( renderWindow->isOpen() ) {
-            sf::Event event;
-            while( renderWindow->pollEvent(event) ) {
-                if( event.type == sf::Event::Closed )
-                    renderWindow->close();
-            }
-
+        try
+        {
+            renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
             renderWindow->clear();
-            try {
+            renderWindow->setFramerateLimit( 60 );
+
+            master = unique_ptr<Entity>( getMaster(windowProperties) );
+
+            while( renderWindow->isOpen() ) {
+                sf::Event event;
+                while( renderWindow->pollEvent(event) ) {
+                    if( event.type == sf::Event::Closed )
+                        renderWindow->close();
+                }
+
+                renderWindow->clear();
+
                 master->step();
                 renderWindow->display();
             }
-            catch(exception &e) {
-                cerr<<"Exception caught: "<<e.what()<<endl;
-                renderWindow->close();
-                cerr<<"Terminating..."<<endl;
-            }
+        } catch(exception &e)
+        {
+            cerr<<"Exception caught: "<<e.what()<<endl;
+            renderWindow->close();
+            cerr<<"Terminating..."<<endl;
         }
     }
 

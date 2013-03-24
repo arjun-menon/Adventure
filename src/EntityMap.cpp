@@ -7,8 +7,9 @@
 void EntityMap::setMapSize(Dim newMapSize)
 {
     mapSize = newMapSize;
-    mat.resize( Dim(ceil(mapSize.h) / optimizationFactor,
-                    ceil(mapSize.w) / optimizationFactor) );
+    Dim matrixSize(ceil(mapSize.w / optimizationFactor),
+                   ceil(mapSize.h / optimizationFactor));
+    mat.resize(matrixSize);
 }
 
 bool EntityMap::isInsideMap(const EntityAABB &e)
@@ -16,59 +17,63 @@ bool EntityMap::isInsideMap(const EntityAABB &e)
     return Rect(Pt(0,0), mapSize).isInside(e.rect);
 }
 
+PtI EntityMap::matrixBottomLeft(const Rect &rt)
+{
+    return PtI( static_cast<int>( floor( rt.pos.x / optimizationFactor ) ) ,
+                static_cast<int>( floor( rt.pos.y / optimizationFactor ) ) );
+}
+
+PtI EntityMap::matrixTopRight(const Rect &rt)
+{
+    return PtI( static_cast<int>( floor( (rt.pos.x + rt.sz.w) / optimizationFactor ) ) ,
+                static_cast<int>( floor( (rt.pos.y + rt.sz.h) / optimizationFactor ) ) );
+}
+
 /*
  * Computes which entities in the map intersect `EntityAABB *e`
+ *
+ * Returns `false` if there is a collision.
  */
-set<EntityAABB *> EntityMap::computeIntersectingEntities(const EntityAABB *e)
+bool EntityMap::computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities)
 {
-    set<EntityAABB *> intersectingEntities;
+    if( collidingEntities.size() != 0 )
+        throw logic_error("Non-empty EntityCollision collidingEntities set passed to EntityMap::computeEntityCollisions(...)");
 
-    if( isInsideMap(*e) )
-    {
-        Pt bottomLeft(e->rect.pos.x / optimizationFactor,
-                      e->rect.pos.y / optimizationFactor ),
-           topRight( (e->rect.pos.x + e->rect.sz.w) / optimizationFactor ,
-                     (e->rect.pos.y + e->rect.sz.h) / optimizationFactor );
+    if( !isInsideMap(*e) )
+        return false;
 
-        for(int x = static_cast<int>(bottomLeft.x) ; x <= static_cast<int>(topRight.x) ; x++) {
-        for(int y = static_cast<int>(bottomLeft.y) ; y <= static_cast<int>(topRight.y) ; y++) {
-            if(!mat.at(x,y).empty()) {
-                for(auto m_e : mat.at(x,y)) { // iterate through the entities in each non-empty cell
-                    if( e->rect.doesIntersect((m_e->rect)) ) {
-                        intersectingEntities.insert(m_e);
-                    }
-                }
-            }
-        }
-        }
-    }
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixBottomLeft(e->rect);
+    for(int x = bl.x ; x < tr.x ; x++)
+        for(int y = bl.y ; y < tr.y ; y++)
+            if(!mat.at(x,y).empty())
+                for(auto m_e : mat.at(x,y)) // iterate through the entities in each non-empty cell
+                    if( e->rect.doesIntersect((m_e->rect)) )
+                        collidingEntities.insert(m_e);
 
-    return intersectingEntities;
+    if(collidingEntities.empty())
+        return true;
+
+    return false;
 }
 
 /*
  * Place an entity on the map
  */
-void EntityMap::place(EntityAABB *e) // throws `set<EntityAABB *> intersectingEntities` when there is a collision
+bool EntityMap::place(EntityAABB *e,  set<EntityAABB *> &collidingEntities)
 {
     if( entities.find(e) != entities.end() )
         throw logic_error("EntityMap::place -- attempt to place an existing entity on the map");
 
-    set<EntityAABB *> intersectingEntities = computeIntersectingEntities(e);
+    if( !computeEntityCollisions(e, collidingEntities) )
+        return false;
 
-    if(!intersectingEntities.empty())
-        throw intersectingEntities;
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixBottomLeft(e->rect);
+    for(int x = bl.x ; x < tr.x ; x++)
+        for(int y = bl.y ; y < tr.y ; y++)
+            mat.at(x,y).insert(e);
 
     entities.insert(e);
-
-    Pt bottomLeft( floor( e->rect.pos.x / optimizationFactor ) ,
-                   floor( e->rect.pos.y / optimizationFactor ) ),
-       topRight( ceil( (e->rect.pos.x + e->rect.sz.w) / optimizationFactor ) ,
-                 ceil( (e->rect.pos.y + e->rect.sz.h) / optimizationFactor ) );
-
-    for(int x = (int) bottomLeft.x ; x <= (int) topRight.x ; x++)
-        for(int y = (int) bottomLeft.y ; y <= (int) topRight.y ; y++)
-            mat.at(x,y).insert(e);
+    return true;
 }
 
 /*
@@ -77,15 +82,11 @@ void EntityMap::place(EntityAABB *e) // throws `set<EntityAABB *> intersectingEn
 void EntityMap::remove(EntityAABB *e)
 {
     if( entities.find(e) == entities.end() )
-        throw logic_error("EntityMap::place -- attempt to remove an entity that does not exist on the map");
+        throw logic_error("EntityMap::remove -- attempt to remove an entity that does not exist on the map");
 
-    Pt bottomLeft( floor( e->rect.pos.x / optimizationFactor ) ,
-                   floor( e->rect.pos.y / optimizationFactor ) ),
-       topRight( ceil( (e->rect.pos.x + e->rect.sz.w) / optimizationFactor ) ,
-                 ceil( (e->rect.pos.y + e->rect.sz.h) / optimizationFactor ) );
-
-    for(int x = (int) bottomLeft.x ; x <= (int) topRight.x ; x++)
-        for(int y = (int) bottomLeft.y ; y <= (int) topRight.y ; y++)
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixBottomLeft(e->rect);
+    for(int x = bl.x ; x < tr.x ; x++)
+        for(int y = bl.y ; y < tr.y ; y++)
             mat.at(x,y).erase(e);
 
     entities.erase(e);
@@ -94,21 +95,50 @@ void EntityMap::remove(EntityAABB *e)
 /*
  * Move an existing entity `e` to a new position
  */
-void EntityMap::move(EntityAABB *e, Pt newPos) // throws `set<EntityAABB *> intersectingEntities` when there is a collision
+bool EntityMap::move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEntities)
 {
-    Pt oldPos = e->rect.pos;
-    e->rect.pos = newPos;
+    if(e->rect.pos == newPos)
+        return true;
 
     remove(e);
 
-    try {
-        place(e);
-    }
-    catch(set<EntityAABB *> &intersectingEntities) {
+    Pt oldPos = e->rect.pos;
+    e->rect.pos = newPos;
+    if( !place(e, collidingEntities) ) {
         e->rect.pos = oldPos;
-        place(e); // place it back
-        throw intersectingEntities;
+        set<EntityAABB *> temp;
+        if( !place(e, temp) ) // place it back
+            throw logic_error("this shouldn't happen");
+        return false;
     }
+
+    return true;
+}
+
+/*
+ * Same as `move` until there is a collision.
+ *
+ * When there's a collision, `moveBy` moves the entity
+ * as close as possible to the colliding entities by
+ * reducing by reducing the step at which it moves.
+ */
+bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities)
+{
+    if( !move(e, e->rect.pos + distance, collidingEntities) )
+    {
+        collidingEntities.clear();
+
+        float divisor = min( abs(distance.x), abs(distance.y) );
+        if(divisor == 0) // then get the other value:
+            divisor = max( abs(distance.x), abs(distance.y) );
+
+        Pt short_distance =  distance / divisor;
+        while( move(e, e->rect.pos + short_distance, collidingEntities) ) {}
+
+        return false;
+    }
+
+    return true;
 }
 
 void EntityMap::step()

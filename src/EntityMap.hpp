@@ -31,7 +31,7 @@ struct matrix
         this->size = size;
     }
 
-    T& at(int x, int y) { return (m.at(x)).at(y); }
+    T& at(int x, int y) { cout<<x<<","<<y<<endl; return (m.at(x)).at(y); }
 };
 
 class EntityMap : public Entity
@@ -43,23 +43,23 @@ class EntityMap : public Entity
 
     set<EntityAABB *> entities;
 
-    bool outside_bounds(const EntityAABB &e);
-
-public:
-    EntityMap(Dim newMapSize, unsigned int optimizationFactor) :
-        optimizationFactor( static_cast<float>(optimizationFactor) )
-    { setMapSize(newMapSize); }
-
     void setMapSize(Dim newMapSize);
-
     bool isInsideMap(const EntityAABB &e);
 
-    set<EntityAABB *> computeIntersectingEntities(const EntityAABB *e);
+    PtI matrixBottomLeft(const Rect &rt);
+    PtI matrixTopRight(const Rect &rt);
 
-    void place(EntityAABB *e);
+    bool computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities);
+
+public:
+    EntityMap(Dim worldSize, float optimizationFactor) :
+        optimizationFactor(optimizationFactor) { setMapSize(worldSize); }
+
+    bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
     void remove(EntityAABB *e);
 
-    void move(EntityAABB *e, Pt newPos);
+    bool move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEntities);
+    bool moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities);
 
     void step();
 };

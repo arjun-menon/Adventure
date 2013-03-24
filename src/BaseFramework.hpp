@@ -8,6 +8,7 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
+#include <functional>
 #include <cstring>
 #include <string>
 #include <cmath>

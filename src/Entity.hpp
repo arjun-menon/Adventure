@@ -35,10 +35,11 @@ struct EntityAABB : public Entity
  */
 class PlaceholderEntityAABB : public EntityAABB
 {
-    Color outlineColor, fillColor;
+    Color randomColor;
 
 public:
     PlaceholderEntityAABB(Rect rect);
+    PlaceholderEntityAABB(Pt pos, Dim sz) : PlaceholderEntityAABB( Rect(pos, sz) ) {}
     void step();
 };
 

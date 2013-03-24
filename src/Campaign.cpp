@@ -3,30 +3,30 @@
  */
 
 #include "Elements.hpp"
-#include "EntityMap.hpp"
+#include "PhysicsMap.hpp"
 
 class Campaign : public Entity
 {
     EntityMap em;
-    PlaceholderEntityAABB *a, *b;
+    PlaceholderEntityAABB *a, *b, *c;
 
 public:
     Campaign() : em(Dim(1024, 600), 32) {
-        a = new PlaceholderEntityAABB(Rect( Pt(10, 10), Dim(100, 100) ));
-        b = new PlaceholderEntityAABB(Rect( Pt(200, 300), Dim(100, 100) ));
+        a = new PlaceholderEntityAABB( Pt(10, 10)   , Dim(100, 100) );
+        b = new PlaceholderEntityAABB( Pt(210, 210) , Dim(100, 100) );
+        c = new PlaceholderEntityAABB( Pt(10, 110) , Dim(10, 10) );
 
-        em.place(a);
-        em.place(b);
+        set<EntityAABB *> collidingEntities;
+        em.place(a, collidingEntities);
+        em.place(b, collidingEntities);
+        em.place(c, collidingEntities);
     }
 
     void step() {
         em.step();
 
-        try {
-            em.move(b, b->rect.pos + Pt(-1,-1));
-        }
-        catch(set<EntityAABB *> &intersectingEntities) {
-        }
+        set<EntityAABB *> collidingEntities;
+        em.moveBy(b, Pt(0, 0), collidingEntities);
     }
 };
 
