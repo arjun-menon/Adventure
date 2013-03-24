@@ -16,13 +16,13 @@ public: \
 	inline NAME(T A, T B) : A(A), B(B) {} \
 	inline NAME(const NAME& other) : A(other.A), B(other.B) {} \
 	\
-	inline NAME& operator=(const NAME& other) { \
+	inline NAME& operator=(const NAME &other) { \
 		A = other.A; \
 		B = other.B; \
 		return *this; \
 	} \
 	\
-	inline NAME operator+(const NAME& other) const { \
+	inline NAME operator+(const NAME &other) const { \
 		return NAME(A + other.A, B + other.B); \
 	} \
 	inline NAME& operator+=(const NAME& other) { \
@@ -31,38 +31,54 @@ public: \
 		return *this; \
 	} \
 	\
-	inline NAME operator-(const NAME& other) const { \
+	inline NAME operator-(const NAME &other) const { \
 		return NAME(A - other.A, B - other.B); \
 	} \
-	inline NAME& operator-=(const NAME& other) { \
+	inline NAME& operator-=(const NAME &other) { \
 		A -= other.A; \
 		B -= other.B; \
 		return *this; \
 	} \
 	\
+	inline NAME operator/(const T &divisor) const { \
+        return NAME(A / divisor, B / divisor); \
+    } \
+    \
+    inline NAME operator*(const T &multiplier) const { \
+        return NAME(A * multiplier, B * multiplier); \
+    } \
+    \
+    inline bool operator==(const NAME &other) const { \
+        return A == other.A && B == other.B; \
+    } \
+    \
 };
 
 VEC2_TEMPLATE_GENERATOR(PtPolymorphic, x, y)
 typedef PtPolymorphic<float> Pt;
+typedef PtPolymorphic<int> PtI;
 
 VEC2_TEMPLATE_GENERATOR(DimPolymorphic, w, h)
 typedef DimPolymorphic<float> Dim;
+typedef DimPolymorphic<int> DimI;
 
-class Rect
+template <class T>
+class RectPolymorphic
 {
 public:
-	Pt pos;
-	Dim sz;
+    PtPolymorphic<T> pos;
+    DimPolymorphic<T> sz;
 
-	inline Rect(Pt pos, Dim sz) : pos(pos), sz(sz) {}
+	inline RectPolymorphic(PtPolymorphic<T> pos, DimPolymorphic<T> sz) :
+	        pos(pos), sz(sz) {}
 
-	inline bool isInside(const Pt &pt) const {
+	inline bool isInside(const PtPolymorphic<T> &pt) const {
 		return pt.x >= pos.x && pt.y >= pos.y
 		       && pt.x <= (pos.x + sz.w - 1)
 		       && pt.y <= (pos.y + sz.h - 1);
 	}
 
-	inline bool isInside(const Rect &rt) const {
+	inline bool isInside(const RectPolymorphic<T> &rt) const {
 	    // check if all of the four corners of rt are within this Rect
 	    return isInside( rt.pos ) &&
 	           isInside( rt.pos + Pt(rt.sz.w - 1, 0) ) &&
@@ -70,7 +86,7 @@ public:
 	           isInside( rt.pos + Pt(rt.sz.w - 1, rt.sz.h - 1) );
 	}
 
-	inline bool isPartiallyInside(const Rect &rt) const {
+	inline bool isPartiallyInside(const RectPolymorphic<T> &rt) const {
 	    // check if any of the four corners of rt are within this Rect
         return isInside( rt.pos ) ||
                isInside( rt.pos + Pt(rt.sz.w - 1, 0) ) ||
@@ -78,9 +94,15 @@ public:
                isInside( rt.pos + Pt(rt.sz.w - 1, rt.sz.h - 1) );
 	}
 
-	inline bool doesIntersect(const Rect &rt) const {
+	inline bool doesIntersect(const RectPolymorphic<T> &rt) const {
 	    return ( this->isPartiallyInside(rt) || rt.isPartiallyInside(*this) );
 	}
+
+	inline PtPolymorphic<T> getOppositeCorner() {
+	    return PtPolymorphic<T>(pos.x + sz.w, pos.y + sz.h);
+    }
 };
+
+typedef RectPolymorphic<float> Rect;
 
 #endif /* GEOMETRICPRIMITIVES_HPP_ */
