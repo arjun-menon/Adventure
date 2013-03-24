@@ -5,28 +5,33 @@
 #include "Elements.hpp"
 #include "PhysicsMap.hpp"
 
+class MovingObject : public PlaceholderEntityAABB, public DynamicEntityTrait
+{
+public:
+    MovingObject(Pt pos, Dim sz) : PlaceholderEntityAABB(pos, sz), DynamicEntityTrait(1.0f, 0.2f) {}
+};
+
 class Campaign : public Entity
 {
-    EntityMap em;
+    PhysicsMap m;
     PlaceholderEntityAABB *a, *b, *c;
 
 public:
-    Campaign() : em(Dim(1024, 600), 32) {
-        a = new PlaceholderEntityAABB( Pt(10, 10)   , Dim(100, 100) );
-        b = new PlaceholderEntityAABB( Pt(210, 210) , Dim(100, 100) );
-        c = new PlaceholderEntityAABB( Pt(10, 110) , Dim(10, 10) );
+    Campaign() : m(Dim(1024, 600), 32) {
+        a = new PlaceholderEntityAABB( Pt(10, 10)   , Dim(200, 100) );
+        b = new MovingObject( Pt(220, 210) , Dim(100, 100) );
+        c = new MovingObject( Pt(10, 110) , Dim(10, 10) );
 
         set<EntityAABB *> collidingEntities;
-        em.place(a, collidingEntities);
-        em.place(b, collidingEntities);
-        em.place(c, collidingEntities);
+        m.place(a, collidingEntities);
+        m.place(b, collidingEntities);
+        m.place(c, collidingEntities);
+
+        dynamic_cast<DynamicEntityTrait&>(*c).velocity.x = 15.0f;
     }
 
     void step() {
-        em.step();
-
-        set<EntityAABB *> collidingEntities;
-        em.moveBy(b, Pt(0, 0), collidingEntities);
+        m.step();
     }
 };
 

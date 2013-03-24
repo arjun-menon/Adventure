@@ -42,18 +42,18 @@ bool EntityMap::computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &
     if( !isInsideMap(*e) )
         return false;
 
-    PtI bl = matrixBottomLeft(e->rect), tr = matrixBottomLeft(e->rect);
-    for(int x = bl.x ; x < tr.x ; x++)
-        for(int y = bl.y ; y < tr.y ; y++)
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
             if(!mat.at(x,y).empty())
                 for(auto m_e : mat.at(x,y)) // iterate through the entities in each non-empty cell
                     if( e->rect.doesIntersect((m_e->rect)) )
                         collidingEntities.insert(m_e);
 
-    if(collidingEntities.empty())
-        return true;
+    if( !collidingEntities.empty() )
+        return false;
 
-    return false;
+    return true;
 }
 
 /*
@@ -67,10 +67,14 @@ bool EntityMap::place(EntityAABB *e,  set<EntityAABB *> &collidingEntities)
     if( !computeEntityCollisions(e, collidingEntities) )
         return false;
 
-    PtI bl = matrixBottomLeft(e->rect), tr = matrixBottomLeft(e->rect);
-    for(int x = bl.x ; x < tr.x ; x++)
-        for(int y = bl.y ; y < tr.y ; y++)
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
+    //cout<<"EntityMap::place matrix -> "<<bl.x<<","<<bl.y<<" and "<<tr.x<<","<<tr.y<<endl;;
+    for(int x = bl.x ; x <= tr.x ; x++) {
+        for(int y = bl.y ; y <= tr.y ; y++) {
+            //cout<<"EntityMap::place inserting at "<<x<<","<<y<<endl;
             mat.at(x,y).insert(e);
+        }
+    }
 
     entities.insert(e);
     return true;
@@ -84,9 +88,9 @@ void EntityMap::remove(EntityAABB *e)
     if( entities.find(e) == entities.end() )
         throw logic_error("EntityMap::remove -- attempt to remove an entity that does not exist on the map");
 
-    PtI bl = matrixBottomLeft(e->rect), tr = matrixBottomLeft(e->rect);
-    for(int x = bl.x ; x < tr.x ; x++)
-        for(int y = bl.y ; y < tr.y ; y++)
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
             mat.at(x,y).erase(e);
 
     entities.erase(e);
@@ -97,6 +101,9 @@ void EntityMap::remove(EntityAABB *e)
  */
 bool EntityMap::move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEntities)
 {
+    if( entities.find(e) == entities.end() )
+        throw logic_error("EntityMap::move -- attempt to move an entity that does not exist on the map");
+
     if(e->rect.pos == newPos)
         return true;
 
@@ -116,11 +123,10 @@ bool EntityMap::move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEnti
 }
 
 /*
- * Same as `move` until there is a collision.
- *
- * When there's a collision, `moveBy` moves the entity
- * as close as possible to the colliding entities by
- * reducing by reducing the step at which it moves.
+ * Adds `distance` to the position of an entity, until there is a collision.
+ *   When there's a collision, `moveBy` moves the entity
+ *   as close as possible to the colliding entities by
+ *   reducing by reducing the step at which it moves.
  */
 bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities)
 {
@@ -137,7 +143,6 @@ bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &colliding
 
         return false;
     }
-
     return true;
 }
 

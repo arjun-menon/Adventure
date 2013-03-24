@@ -31,7 +31,7 @@ struct matrix
         this->size = size;
     }
 
-    T& at(int x, int y) { cout<<x<<","<<y<<endl; return (m.at(x)).at(y); }
+    T& at(int x, int y) { return (m.at(x)).at(y); }
 };
 
 class EntityMap : public Entity
@@ -55,13 +55,13 @@ public:
     EntityMap(Dim worldSize, float optimizationFactor) :
         optimizationFactor(optimizationFactor) { setMapSize(worldSize); }
 
-    bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
-    void remove(EntityAABB *e);
+    virtual bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
+    virtual void remove(EntityAABB *e);
 
     bool move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEntities);
     bool moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities);
 
-    void step();
+    virtual void step();
 };
 
 #endif /* ENTITYMAP_HPP_ */
