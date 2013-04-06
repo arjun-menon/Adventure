@@ -6,12 +6,13 @@
 
 bool PhysicsMap::place(EntityAABB *e, set<EntityAABB *> &collidingEntities)
 {
-    if( entityMap.place(e, collidingEntities) ) {
-        if( dynamic_cast<DynamicEntityTrait *>(e) != NULL )
-            dynamicEntities.insert(e);
-        return true;
-    }
-    return false;
+    if( !entityMap.place(e, collidingEntities) )
+        return false;
+
+    if( dynamic_cast<DynamicEntityTrait *>(e) != nullptr )
+        dynamicEntities.insert(e);
+
+    return true;
 }
 
 void PhysicsMap::remove(EntityAABB *e)

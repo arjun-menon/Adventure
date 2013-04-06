@@ -74,8 +74,7 @@ public:
 
 	inline bool isInside(const PtPolymorphic<T> &pt) const {
 		return pt.x >= pos.x && pt.y >= pos.y
-		       && pt.x <= (pos.x + sz.w - 1)
-		       && pt.y <= (pos.y + sz.h - 1);
+		    && pt.x <= (pos.x + sz.w) && pt.y <= (pos.y + sz.h);
 	}
 
 	inline bool isInside(const RectPolymorphic<T> &rt) const {

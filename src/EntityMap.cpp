@@ -111,11 +111,12 @@ bool EntityMap::move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEnti
 
     Pt oldPos = e->rect.pos;
     e->rect.pos = newPos;
+
     if( !place(e, collidingEntities) ) {
         e->rect.pos = oldPos;
         set<EntityAABB *> temp;
         if( !place(e, temp) ) // place it back
-            throw logic_error("this shouldn't happen");
+            throw logic_error("UEntityMap::move -- unexpected fatal error: trouble placing an entity back at the same position it was moved from.");
         return false;
     }
 
