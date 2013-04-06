@@ -104,4 +104,24 @@ public:
 
 typedef RectPolymorphic<float> Rect;
 
+/*
+ * Define functions that apply a specified function to the members of a VEC2.
+ */
+
+#define MATH_TRANSFORM_FUNCTION(FUNCTION, SOURCE_TYPE, TARGET_TYPE, A, B) \
+inline TARGET_TYPE FUNCTION(SOURCE_TYPE source) { \
+	return TARGET_TYPE( FUNCTION(source.A), FUNCTION(source.B) ); \
+}
+
+#define MATH_TRANSFORM_FUNCTION_WITH_CAST(FUNCTION, SOURCE_TYPE, TARGET_TYPE, TARGET_SUBTYPE, A, B) \
+inline TARGET_TYPE FUNCTION(SOURCE_TYPE source) { \
+	return TARGET_TYPE( static_cast<TARGET_SUBTYPE>( FUNCTION(source.A) ),   \
+		                static_cast<TARGET_SUBTYPE>( FUNCTION(source.B) ) ); \
+}
+
+MATH_TRANSFORM_FUNCTION_WITH_CAST(ceil, Pt, PtI, int, x, y)
+MATH_TRANSFORM_FUNCTION_WITH_CAST(floor, Pt, PtI, int, x, y)
+MATH_TRANSFORM_FUNCTION(ceil, Dim, Dim, w, h)
+MATH_TRANSFORM_FUNCTION(floor, Dim, Dim, w, h)
+
 #endif /* GEOMETRICPRIMITIVES_HPP_ */

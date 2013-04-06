@@ -4,31 +4,6 @@
 
 #include "EntityMap.hpp"
 
-void EntityMap::setMapSize(Dim newMapSize)
-{
-    mapSize = newMapSize;
-    Dim matrixSize(ceil(mapSize.w / optimizationFactor),
-                   ceil(mapSize.h / optimizationFactor));
-    mat.resize(matrixSize);
-}
-
-bool EntityMap::isInsideMap(const EntityAABB &e)
-{
-    return Rect(Pt(0,0), mapSize).isInside(e.rect);
-}
-
-PtI EntityMap::matrixBottomLeft(const Rect &rt)
-{
-    return PtI( static_cast<int>( floor( rt.pos.x / optimizationFactor ) ) ,
-                static_cast<int>( floor( rt.pos.y / optimizationFactor ) ) );
-}
-
-PtI EntityMap::matrixTopRight(const Rect &rt)
-{
-    return PtI( static_cast<int>( floor( (rt.pos.x + rt.sz.w) / optimizationFactor ) ) ,
-                static_cast<int>( floor( (rt.pos.y + rt.sz.h) / optimizationFactor ) ) );
-}
-
 /*
  * Computes which entities in the map intersect `EntityAABB *e`
  *
@@ -68,7 +43,7 @@ bool EntityMap::place(EntityAABB *e,  set<EntityAABB *> &collidingEntities)
         return false;
 
     PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
-    //cout<<"EntityMap::place matrix -> "<<bl.x<<","<<bl.y<<" and "<<tr.x<<","<<tr.y<<endl;;
+    //cout<<"EntityMap::place matrix -> "<<bl.x<<","<<bl.y<<" and "<<tr.x<<","<<tr.y<<endl;
     for(int x = bl.x ; x <= tr.x ; x++) {
         for(int y = bl.y ; y <= tr.y ; y++) {
             //cout<<"EntityMap::place inserting at "<<x<<","<<y<<endl;
@@ -137,7 +112,7 @@ bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &colliding
 
         float divisor = min( abs(distance.x), abs(distance.y) );
         if(divisor == 0) // then get the other value:
-            divisor = max( abs(distance.x), abs(distance.y) );
+            divisor = max( abs(distance.x), abs(distance.y) ) * 10;
 
         Pt short_distance =  distance / divisor;
         while( move(e, e->rect.pos + short_distance, collidingEntities) ) {}

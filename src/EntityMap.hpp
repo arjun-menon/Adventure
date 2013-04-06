@@ -43,11 +43,11 @@ class EntityMap : public Entity
 
     set<EntityAABB *> entities;
 
-    void setMapSize(Dim newMapSize);
-    bool isInsideMap(const EntityAABB &e);
+    void setMapSize(Dim newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
+    bool isInsideMap(const EntityAABB &e) { return Rect(Pt(0,0), mapSize).isInside(e.rect); }
 
-    PtI matrixBottomLeft(const Rect &rt);
-    PtI matrixTopRight(const Rect &rt);
+    PtI matrixBottomLeft(const Rect &rt) { return floor( rt.pos/optimizationFactor ); }
+    PtI matrixTopRight(const Rect &rt) { return floor( Pt(rt.pos.x + rt.sz.w, rt.pos.y + rt.sz.h)/optimizationFactor ); }
 
     bool computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities);
 
