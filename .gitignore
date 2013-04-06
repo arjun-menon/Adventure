@@ -1,3 +1,6 @@
-# Eclipse CDT Build Directories
+Game.run
+
+# Various Build Directories
 Debug
 Release
+obj
