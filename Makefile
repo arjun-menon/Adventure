@@ -6,6 +6,9 @@ LD_FLAGS := -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
 CC_FLAGS := -std=c++11 -O0
 CXX := g++-4.7
 
+all: $(TARGET)
+	
+
 $(TARGET): $(OBJDIR) objects
 	
 
