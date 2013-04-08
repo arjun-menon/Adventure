@@ -34,26 +34,38 @@ struct matrix
     T& at(int x, int y) { return (m.at(x)).at(y); }
 };
 
-class EntityMap : public Entity
+class OptimizationMatrix
 {
-    Dim mapSize;
-
     matrix< set<EntityAABB *> > mat;
+
+    Dim mapSize;
     const float optimizationFactor;
 
+    inline PtI matrixBottomLeft(const Rect &rt) { return floor( rt.pos/optimizationFactor ); }
+    inline PtI matrixTopRight(const Rect &rt)   { return floor( Pt(rt.pos.x + rt.sz.w, rt.pos.y + rt.sz.h)/optimizationFactor ); }
+
+public:
+    inline OptimizationMatrix(Dim mapSize, const float optimizationFactor) :
+    mapSize(mapSize), optimizationFactor(optimizationFactor) { mat.resize( ceil( mapSize/optimizationFactor ) ); }
+
+    inline void resizeMap(Dim newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
+    inline Dim getMapSize() { return mapSize; }
+
+    void insert(EntityAABB *e);
+    void erase(EntityAABB *e);
+    set<EntityAABB *> getEntities(Rect region);
+};
+
+class EntityMap : public Entity
+{
     set<EntityAABB *> entities;
+    OptimizationMatrix optmat;
 
-    void setMapSize(Dim newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
-    bool isInsideMap(const EntityAABB &e) { return Rect(Pt(0,0), mapSize).isInside(e.rect); }
-
-    PtI matrixBottomLeft(const Rect &rt) { return floor( rt.pos/optimizationFactor ); }
-    PtI matrixTopRight(const Rect &rt) { return floor( Pt(rt.pos.x + rt.sz.w, rt.pos.y + rt.sz.h)/optimizationFactor ); }
-
+    inline bool isInsideMap(const EntityAABB &e) { return Rect(Pt(0,0), optmat.getMapSize()).isInside(e.rect); }
     bool computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities);
 
 public:
-    EntityMap(Dim worldSize, float optimizationFactor) :
-        optimizationFactor(optimizationFactor) { setMapSize(worldSize); }
+    EntityMap(Dim worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
 
     virtual bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
     virtual void remove(EntityAABB *e);

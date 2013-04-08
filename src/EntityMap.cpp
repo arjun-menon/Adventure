@@ -5,6 +5,48 @@
 #include "EntityMap.hpp"
 
 /*
+ * Insert entity in optimization matix.
+ *
+ * Does not check for collisions. To check
+ * for collisions, use EntityMap::place(...).
+ */
+void OptimizationMatrix::insert(EntityAABB *e)
+{
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
+            mat.at(x,y).insert(e);
+}
+
+/*
+ * Remove entity from optimization matix.
+ */
+void OptimizationMatrix::erase(EntityAABB *e)
+{
+    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
+            mat.at(x,y).erase(e);
+}
+
+/*
+ * Get all the entities that fall within a certain (rectangular) region.
+ */
+set<EntityAABB *> OptimizationMatrix::getEntities(Rect region)
+{
+    set<EntityAABB *> entities;
+
+    PtI bl = matrixBottomLeft(region), tr = matrixTopRight(region);
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
+            if(!mat.at(x,y).empty())
+                for(auto e : mat.at(x,y))
+                    entities.insert(e);
+
+    return entities;
+}
+
+/*
  * Computes which entities in the map intersect `EntityAABB *e`
  *
  * Returns `false` if there is a collision.
@@ -12,18 +54,15 @@
 bool EntityMap::computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities)
 {
     if( collidingEntities.size() != 0 )
-        throw logic_error("Non-empty EntityCollision collidingEntities set passed to EntityMap::computeEntityCollisions(...)");
+        throw logic_error("EntityMap::computeEntityCollisions -- non-empty EntityCollision collidingEntities set");
 
     if( !isInsideMap(*e) )
         return false;
 
-    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            if(!mat.at(x,y).empty())
-                for(auto m_e : mat.at(x,y)) // iterate through the entities in each non-empty cell
-                    if( e->rect.doesIntersect((m_e->rect)) )
-                        collidingEntities.insert(m_e);
+    set<EntityAABB *> entities = optmat.getEntities(e->rect);
+    for(auto m_e : entities)
+        if( e->rect.doesIntersect((m_e->rect)) )
+            collidingEntities.insert(m_e);
 
     if( !collidingEntities.empty() )
         return false;
@@ -42,16 +81,9 @@ bool EntityMap::place(EntityAABB *e,  set<EntityAABB *> &collidingEntities)
     if( !computeEntityCollisions(e, collidingEntities) )
         return false;
 
-    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
-    //cout<<"EntityMap::place matrix -> "<<bl.x<<","<<bl.y<<" and "<<tr.x<<","<<tr.y<<endl;
-    for(int x = bl.x ; x <= tr.x ; x++) {
-        for(int y = bl.y ; y <= tr.y ; y++) {
-            //cout<<"EntityMap::place inserting at "<<x<<","<<y<<endl;
-            mat.at(x,y).insert(e);
-        }
-    }
-
+    optmat.insert(e);
     entities.insert(e);
+
     return true;
 }
 
@@ -63,11 +95,7 @@ void EntityMap::remove(EntityAABB *e)
     if( entities.find(e) == entities.end() )
         throw logic_error("EntityMap::remove -- attempt to remove an entity that does not exist on the map");
 
-    PtI bl = matrixBottomLeft(e->rect), tr = matrixTopRight(e->rect);
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            mat.at(x,y).erase(e);
-
+    optmat.erase(e);
     entities.erase(e);
 }
 
@@ -91,7 +119,7 @@ bool EntityMap::move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEnti
         e->rect.pos = oldPos;
         set<EntityAABB *> temp;
         if( !place(e, temp) ) // place it back
-            throw logic_error("UEntityMap::move -- unexpected fatal error: trouble placing an entity back at the same position it was moved from.");
+            throw logic_error("EntityMap::move -- unexpected fatal error: trouble placing an entity back at the same position it was moved from.");
         return false;
     }
 
@@ -99,10 +127,11 @@ bool EntityMap::move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEnti
 }
 
 /*
- * Adds `distance` to the position of an entity, until there is a collision.
- *   When there's a collision, `moveBy` moves the entity
- *   as close as possible to the colliding entities by
- *   reducing by reducing the step at which it moves.
+ * Move entity *e as close as possible by `distance` until there until there is a collision.
+ *
+ * First it attempts a naïve move. If there is no collision, good.
+ * When there's a collision, `moveBy` moves the entity by small steps
+ * defined by `divisor` (derived from `distance`) until there is a collision.
  */
 bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities)
 {
@@ -122,6 +151,9 @@ bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &colliding
     return true;
 }
 
+/*
+ * Invoke step() on each entity.
+ */
 void EntityMap::step()
 {
     for(auto e : entities)
