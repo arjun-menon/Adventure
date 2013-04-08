@@ -19,13 +19,13 @@ class Campaign : public Entity
     PlaceholderEntityAABB *a, *b, *c;
 
 public:
-    Campaign() : m(Dim(1024, 600), 32) {
+    Campaign() : m(Sys()->windowProperties.dim, 32) {
         a = new PlaceholderEntityAABB( Pt(10, 10) , Dim(200, 100) );
-        b = new PlaceholderEntityAABB( Pt(220, 210) , Dim(100, 100) );
-        //b = new DynamicPlaceholderEntityAABB( Pt(220, 210) , Dim(100, 100), 0.1f, 0.2f );
-        //c = new DynamicPlaceholderEntityAABB( Pt(300, 170) , Dim(10, 10), 0.1f, 0.2f );
+        //b = new PlaceholderEntityAABB( Pt(220, 210) , Dim(100, 100) );
+        b = new DynamicPlaceholderEntityAABB( Pt(220, 210) , Dim(100, 100), 0.1f, 0.2f );
+        c = new DynamicPlaceholderEntityAABB( Pt(300, 170) , Dim(10, 10), 0.1f, 0.2f );
         //b = new PlaceholderEntityAABB( Pt(220, 210) , Dim(5, 5) );
-        c = new PlaceholderEntityAABB( Pt(225.1, 210) , Dim(3, 3) );
+        //c = new PlaceholderEntityAABB( Pt(225.1, 210) , Dim(3, 3) );
 
         set<EntityAABB *> collidingEntities;
         m.place(a, collidingEntities);
@@ -33,6 +33,8 @@ public:
         m.place(c, collidingEntities);
 
         //dynamic_cast<DynamicEntityTrait&>(*c).velocity.x = -7.0f;
+
+        OptimizationMatrix optmat(Dim(1024, 600), 32);
     }
 
     void step() {
