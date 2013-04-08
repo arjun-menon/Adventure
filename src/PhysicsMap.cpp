@@ -55,7 +55,7 @@ void PhysicsMap::step()
          * apply friction
          */
         collidingEntities.clear();
-        dynamicTrait->velocity.x = applyGroundFriction(dynamicTrait->velocity.x, dynamicTrait->groundfriction);
+        dynamicTrait->velocity.x = applyGroundFriction(dynamicTrait->velocity.x, dynamicTrait->groundFriction);
         entityMap.moveBy(e, dynamicTrait->velocity, collidingEntities);
     }
 

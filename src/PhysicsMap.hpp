@@ -10,10 +10,10 @@
 struct DynamicEntityTrait
 {
     Pt velocity;
-    const float groundfriction, gravityFactor;
+    const float groundFriction, gravityFactor;
 
     DynamicEntityTrait(const float groundfriction, const float gravityFactor) :
-        velocity(0.0f, 0.0f), groundfriction(groundfriction), gravityFactor(gravityFactor) {}
+        velocity(0.0f, 0.0f), groundFriction(groundfriction), gravityFactor(gravityFactor) {}
 };
 
 class PhysicsMap
