@@ -11,10 +11,10 @@
 
 class SystemImpl : public System
 {
-    static SystemImpl* singleton;
-
     friend int main(int argc, char *argv[]);
     friend System* Sys();
+
+    static SystemImpl* singleton;
 
     class TexImpl : public Tex
     {
@@ -40,7 +40,6 @@ class SystemImpl : public System
         }
     };
 
-    WindowProperties windowProperties;
     unique_ptr<Entity> master;
     unique_ptr<sf::RenderWindow> renderWindow;
 
@@ -83,11 +82,11 @@ class SystemImpl : public System
 
         try
         {
+            master = unique_ptr<Entity>( getMaster() );
+
             renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
             renderWindow->clear();
             renderWindow->setFramerateLimit( 60 );
-
-            master = unique_ptr<Entity>( getMaster(windowProperties) );
 
             while( renderWindow->isOpen() ) {
                 sf::Event event;

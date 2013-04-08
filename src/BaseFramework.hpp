@@ -38,6 +38,8 @@ public:
 class System
 {
 public:
+    WindowProperties windowProperties;
+
     virtual shared_ptr<Tex> loadTex(string file) = 0;
     virtual void setMouseCursorVisibility(bool visibility) = 0;
     virtual void drawImage(Tex &tex, Pt pos, bool =false, float angle=0.0f) = 0;
@@ -48,7 +50,7 @@ public:
     virtual ~System() {}
 };
 
-Entity* getMaster(WindowProperties &windowProperties);
+Entity* getMaster();
 
 System* Sys(); // get pointer to concrete System singleton
 
