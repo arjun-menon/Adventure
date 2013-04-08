@@ -14,10 +14,17 @@ You also need to have the g++ 4.7 or higher for full [C++11](http://en.wikipedia
 
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
-        sudo apt-get install g++-4.7 c++-4.7
+        sudo apt-get install g++ g++-4.7 c++-4.7
 
-On Eclipse, it will be necessary to enable the `__GXX_EXPERIMENTAL_CXX0X__` flag in order to activate all C++11 features. The flag isn't necessary for some reason, when running g++ from the command-line.
+Additionally, on Ubuntu and potentially other Linux distributions, g++ 4.7 might not be your default version of g++ especially if you had an older version of g++ when you installed *4.7*. In these cases, both versions will be installed side-by-side in order to prevent breaking existing dependencies on the other g++ version, and *4.7* will be accessible as `g++-4.7`. If that is the case, you should configure your IDE and/or the Makefile so that it uses the right version.
 
-Additionally, on Ubuntu and potentially other Linux distributions, g++ 4.7 might not be your default version of g++ especially if you had an older version of g++ when you installed *4.7*. In these cases, both versions will be installed side-by-side in order to prevent breaking existing dependencies on the other g++ version, and *4.7* will be accessible as `g++-4.7`. If that is the case, you should configure your IDE so that it uses the right version.
+### Eclipse Configuration
 
-By now everything should be setup and you should be able to compile & run the code.
+- **Enabling C++11 support:**
+	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Miscallaneous -> Other flags*, add the following flag: `-std=c++11` (sets the standard to ISO C++11).
+
+	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Preprocessor -> Defined Symbols (-D)*, add the following symbol: `__GXX_EXPERIMENTAL_CXX0X__` (enabling this macro is necessary for Eclipse to be able to parse the C++11 extensions in STL headers).
+
+- **Linker settings:** In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Linker -> Libraries -> Libraries (-l)*, add the following libraries: `sfml-window`, `sfml-window` and `sfml-system`.
+
+- **Speeding up the build process:** Select one of the appropriate options from: *Project -> Properties -> C/C++ Build -> (main page) -> Behavior (tab) -> Build settings -> Enable parallel build*.
