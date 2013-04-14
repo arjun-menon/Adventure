@@ -1,5 +1,5 @@
-Compilation on Debian/Ubuntu Linux
-----------------------------------
+Building on Debian/Ubuntu Linux
+--------------------------------
 First get these packages:
 
         sudo apt-get install build-essential cmake libfreetype6-dev libglew1.5-dev libjpeg62-dev libpng12-dev libsndfile1-dev libxrandr-dev libopenal-dev
@@ -14,13 +14,16 @@ You also need to have the g++ 4.7 or higher for full [C++11](http://en.wikipedia
 
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
-        sudo apt-get install g++ g++-4.7 c++-4.7
+        sudo apt-get install g++-4.8
 
 Additionally, on Ubuntu and potentially other Linux distributions, g++ 4.7 might not be your default version of g++ especially if you had an older version of g++ when you installed *4.7*. In these cases, both versions will be installed side-by-side in order to prevent breaking existing dependencies on the other g++ version, and *4.7* will be accessible as `g++-4.7`. If that is the case, you should configure your IDE and/or the Makefile so that it uses the right version.
 
 ### Eclipse Configuration
 
 - **Enabling C++11 support:**
+
+	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Command*, change `g++` to `g++-4.8`. Do the same for *GCC C++ Linker* as well.
+
 	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Miscallaneous -> Other flags*, add the following flag: `-std=c++11` (sets the standard to ISO C++11).
 
 	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Preprocessor -> Defined Symbols (-D)*, add the following symbol: `__GXX_EXPERIMENTAL_CXX0X__` (enabling this macro is necessary for Eclipse to be able to parse the C++11 extensions in STL headers).
