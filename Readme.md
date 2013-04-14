@@ -31,3 +31,5 @@ Additionally, on Ubuntu and potentially other Linux distributions, g++ 4.7 might
 - **Linker settings:** In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Linker -> Libraries -> Libraries (-l)*, add the following libraries: `sfml-window`, `sfml-window` and `sfml-system`.
 
 - **Speeding up the build process:** Select one of the appropriate options from: *Project -> Properties -> C/C++ Build -> (main page) -> Behavior (tab) -> Build settings -> Enable parallel build*.
+
+- **Dealing with an out-of-sync index:** Every now and then, the Eclipse C++ indexer will go haywire and start reporting various segments of your code as erroneous while everything compiles fine. There is an easy [fix](http://stackoverflow.com/a/3040761) to this: Close Eclipse; go to your workspace directory, and delete everything under `$workspace\.metadata\.plugins\org.eclipse.cdt.core`; then restart Eclipse. The indexer will run once more, and things should be back to normal now.
