@@ -23,7 +23,7 @@ void PhysicsMap::remove(EntityAABB *e)
     entityMap.remove(e);
 }
 
-float PhysicsMap::applyGroundFriction(float horizontalVelocity, float groundFriction)
+float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
 {
     if( abs(horizontalVelocity) < groundFriction )
         return 0;
@@ -55,7 +55,7 @@ void PhysicsMap::step()
          * apply friction
          */
         collidingEntities.clear();
-        dynamicTrait->velocity.x = applyGroundFriction(dynamicTrait->velocity.x, dynamicTrait->groundFriction);
+        dynamicTrait->velocity.x = calculatePostFrictionHorizontalVelocity(dynamicTrait->velocity.x, dynamicTrait->groundFriction);
         entityMap.moveBy(e, dynamicTrait->velocity, collidingEntities);
     }
 

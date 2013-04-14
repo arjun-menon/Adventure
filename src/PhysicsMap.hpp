@@ -20,7 +20,7 @@ class PhysicsMap
 {
     set<EntityAABB *> dynamicEntities;
 
-    static float applyGroundFriction(float horizontalVelocity, float groundFriction);
+    static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
 
 public:
     EntityMap entityMap;
