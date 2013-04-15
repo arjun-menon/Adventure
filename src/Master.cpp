@@ -1,5 +1,7 @@
 /*
  * Master.cpp
+ *
+ * The "Master" entity, ie. the root entity.
  */
 
 #include "BaseFramework.hpp"
@@ -13,9 +15,7 @@ class Master : public Entity
 public:
     Master() : loaded(false)
     {
-        Sys()->windowProperties.title = "Adventure";
-
-        unique_ptr<Entity> newCampaign(); // prototype
+        unique_ptr<Entity> newCampaign(); // defined in Campaign.cpp
         campaign = newCampaign();
     }
 
@@ -26,6 +26,20 @@ public:
     ~Master() {
     }
 };
+
+WindowProperties defaultWindowProperties()
+{
+    WindowProperties windowProperties;
+
+    // Default window height & width:
+    windowProperties.dim = Dim(1024, 600);
+    windowProperties.fullscreen = false;
+
+    // Title
+    windowProperties.title = "Adventure";
+
+    return windowProperties;
+}
 
 Entity* getMaster() {
     static Master *master = nullptr;

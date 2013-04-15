@@ -55,11 +55,6 @@ class SystemImpl : public System
             windowProperties.dim= Dim( static_cast<float>( atoi(argv[2]) ),
                                        static_cast<float>( atoi(argv[3]) ) );
         }
-        else {
-            // Default window height & width:
-            windowProperties.dim = Dim(1024, 600);
-            windowProperties.fullscreen = false;
-        }
     }
 
     sf::RenderWindow* createRenderWindow()
@@ -78,19 +73,23 @@ class SystemImpl : public System
 
     void main(int argc, char *argv[])
     {
+        windowProperties = defaultWindowProperties();
+
         handleCmdlineArgs(argc, argv);
+
+        renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
+        renderWindow->clear();
+        renderWindow->setFramerateLimit( 60 );
 
         try
         {
             master = unique_ptr<Entity>( getMaster() );
 
-            renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
-            renderWindow->clear();
-            renderWindow->setFramerateLimit( 60 );
-
-            while( renderWindow->isOpen() ) {
+            while( renderWindow->isOpen() )
+            {
                 sf::Event event;
-                while( renderWindow->pollEvent(event) ) {
+                while( renderWindow->pollEvent(event) )
+                {
                     if( event.type == sf::Event::Closed )
                         renderWindow->close();
                 }
@@ -100,7 +99,8 @@ class SystemImpl : public System
                 master->step();
                 renderWindow->display();
             }
-        } catch(exception &e)
+        }
+        catch(exception &e)
         {
             cerr<<"Exception caught: "<<e.what()<<endl;
             renderWindow->close();

@@ -19,7 +19,7 @@ class Campaign : public Entity
     PlaceholderEntityAABB *a, *b, *c;
 
 public:
-    Campaign() : m(Sys()->windowProperties.dim, 32) {
+    Campaign() : m( Sys()->getWindowProperties().dim, 32 ) {
         a = new PlaceholderEntityAABB( Pt(10, 10) , Dim(200, 100) );
         //b = new PlaceholderEntityAABB( Pt(220, 210) , Dim(100, 100) );
         b = new DynamicPlaceholderEntityAABB( Pt(220, 210) , Dim(100, 100), 0.1f, 0.2f );

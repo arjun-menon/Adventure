@@ -37,8 +37,11 @@ public:
 
 class System
 {
-public:
+protected:
     WindowProperties windowProperties;
+
+public:
+    const WindowProperties& getWindowProperties() { return windowProperties; }
 
     virtual shared_ptr<Tex> loadTex(string file) = 0;
     virtual void setMouseCursorVisibility(bool visibility) = 0;
@@ -50,8 +53,12 @@ public:
     virtual ~System() {}
 };
 
-Entity* getMaster();
-
 System* Sys(); // get pointer to concrete System singleton
+
+/*
+ * Defined in Master.cpp:
+ */
+WindowProperties defaultWindowProperties();
+Entity* getMaster();
 
 #endif /* BASEFRAMEWORK_HPP_ */
