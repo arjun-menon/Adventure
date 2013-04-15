@@ -5,13 +5,14 @@
 #ifndef BASEFRAMEWORK_HPP_
 #define BASEFRAMEWORK_HPP_
 
-#include <memory>
-#include <iostream>
-#include <stdexcept>
-#include <functional>
 #include <cstring>
-#include <string>
 #include <cmath>
+#include <stdexcept>
+#include <memory>
+#include <functional>
+#include <iostream>
+#include <string>
+#include <vector>
 #include <list>
 #include <set>
 using namespace std;
@@ -56,7 +57,7 @@ public:
 System* Sys(); // get pointer to concrete System singleton
 
 /*
- * Defined in Master.cpp:
+ * Defined in Master.cpp
  */
 WindowProperties defaultWindowProperties();
 Entity* getMaster();

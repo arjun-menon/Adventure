@@ -2,8 +2,6 @@
  * EntityMap.hpp
  */
 
-#include <vector>
-
 #include "BaseFramework.hpp"
 
 #ifndef ENTITYMAP_HPP_
