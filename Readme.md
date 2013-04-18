@@ -28,7 +28,7 @@ Additionally, on Ubuntu and potentially other Linux distributions, g++ 4.7 might
 
 	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Preprocessor -> Defined Symbols (-D)*, add the following symbol: `__GXX_EXPERIMENTAL_CXX0X__` (enabling this macro is necessary for Eclipse to be able to parse the C++11 extensions in STL headers).
 
-- **Linker settings:** In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Linker -> Libraries -> Libraries (-l)*, add the following libraries: `sfml-window`, `sfml-window` and `sfml-system`.
+- **Linker settings:** In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Linker -> Libraries -> Libraries (-l)*, add the following libraries: `sfml-graphics`, `sfml-window` and `sfml-system`.
 
 - **Speeding up the build process:** Select one of the appropriate options from: *Project -> Properties -> C/C++ Build -> (main page) -> Behavior (tab) -> Build settings -> Enable parallel build*.
 

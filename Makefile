@@ -2,7 +2,7 @@ TARGET := Game.run
 OBJDIR := obj
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
-LD_FLAGS := -lsfml-audio -lsfml-graphics -lsfml-window -lsfml-system
+LD_FLAGS := -lsfml-graphics -lsfml-window -lsfml-system
 CC_FLAGS := -std=c++11 -O0
 CXX := g++-4.8
 
