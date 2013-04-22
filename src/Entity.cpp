@@ -21,3 +21,7 @@ PlaceholderEntityAABB::PlaceholderEntityAABB(Rect rect) : EntityAABB(rect) {
 void PlaceholderEntityAABB::step() {
     Sys()->drawBox( rect.pos, rect.sz, randomColor, randomColor );
 }
+
+void SimpleImage::step() {
+    Sys()->drawImage(*tex, pos);
+}
