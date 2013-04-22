@@ -2,3 +2,5 @@
 Time-based FPS-independent physics
 
 step_multiple(...) -- use variadic templates
+
+~TexImpl: frees the Tex
