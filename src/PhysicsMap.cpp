@@ -6,7 +6,7 @@
 
 bool PhysicsMap::place(EntityAABB *e, set<EntityAABB *> &collidingEntities)
 {
-    if( !entityMap.place(e, collidingEntities) )
+    if( !EntityMap::place(e, collidingEntities) )
         return false;
 
     if( dynamic_cast<DynamicEntityTrait *>(e) != nullptr )
@@ -20,7 +20,7 @@ void PhysicsMap::remove(EntityAABB *e)
     if( dynamic_cast<DynamicEntityTrait *>(e) != nullptr )
         dynamicEntities.erase(e);
 
-    entityMap.remove(e);
+    EntityMap::remove(e);
 }
 
 float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
@@ -32,7 +32,7 @@ float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVeloci
     return horizontalVelocity - direction * groundFriction;
 }
 
-void PhysicsMap::step()
+void PhysicsMap::performPhysics()
 {
     for(auto e : dynamicEntities)
     {
@@ -48,7 +48,7 @@ void PhysicsMap::step()
          */
         collidingEntities.clear();
         dynamicTrait->velocity += Pt(0, -1 * dynamicTrait->gravityFactor);
-        if( !entityMap.moveBy(e, dynamicTrait->velocity, collidingEntities) )
+        if( !moveBy(e, dynamicTrait->velocity, collidingEntities) )
             dynamicTrait->velocity.y = 0;
 
         /*
@@ -56,8 +56,6 @@ void PhysicsMap::step()
          */
         collidingEntities.clear();
         dynamicTrait->velocity.x = calculatePostFrictionHorizontalVelocity(dynamicTrait->velocity.x, dynamicTrait->groundFriction);
-        entityMap.moveBy(e, dynamicTrait->velocity, collidingEntities);
+        moveBy(e, dynamicTrait->velocity, collidingEntities);
     }
-
-    entityMap.step();
 }

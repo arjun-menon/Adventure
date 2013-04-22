@@ -150,12 +150,3 @@ bool EntityMap::moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &colliding
     }
     return true;
 }
-
-/*
- * Invoke step() on each entity.
- */
-void EntityMap::step()
-{
-    for(auto e : entities)
-        e->step();
-}

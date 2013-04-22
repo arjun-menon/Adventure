@@ -3,7 +3,7 @@
  */
 
 #include "Elements.hpp"
-#include "PhysicsMap.hpp"
+#include "SideScrollingMap.hpp"
 
 class DynamicPlaceholderEntityAABB : public PlaceholderEntityAABB, public DynamicEntityTrait
 {
@@ -38,17 +38,16 @@ public:
     }
 
     void step() {
-        m.step();
+        m.performPhysics();
 
         set<EntityAABB *> collidingEntities;
-        m.entityMap.moveBy(b, Pt(5, 0), collidingEntities);
+        m.moveBy(b, Pt(5, 0), collidingEntities);
     }
 };
 
-
 class OldGameMap : public Entity
 {
-    unique_ptr<PhysicsMap> m;
+    unique_ptr<SideScrollingMap> m;
 
 public:
     OldGameMap()
@@ -90,7 +89,7 @@ public:
         getline(level_file, d);
         size.h = atoi(d.c_str());
 
-        m = move( unique_ptr<PhysicsMap>( new PhysicsMap(size, 32) ) );
+        m = move( unique_ptr<SideScrollingMap>( new SideScrollingMap(size, 32) ) );
 
         set<EntityAABB *> collidingEntities;
 

@@ -7,8 +7,9 @@
 
 #include "EntityMap.hpp"
 
-struct DynamicEntityTrait
+class DynamicEntityTrait
 {
+public:
     Pt velocity;
     const float groundFriction, gravityFactor;
 
@@ -16,22 +17,20 @@ struct DynamicEntityTrait
         velocity(0.0f, 0.0f), groundFriction(groundfriction), gravityFactor(gravityFactor) {}
 };
 
-class PhysicsMap
+class PhysicsMap : public EntityMap
 {
     set<EntityAABB *> dynamicEntities;
 
     static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
 
 public:
-    EntityMap entityMap;
-
     PhysicsMap(Dim worldSize, float optimizationFactor) :
-        entityMap(worldSize, optimizationFactor) {}
+        EntityMap(worldSize, optimizationFactor) {}
 
     bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
     void remove(EntityAABB *e);
 
-    void step();
+    void performPhysics();
 };
 
 #endif /* PHYSICSMAP_HPP_ */

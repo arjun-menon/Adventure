@@ -54,7 +54,7 @@ public:
     set<EntityAABB *> getEntities(Rect region);
 };
 
-class EntityMap : public Entity
+class EntityMap
 {
     set<EntityAABB *> entities;
     OptimizationMatrix optmat;
@@ -62,16 +62,19 @@ class EntityMap : public Entity
     inline bool isInsideMap(const EntityAABB &e) { return Rect(Pt(0,0), optmat.getMapSize()).isInside(e.rect); }
     bool computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities);
 
-public:
-    EntityMap(Dim worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
+protected:
+    inline EntityMap(Dim worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
 
     virtual bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
     virtual void remove(EntityAABB *e);
 
+    virtual ~EntityMap() {}
+
+public:
+    inline const set<EntityAABB *> & getEntities() { return entities; }
+
     bool move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEntities);
     bool moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities);
-
-    virtual void step();
 };
 
 #endif /* ENTITYMAP_HPP_ */
