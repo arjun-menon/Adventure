@@ -7,6 +7,20 @@
 #ifndef ENTITYMAP_HPP_
 #define ENTITYMAP_HPP_
 
+/*
+ * Entity - a polymorphic holder for a DrawableAABB
+ *          that has a position on an EntityMap.
+ */
+struct Entity
+{
+    const shared_ptr<DrawableAABB> d;
+    Pt pos;
+
+    Entity(shared_ptr<DrawableAABB> d, Pt pos) : d(d), pos(pos) {}
+
+    virtual ~Entity() {}
+};
+
 template<class T>
 struct matrix
 {
@@ -34,7 +48,7 @@ struct matrix
 
 class OptimizationMatrix
 {
-    matrix< set<EntityAABB *> > mat;
+    matrix< set<Entity *> > mat;
 
     Dim mapSize;
     const float optimizationFactor;
@@ -49,32 +63,34 @@ public:
     inline void resizeMap(Dim newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
     inline Dim getMapSize() { return mapSize; }
 
-    void insert(EntityAABB *e);
-    void erase(EntityAABB *e);
-    set<EntityAABB *> getEntities(Rect region);
+    void insert(Entity *e);
+    void erase(Entity *e);
+    set<Entity *> getEntities(Rect region);
 };
 
 class EntityMap
 {
-    set<EntityAABB *> entities;
+    set<Entity *> entities;
     OptimizationMatrix optmat;
 
-    inline bool isInsideMap(const EntityAABB &e) { return Rect(Pt(0,0), optmat.getMapSize()).isInside(e.rect); }
-    bool computeEntityCollisions(const EntityAABB *e, set<EntityAABB *> &collidingEntities);
+    inline bool isInsideMap(const Entity &e) {
+        return Rect(Pt(0,0), optmat.getMapSize()).isInside( Rect(e.pos, e.d->getSize()) );
+    }
+    bool computeEntityCollisions(const Entity *e, set<Entity *> &collidingEntities);
 
 protected:
     inline EntityMap(Dim worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
 
-    virtual bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
-    virtual void remove(EntityAABB *e);
+    virtual bool place(Entity *e, set<Entity *> &collidingEntities);
+    virtual void remove(Entity *e);
 
     virtual ~EntityMap() {}
 
 public:
-    inline const set<EntityAABB *> & getEntities() { return entities; }
+    inline const set<Entity *> & getEntities() { return entities; }
 
-    bool move(EntityAABB *e, Pt newPos,  set<EntityAABB *> &collidingEntities);
-    bool moveBy(EntityAABB *e, Pt distance,  set<EntityAABB *> &collidingEntities);
+    bool move(Entity *e, Pt newPos,  set<Entity *> &collidingEntities);
+    bool moveBy(Entity *e, Pt distance,  set<Entity *> &collidingEntities);
 };
 
 #endif /* ENTITYMAP_HPP_ */

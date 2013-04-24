@@ -10,7 +10,7 @@
 
 #include "PhysicsMap.hpp"
 
-class SideScrollingMap : public PhysicsMap, public Entity
+class SideScrollingMap : public PhysicsMap
 {
 
 public:
@@ -24,7 +24,7 @@ public:
 
         // Invoke step() on each entity:
         for(auto e : getEntities())
-            e->step();
+            e->d->drawAt(e->pos);
     }
 };
 

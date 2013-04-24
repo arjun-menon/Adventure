@@ -19,7 +19,7 @@ public:
 
 class PhysicsMap : public EntityMap
 {
-    set<EntityAABB *> dynamicEntities;
+    set<Entity *> dynamicEntities;
 
     static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
 
@@ -27,8 +27,8 @@ public:
     PhysicsMap(Dim worldSize, float optimizationFactor) :
         EntityMap(worldSize, optimizationFactor) {}
 
-    bool place(EntityAABB *e, set<EntityAABB *> &collidingEntities);
-    void remove(EntityAABB *e);
+    bool place(Entity *e, set<Entity *> &collidingEntities);
+    void remove(Entity *e);
 
     void performPhysics();
 };

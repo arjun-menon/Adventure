@@ -20,8 +20,7 @@
 
 using namespace std;
 
-#include "GeometricPrimitives.hpp"
-#include "Entity.hpp"
+#include "Elements.hpp"
 
 struct WindowProperties
 {
@@ -40,7 +39,7 @@ public:
 
     virtual shared_ptr<Tex> loadTex(string file) = 0;
     virtual void setMouseCursorVisibility(bool visibility) = 0;
-    virtual void drawImage(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) = 0;
+    virtual void drawImage(const Tex &tex, Pt pos, bool flip=false, float angle=0.0f) = 0;
     virtual void drawText(string line, Pt pos, Color color=Color(), float fontSize=15.0f) = 0;
     virtual void drawBox(Pt pos, Dim size, Color fillColor=Color(255,255,255,0), Color outlineColor=Color(), float outlineThickness=1.0f) = 0;
 
@@ -50,10 +49,18 @@ public:
 
 System* Sys(); // get pointer to concrete System singleton
 
-/*
- * Defined in Master.cpp
- */
-WindowProperties defaultWindowProperties();
-Entity* getMaster();
+class GameMain
+{
+public:
+    static WindowProperties defaultWindowProperties();
+    static GameMain* getSingleton();
+
+    virtual void step() = 0; // Called every frame.
+
+    virtual ~GameMain() {}
+
+private:
+    static GameMain* singleton;
+};
 
 #endif /* BASEFRAMEWORK_HPP_ */

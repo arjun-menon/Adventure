@@ -4,7 +4,7 @@
 
 #include "PhysicsMap.hpp"
 
-bool PhysicsMap::place(EntityAABB *e, set<EntityAABB *> &collidingEntities)
+bool PhysicsMap::place(Entity *e, set<Entity *> &collidingEntities)
 {
     if( !EntityMap::place(e, collidingEntities) )
         return false;
@@ -15,7 +15,7 @@ bool PhysicsMap::place(EntityAABB *e, set<EntityAABB *> &collidingEntities)
     return true;
 }
 
-void PhysicsMap::remove(EntityAABB *e)
+void PhysicsMap::remove(Entity *e)
 {
     if( dynamic_cast<DynamicEntityTrait *>(e) != nullptr )
         dynamicEntities.erase(e);
@@ -41,7 +41,7 @@ void PhysicsMap::performPhysics()
         if(dynamicTrait == nullptr)
             throw logic_error("Non-dynamic entity in PhysicsMap.dynamicEntities set");
 
-        static set<EntityAABB *> collidingEntities; // let's reuse it (therefore static)
+        static set<Entity *> collidingEntities; // let's reuse it (therefore static)
 
         /*
          * apply gravity

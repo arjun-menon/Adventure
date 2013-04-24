@@ -35,12 +35,12 @@ class SystemImpl : public System
             sz.h = static_cast<float>( size.y );
         }
 
-        Dim getDim() {
+        Dim getDim() const {
             return sz;
         }
     };
 
-    unique_ptr<Entity> master;
+    unique_ptr<GameMain> gameMain;
     unique_ptr<sf::RenderWindow> renderWindow;
 
     std::minstd_rand0 rng;
@@ -73,7 +73,7 @@ class SystemImpl : public System
 
     void main(int argc, char *argv[])
     {
-        windowProperties = defaultWindowProperties();
+        windowProperties = GameMain::defaultWindowProperties();
 
         handleCmdlineArgs(argc, argv);
 
@@ -83,7 +83,7 @@ class SystemImpl : public System
 
         try
         {
-            master = unique_ptr<Entity>( getMaster() );
+            gameMain = unique_ptr<GameMain>( GameMain::getSingleton() );
 
             while( renderWindow->isOpen() )
             {
@@ -96,7 +96,7 @@ class SystemImpl : public System
 
                 renderWindow->clear();
 
-                master->step();
+                gameMain->step();
                 renderWindow->display();
             }
         }
@@ -109,8 +109,8 @@ class SystemImpl : public System
     }
 
 public:
-    SystemImpl() : master(nullptr), renderWindow(nullptr),
-                   rng( std::chrono::system_clock::now().time_since_epoch().count() ) {
+    SystemImpl() : gameMain(nullptr), renderWindow(nullptr),
+        rng( std::chrono::system_clock::now().time_since_epoch().count() ) {
     }
 
     ~SystemImpl() {
@@ -124,8 +124,8 @@ public:
         renderWindow->setMouseCursorVisible( visibility );
     }
 
-    void drawImage(Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
-        sf::Sprite sprite( dynamic_cast<TexImpl&>(tex).tex );
+    void drawImage(const Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
+        sf::Sprite sprite( dynamic_cast<const TexImpl&>(tex).tex );
         sprite.setPosition( pos.x + (flip ? tex.w() : 0) , windowProperties.dim.h - tex.h() - pos.y );
         sprite.setRotation(angle);
         if(flip) {

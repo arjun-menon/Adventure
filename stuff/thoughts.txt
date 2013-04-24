@@ -4,3 +4,7 @@ Time-based FPS-independent physics
 step_multiple(...) -- use variadic templates
 
 ~TexImpl: frees the Tex
+
+fix the Rect stuff in EntityMap.cpp
+
+Maybe the Entity class needs protected mutable data members & public const getters
