@@ -12,7 +12,35 @@
 
 class SideScrollingView
 {
-    xy calculateViewport(xy pivotPosition, xy mapSize)
+public:
+    PhysicsMap* physicsMap;
+    Entity* pivot;
+
+    SideScrollingView() : physicsMap(nullptr), pivot(nullptr) {}
+
+    void render()
+    {
+        if(physicsMap != nullptr) {
+            physicsMap->performPhysics();
+
+            if(pivot == nullptr) {
+                // Invoke drawAt() naively on each entity:
+                for(auto e : physicsMap->entityMap.getEntities())
+                    e->d->drawAt(e->pos);
+            }
+            else {
+                xy viewport = calculateViewport(pivot->pos,
+                        physicsMap->entityMap.getMapSize());
+
+                // Invoke drawAt(pos - viewport) on each entity:
+                for(auto e : physicsMap->entityMap.getEntities())
+                    e->d->drawAt(e->pos - viewport);
+            }
+        }
+    }
+
+private:
+    static inline xy calculateViewport(const xy &pivotPosition, const xy &mapSize)
     {
         xy v;
 
@@ -39,33 +67,6 @@ class SideScrollingView
         }
 
         return v;
-    }
-
-public:
-    PhysicsMap* physicsMap;
-    Entity* pivot;
-
-    SideScrollingView() : physicsMap(nullptr), pivot(nullptr) {}
-
-    void render()
-    {
-        if(physicsMap != nullptr) {
-            physicsMap->performPhysics();
-
-            if(pivot == nullptr) {
-                // Invoke drawAt() naively on each entity:
-                for(auto e : physicsMap->entityMap.getEntities())
-                    e->d->drawAt(e->pos);
-            }
-            else {
-                xy viewport = calculateViewport(pivot->pos,
-                        physicsMap->entityMap.getMapSize());
-
-                // Invoke drawAt(pos - viewport) on each entity:
-                for(auto e : physicsMap->entityMap.getEntities())
-                    e->d->drawAt(e->pos - viewport);
-            }
-        }
     }
 };
 
