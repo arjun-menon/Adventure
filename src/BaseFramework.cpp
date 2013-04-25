@@ -11,33 +11,99 @@
 
 class SystemImpl : public System
 {
+public:
+    SystemImpl() : gameMain(nullptr), renderWindow(nullptr),
+        rng( std::chrono::system_clock::now().time_since_epoch().count() ) {
+    }
+
+    ~SystemImpl() {
+    }
+
+    shared_ptr<Tex> loadTex(const string file) {
+        if( fileTexMap.find(file) == fileTexMap.end() ) {
+            // Load the texture
+            sf::Image image;
+            if( !image.loadFromFile(file) )
+                throw invalid_argument("Unable to open file: " + file);
+
+            sf::Texture* tex = new sf::Texture;
+            if( !tex->loadFromImage(image) )
+                throw runtime_error("Loading image from texture " + file + " failed.");
+
+            fileTexMap[file] = tex;
+        }
+
+        sf::Texture* tex = fileTexMap[file];
+
+        sf::Vector2u sz = tex->getSize();
+        Dim size( static_cast<float>( sz.x ),
+                  static_cast<float>( sz.y ) );
+
+        return shared_ptr<Tex>( new TexImpl(tex, size) );
+    }
+
+    void setMouseCursorVisibility(bool visibility) {
+        renderWindow->setMouseCursorVisible( visibility );
+    }
+
+    void drawImage(const Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
+        sf::Sprite sprite( *(dynamic_cast<const TexImpl&>(tex).tex) );
+        sprite.setPosition( pos.x + (flip ? tex.getSize().w : 0) ,
+                            windowProperties.dim.h - tex.getSize().h - pos.y );
+        sprite.setRotation(angle);
+        if(flip) {
+            sprite.setScale(-1, 1);
+        }
+        renderWindow->draw(sprite);
+    }
+
+    void drawText(string line, Pt pos, Color color=Color(), float fontSize=15.0f) {
+        sf::Text textToDraw(line, sf::Font::getDefaultFont(), static_cast<unsigned int>(fontSize));
+        textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
+        textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
+        renderWindow->draw(textToDraw);
+    }
+
+    void drawBox(Pt pos, Dim size, Color fillColor, Color outlineColor, float outlineThickness) {
+        sf::RectangleShape rectangle;
+        rectangle.setPosition ( sf::Vector2f( pos.x,  windowProperties.dim.h - pos.y) );
+        rectangle.setSize     ( sf::Vector2f(size.w, -size.h) );
+        rectangle.setFillColor( sf::Color( fillColor.r, fillColor.g, fillColor.b, fillColor.a) );
+        rectangle.setOutlineThickness( outlineThickness );
+        rectangle.setOutlineColor( sf::Color(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a) );
+        renderWindow->draw(rectangle);
+    }
+
+    void exit() {
+        renderWindow->close();
+    }
+
+    unsigned int random() {
+        return static_cast<unsigned int>( rng() );
+    }
+
+private:
     friend int main(int argc, char *argv[]);
     friend System* Sys();
 
     static SystemImpl* singleton;
 
+    map<const string, sf::Texture*> fileTexMap;
+
     class TexImpl : public Tex
     {
-        sf::Image image;
     public:
-        sf::Texture tex;
-        Dim sz;
+        sf::Texture* tex;
 
-        TexImpl(string file) {
-            if( !image.loadFromFile(file) ) {
-                throw invalid_argument("Unable to open file: " + file);
-            }
-            if( !tex.loadFromImage(image) ) {
-                throw runtime_error("Loading image from texture " + file + " failed.");
-            }
-            sf::Vector2u size = tex.getSize();
-            sz.w = static_cast<float>( size.x );
-            sz.h = static_cast<float>( size.y );
+        TexImpl(sf::Texture* tex, Dim size) :
+            tex(tex), size(size) {}
+
+        const Dim getSize() const {
+            return size;
         }
 
-        Dim getDim() const {
-            return sz;
-        }
+    private:
+        Dim size;
     };
 
     unique_ptr<GameMain> gameMain;
@@ -106,57 +172,6 @@ class SystemImpl : public System
             renderWindow->close();
             cerr<<"Terminating..."<<endl;
         }
-    }
-
-public:
-    SystemImpl() : gameMain(nullptr), renderWindow(nullptr),
-        rng( std::chrono::system_clock::now().time_since_epoch().count() ) {
-    }
-
-    ~SystemImpl() {
-    }
-
-    shared_ptr<Tex> loadTex(string file) {
-        return shared_ptr<Tex>( new TexImpl(file) );
-    }
-
-    void setMouseCursorVisibility(bool visibility) {
-        renderWindow->setMouseCursorVisible( visibility );
-    }
-
-    void drawImage(const Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
-        sf::Sprite sprite( dynamic_cast<const TexImpl&>(tex).tex );
-        sprite.setPosition( pos.x + (flip ? tex.w() : 0) , windowProperties.dim.h - tex.h() - pos.y );
-        sprite.setRotation(angle);
-        if(flip) {
-            sprite.setScale(-1, 1);
-        }
-        renderWindow->draw(sprite);
-    }
-
-    void drawText(string line, Pt pos, Color color=Color(), float fontSize=15.0f) {
-        sf::Text textToDraw(line, sf::Font::getDefaultFont(), static_cast<unsigned int>(fontSize));
-        textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
-        textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
-        renderWindow->draw(textToDraw);
-    }
-
-    void drawBox(Pt pos, Dim size, Color fillColor, Color outlineColor, float outlineThickness) {
-        sf::RectangleShape rectangle;
-        rectangle.setPosition ( sf::Vector2f( pos.x,  windowProperties.dim.h - pos.y) );
-        rectangle.setSize     ( sf::Vector2f(size.w, -size.h) );
-        rectangle.setFillColor( sf::Color( fillColor.r, fillColor.g, fillColor.b, fillColor.a) );
-        rectangle.setOutlineThickness( outlineThickness );
-        rectangle.setOutlineColor( sf::Color(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a) );
-        renderWindow->draw(rectangle);
-    }
-
-    void exit() {
-        renderWindow->close();
-    }
-
-    unsigned int random() {
-        return static_cast<unsigned int>( rng() );
     }
 };
 

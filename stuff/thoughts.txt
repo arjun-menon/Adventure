@@ -5,6 +5,10 @@ step_multiple(...) -- use variadic templates
 
 ~TexImpl: frees the Tex
 
-fix the Rect stuff in EntityMap.cpp
+fix the Rect stuff in EntityMap.cpp ---- xyPolymorphic and xy
 
 Maybe the Entity class needs protected mutable data members & public const getters
+
+SideScrollingView: takes a PhysicsMap & a single _pivot_ Entity -- and draws map "around" it. 
+
+add consts to Tex -- i.e. ptr<const Tex>

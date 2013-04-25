@@ -7,18 +7,22 @@
 
 #include "GeometricPrimitives.hpp"
 
+/*
+ * Color - RBG color with alpha channel.
+ */
 struct Color
 {
     unsigned char r, g, b, a;
     Color(unsigned char r=255, unsigned char g=255, unsigned char b=255, unsigned char a=255) : r(r), g(g), b(b), a(a) {}
 };
 
+/*
+ * Tex - a 2D texture.
+ */
 class Tex
 {
 public:
-    virtual Dim getDim() const = 0;
-    inline float w() const { return getDim().w; }
-    inline float h() const { return getDim().h; }
+    virtual const Dim getSize() const = 0;
     virtual ~Tex() {}
 };
 
@@ -32,14 +36,6 @@ public:
     virtual ~Drawable() {}
 };
 
-
-
-
-// add consts to Tex -- i.e. ptr<const Tex>
-
-
-
-
 /*
  * DrawableAABB - a Drawable with a queryable rectangular size.
  *                an Axis-Aligned Bounding Box (AABB) Drawable.
@@ -50,18 +46,16 @@ public:
     virtual Dim getSize() = 0;
 };
 
-
 /*
  * SimpleImage - an image.
  */
 class SimpleImage : public DrawableAABB
 {
-    const shared_ptr<const Tex> tex;
-    const Dim tex_size;
+    shared_ptr<Tex> tex;
 
 public:
-    inline SimpleImage(shared_ptr<const Tex> tex) : tex(tex), tex_size(tex->getDim()) {}
-    inline Dim getSize() { return tex_size; }
+    inline SimpleImage(shared_ptr<Tex> tex) : tex(tex) {}
+    inline Dim getSize() { return tex->getSize(); }
 
     void drawAt(Pt pos);
 };

@@ -15,22 +15,25 @@ public:
 
     DynamicEntityTrait(const float groundfriction, const float gravityFactor) :
         velocity(0.0f, 0.0f), groundFriction(groundfriction), gravityFactor(gravityFactor) {}
+
+    virtual ~DynamicEntityTrait() {}
 };
 
 class PhysicsMap : public EntityMap
 {
-    set<Entity *> dynamicEntities;
-
-    static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
-
 public:
     PhysicsMap(Dim worldSize, float optimizationFactor) :
         EntityMap(worldSize, optimizationFactor) {}
 
-    bool place(Entity *e, set<Entity *> &collidingEntities);
-    void remove(Entity *e);
+    bool place(Entity *e, set<Entity *> &collidingEntities); // override EntityMap
+    void remove(Entity *e); // override EntityMap
 
     void performPhysics();
+
+private:
+    set<Entity *> dynamicEntities;
+
+    static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
 };
 
 #endif /* PHYSICSMAP_HPP_ */
