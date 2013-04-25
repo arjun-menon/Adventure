@@ -11,11 +11,11 @@ public:
     StaticColoredBox(Pt pos, Dim sz) : Entity(new ColoredBox(sz), pos) {}
 };
 
-class DynamicColoredBox : public Entity, public DynamicEntityTrait
+class DynamicColoredBox : public DynamicEntity
 {
 public:
     DynamicColoredBox(Pt pos, Dim sz, float friction, float gravity) :
-        Entity(new ColoredBox(sz), pos), DynamicEntityTrait(friction, gravity) {}
+        DynamicEntity(new ColoredBox(sz), pos, friction, gravity) {}
 };
 
 class Steppable

@@ -7,16 +7,17 @@
 
 #include "EntityMap.hpp"
 
-class DynamicEntityTrait
+class DynamicEntity : public Entity
 {
 public:
     Pt velocity;
     const float groundFriction, gravityFactor;
 
-    DynamicEntityTrait(const float groundfriction, const float gravityFactor) :
+    DynamicEntity(DrawableAABB *d, Pt pos,
+            const float groundfriction, const float gravityFactor) : Entity(d, pos),
         velocity(0.0f, 0.0f), groundFriction(groundfriction), gravityFactor(gravityFactor) {}
 
-    virtual ~DynamicEntityTrait() {}
+    virtual ~DynamicEntity() {}
 };
 
 class PhysicsMap : public EntityMap
@@ -31,7 +32,7 @@ public:
     void performPhysics();
 
 private:
-    set<Entity *> dynamicEntities;
+    set<DynamicEntity *> dynamicEntities;
 
     static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
 };

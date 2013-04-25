@@ -6,19 +6,21 @@
 
 bool PhysicsMap::place(Entity *e, set<Entity *> &collidingEntities)
 {
+    cout<<"placing: "<< e <<endl;
+
     if( !EntityMap::place(e, collidingEntities) )
         return false;
 
-    if( dynamic_cast<DynamicEntityTrait *>(e) != nullptr )
-        dynamicEntities.insert(e);
+    if( dynamic_cast<DynamicEntity *>(e) != nullptr )
+        dynamicEntities.insert( dynamic_cast<DynamicEntity *>(e) );
 
     return true;
 }
 
 void PhysicsMap::remove(Entity *e)
 {
-    if( dynamic_cast<DynamicEntityTrait *>(e) != nullptr )
-        dynamicEntities.erase(e);
+    if( dynamic_cast<DynamicEntity *>(e) != nullptr )
+        dynamicEntities.erase( dynamic_cast<DynamicEntity *>(e) );
 
     EntityMap::remove(e);
 }
@@ -36,10 +38,11 @@ void PhysicsMap::performPhysics()
 {
     for(auto e : dynamicEntities)
     {
-        DynamicEntityTrait *dynamicTrait = dynamic_cast<DynamicEntityTrait *>(e);
-
-        if(dynamicTrait == nullptr)
-            throw logic_error("Non-dynamic entity in PhysicsMap.dynamicEntities set");
+        cout<<"dynamic: "<< e <<endl;
+//        DynamicEntityTrait *dynamicTrait = dynamic_cast<DynamicEntityTrait *>(e);
+//
+//        if(dynamicTrait == nullptr)
+//            throw logic_error("Non-dynamic entity in PhysicsMap.dynamicEntities set");
 
         static set<Entity *> collidingEntities; // let's reuse it (therefore static)
 
@@ -47,15 +50,15 @@ void PhysicsMap::performPhysics()
          * apply gravity
          */
         collidingEntities.clear();
-        dynamicTrait->velocity += Pt(0, -1 * dynamicTrait->gravityFactor);
-        if( !moveBy(e, dynamicTrait->velocity, collidingEntities) )
-            dynamicTrait->velocity.y = 0;
+        e->velocity += Pt(0, -1 * e->gravityFactor);
+        if( !moveBy(e, e->velocity, collidingEntities) )
+            e->velocity.y = 0;
 
         /*
          * apply friction
          */
         collidingEntities.clear();
-        dynamicTrait->velocity.x = calculatePostFrictionHorizontalVelocity(dynamicTrait->velocity.x, dynamicTrait->groundFriction);
-        moveBy(e, dynamicTrait->velocity, collidingEntities);
+        e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->groundFriction);
+        moveBy(e, e->velocity, collidingEntities);
     }
 }

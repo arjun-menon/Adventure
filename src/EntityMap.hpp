@@ -8,11 +8,11 @@
 #define ENTITYMAP_HPP_
 
 /*
- * Entity - a polymorphic holder for a DrawableAABB
- *          that has a position on an EntityMap.
+ * Entity - a DrawableAABB which has a position on an EntityMap.
  */
-struct Entity
+class Entity
 {
+public:
     DrawableAABB *d;
     Pt pos;
 
