@@ -69,7 +69,7 @@ private:
         return floor_int( rt.pos/optimizationFactor );
     }
     inline xy_int matrixTopRight(const Rect &rect) {
-        return floor_int( xy(rect.pos.x + rect.size.x, rect.pos.y + rect.size.y)/optimizationFactor );
+        return floor_int( (rect.pos + rect.size)/optimizationFactor );
     }
 };
 

@@ -12,3 +12,5 @@ Maybe the Entity class needs protected mutable data members & public const gette
 SideScrollingView: takes a PhysicsMap & a single _pivot_ Entity -- and draws map "around" it. 
 
 add consts to Tex -- i.e. ptr<const Tex>
+
+velocity transfer upon collision
