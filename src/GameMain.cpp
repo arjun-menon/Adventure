@@ -3,7 +3,7 @@
  */
 
 #include "BaseFramework.hpp"
-#include "SideScrollingMap.hpp"
+#include "SideScrollingView.hpp"
 
 class StaticColoredBox : public Entity
 {
@@ -27,37 +27,42 @@ public:
 
 class TestBed : public Steppable
 {
-    SideScrollingMap m;
+    SideScrollingView scv;
+    PhysicsMap physicsMap;
     Entity *a, *b, *c;
 
 public:
-    TestBed() : m( Sys()->getWindowProperties().size, 32 ) {
+    TestBed() : physicsMap( Sys()->getWindowProperties().size, 32 )
+    {
         a = new StaticColoredBox( xy(10, 10) , xy(200, 100) );
         b = new StaticColoredBox( xy(220, 210) , xy(100, 100) );
         b = new DynamicColoredBox( xy(220, 210) , xy(100, 100), 0.1f, 0.2f );
         c = new DynamicColoredBox( xy(300, 170) , xy(10, 10), 0.1f, 0.05f );
 
         set<Entity *> collidingEntities;
-        m.place(a, collidingEntities);
-        m.place(b, collidingEntities);
-        m.place(c, collidingEntities);
+        physicsMap.place(a, collidingEntities);
+        physicsMap.place(b, collidingEntities);
+        physicsMap.place(c, collidingEntities);
 
-        //dynamic_cast<DynamicEntityTrait&>(*c).velocity.x = -7.0f;
+        dynamic_cast<DynamicEntity*>(c)->velocity.x = -4.0f;
+
+        scv.physicsMap = &physicsMap;
     }
 
-    void step() {
-        m.performPhysics();
+    void step()
+    {
+        static set<Entity *> collidingEntities;
+        collidingEntities.clear();
+        physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
 
-        set<Entity *> collidingEntities;
-        m.entityMap.moveBy(b, xy(5, 0), collidingEntities);
-
-        m.step();
+        scv.render();
     }
 };
 
 class OldGameMap : public Steppable
 {
-    unique_ptr<SideScrollingMap> m;
+    unique_ptr<PhysicsMap> physicsMap;
+    SideScrollingView scv;
 
 public:
     OldGameMap()
@@ -99,9 +104,11 @@ public:
         getline(level_file, d);
         size.y = atoi(d.c_str());
 
-        m = move( unique_ptr<SideScrollingMap>( new SideScrollingMap(size, 32) ) );
+        physicsMap = move( unique_ptr<PhysicsMap>( new PhysicsMap(size, 32) ) );
 
         set<Entity *> collidingEntities;
+
+        Entity *pivot = nullptr;
 
         while(!level_file.eof())
         {
@@ -109,8 +116,10 @@ public:
             xy p;
 
             getline(level_file, s, ',');
+
             if(level_file.eof())
                 break;
+
             getline(level_file, d, ',');
             p.x = atoi(d.c_str());
             getline(level_file, d);
@@ -118,19 +127,29 @@ public:
 
             DrawableAABB *d = new SimpleImage( images.at(s) );
 
-            Entity *e = new Entity(d, p);
+            Entity *e = nullptr;
 
-            if( !m->place(e, collidingEntities) ) {
+            if(s == "Player")
+                pivot = e = new DynamicEntity(d, p, 0.1f, 0.2f);
+            else
+                e = new Entity(d, p);
+
+            if( !physicsMap->place(e, collidingEntities) ) {
                 cerr<<"Collision"<<endl;
                 break;
             }
         }
 
         level_file.close();
+
+        // setup scv
+        scv.physicsMap = &*physicsMap;
+        scv.pivot = pivot;
     }
 
     void step() {
-        m->step();
+        //physicsMap->performPhysics();
+        scv.render();
     }
 };
 
@@ -145,8 +164,8 @@ class GameMainImpl : public GameMain
 public:
     GameMainImpl() : loaded(false)
     {
-        whatever = unique_ptr<Steppable>( new TestBed() );
-        //whatever = unique_ptr<Steppable>( new OldGameMap() );
+        //whatever = unique_ptr<Steppable>( new TestBed() );
+        whatever = unique_ptr<Steppable>( new OldGameMap() );
     }
 
     void step() {
