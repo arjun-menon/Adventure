@@ -53,7 +53,7 @@ public:
     mapSize(mapSize), optimizationFactor(optimizationFactor) { mat.resize( ceil( mapSize/optimizationFactor ) ); }
 
     inline void resizeMap(xy newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
-    inline xy getMapSize() { return mapSize; }
+    inline const xy& getMapSize() { return mapSize; }
 
     void insert(Entity *e);
     void erase(Entity *e);
@@ -65,28 +65,21 @@ private:
     xy mapSize;
     const float optimizationFactor;
 
-    inline xy_int matrixBottomLeft(const Rect &rt) {
-        return floor_int( rt.pos/optimizationFactor );
-    }
-    inline xy_int matrixTopRight(const Rect &rect) {
-        return floor_int( (rect.pos + rect.size)/optimizationFactor );
-    }
+    inline xy_int matrixPos(const xy &pos) { return floor_int( pos / optimizationFactor ); }
 };
 
 class EntityMap
 {
 public:
     inline EntityMap(xy worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
-
+    inline const xy& getMapSize() { return optmat.getMapSize(); }
     inline const set<Entity *> & getEntities() { return entities; }
 
-    virtual bool place(Entity *e, set<Entity *> &collidingEntities);
-    virtual void remove(Entity *e);
+    bool place(Entity *e, set<Entity *> &collidingEntities);
+    void remove(Entity *e);
 
     bool move(Entity *e, xy newPos,  set<Entity *> &collidingEntities);
     bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities);
-
-    virtual ~EntityMap() {}
 
 private:
     set<Entity *> entities;

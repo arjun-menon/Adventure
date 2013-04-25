@@ -12,7 +12,7 @@
  */
 void OptimizationMatrix::insert(Entity *e)
 {
-    xy_int bl = matrixBottomLeft( Rect(e->pos, e->d->getSize()) ), tr = matrixTopRight( Rect(e->pos, e->d->getSize()) );
+    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             mat.at(x,y).insert(e);
@@ -23,7 +23,7 @@ void OptimizationMatrix::insert(Entity *e)
  */
 void OptimizationMatrix::erase(Entity *e)
 {
-    xy_int bl = matrixBottomLeft( Rect(e->pos, e->d->getSize()) ), tr = matrixTopRight( Rect(e->pos, e->d->getSize()) );
+    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             mat.at(x,y).erase(e);
@@ -36,7 +36,7 @@ set<Entity *> OptimizationMatrix::getEntities(Rect region)
 {
     set<Entity *> entities;
 
-    xy_int bl = matrixBottomLeft(region), tr = matrixTopRight(region);
+    xy_int bl = matrixPos(region.pos), tr = matrixPos(region.pos + region.size);
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             if(!mat.at(x,y).empty())
