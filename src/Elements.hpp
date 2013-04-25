@@ -22,7 +22,7 @@ struct Color
 class Tex
 {
 public:
-    virtual const Dim getSize() const = 0;
+    virtual const xy getSize() const = 0;
     virtual ~Tex() {}
 };
 
@@ -32,7 +32,7 @@ public:
 class Drawable
 {
 public:
-    virtual void drawAt(Pt pos) = 0;
+    virtual void drawAt(xy pos) = 0;
     virtual ~Drawable() {}
 };
 
@@ -43,7 +43,7 @@ public:
 class DrawableAABB : public Drawable
 {
 public:
-    virtual Dim getSize() = 0;
+    virtual xy getSize() = 0;
 };
 
 /*
@@ -55,9 +55,9 @@ class SimpleImage : public DrawableAABB
 
 public:
     inline SimpleImage(shared_ptr<Tex> tex) : tex(tex) {}
-    inline Dim getSize() { return tex->getSize(); }
+    inline xy getSize() { return tex->getSize(); }
 
-    void drawAt(Pt pos);
+    void drawAt(xy pos);
 };
 
 /*
@@ -68,22 +68,22 @@ class ColoredBox : public DrawableAABB
     static Color randomColor();
 
 public:
-    const Dim size;
+    const xy size;
     const Color color;
 
-    inline ColoredBox(Dim size, Color color) : size(size), color(color) {}
-    inline ColoredBox(Dim size) : ColoredBox(size, randomColor()) {}
+    inline ColoredBox(xy size, Color color) : size(size), color(color) {}
+    inline ColoredBox(xy size) : ColoredBox(size, randomColor()) {}
 
-    inline Dim getSize() { return size; }
-    void drawAt(Pt pos);
+    inline xy getSize() { return size; }
+    void drawAt(xy pos);
 };
 
 
 /*
 class Image : public EntityAABB
 {
-    Pt  pos;
-    Dim size;
+    xy  pos;
+    xy size;
 
     shared_ptr<Tex> tex;
     bool flip;
@@ -99,26 +99,26 @@ public:
 
     void step();
 
-    inline const Pt&  getPos () { return pos;  }
-    inline const Dim& getSize() { return size; }
+    inline const xy&  getPos () { return pos;  }
+    inline const xy& getSize() { return size; }
 
-    inline void setPos (Pt  pos)  { this->pos = pos; }
+    inline void setPos (xy  pos)  { this->pos = pos; }
     inline void setFlip(bool flip) { this->flip = flip; }
     inline void setAngle(float angle) { this->angle = angle; }
 };
 
 class Animation : public EntityAABB
 {
-    Pt  pos;
-    Dim size;
+    xy  pos;
+    xy size;
 
     // TODO Implement
 
 public:
-    inline const Pt&  getPos () { return pos;  }
-    inline const Dim& getSize() { return size; }
+    inline const xy&  getPos () { return pos;  }
+    inline const xy& getSize() { return size; }
 
-    inline void setPos (Pt  pos)  { this->pos = pos; }
+    inline void setPos (xy  pos)  { this->pos = pos; }
 };
 */
 // Sprite...

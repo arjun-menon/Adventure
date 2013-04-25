@@ -14,9 +14,9 @@ class Entity
 {
 public:
     DrawableAABB *d;
-    Pt pos;
+    xy pos;
 
-    Entity(DrawableAABB *d, Pt pos) : d(d), pos(pos) {}
+    Entity(DrawableAABB *d, xy pos) : d(d), pos(pos) {}
 
     virtual ~Entity() {}
 };
@@ -24,21 +24,21 @@ public:
 template<class T>
 struct matrix
 {
-    Dim size;
+    xy size;
     vector< vector<T> > m;
 
-    matrix() : size(Dim(0,0)) {}
+    matrix() : size(xy(0,0)) {}
 
-    void resize(const Dim &size)
+    void resize(const xy &size)
     {
         this->size = size;
 
-        if(size.w != m.size())
-            m.resize( static_cast<unsigned int>(size.w) );
+        if(size.x != m.size())
+            m.resize( static_cast<unsigned int>(size.x) );
 
         for(auto col = m.begin(); col != m.end(); col++)
-            if(size.h != col->size())
-                col->resize( static_cast<unsigned int>(size.h) );
+            if(size.y != col->size())
+                col->resize( static_cast<unsigned int>(size.y) );
 
         this->size = size;
     }
@@ -49,11 +49,11 @@ struct matrix
 class OptimizationMatrix
 {
 public:
-    inline OptimizationMatrix(Dim mapSize, const float optimizationFactor) :
+    inline OptimizationMatrix(xy mapSize, const float optimizationFactor) :
     mapSize(mapSize), optimizationFactor(optimizationFactor) { mat.resize( ceil( mapSize/optimizationFactor ) ); }
 
-    inline void resizeMap(Dim newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
-    inline Dim getMapSize() { return mapSize; }
+    inline void resizeMap(xy newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
+    inline xy getMapSize() { return mapSize; }
 
     void insert(Entity *e);
     void erase(Entity *e);
@@ -62,25 +62,29 @@ public:
 private:
     matrix< set<Entity *> > mat;
 
-    Dim mapSize;
+    xy mapSize;
     const float optimizationFactor;
 
-    inline PtI matrixBottomLeft(const Rect &rt) { return floor( rt.pos/optimizationFactor ); }
-    inline PtI matrixTopRight(const Rect &rt)   { return floor( Pt(rt.pos.x + rt.sz.w, rt.pos.y + rt.sz.h)/optimizationFactor ); }
+    inline xy_int matrixBottomLeft(const Rect &rt) {
+        return floor_int( rt.pos/optimizationFactor );
+    }
+    inline xy_int matrixTopRight(const Rect &rect) {
+        return floor_int( xy(rect.pos.x + rect.size.x, rect.pos.y + rect.size.y)/optimizationFactor );
+    }
 };
 
 class EntityMap
 {
 public:
-    inline EntityMap(Dim worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
+    inline EntityMap(xy worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
 
     inline const set<Entity *> & getEntities() { return entities; }
 
     virtual bool place(Entity *e, set<Entity *> &collidingEntities);
     virtual void remove(Entity *e);
 
-    bool move(Entity *e, Pt newPos,  set<Entity *> &collidingEntities);
-    bool moveBy(Entity *e, Pt distance,  set<Entity *> &collidingEntities);
+    bool move(Entity *e, xy newPos,  set<Entity *> &collidingEntities);
+    bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities);
 
     virtual ~EntityMap() {}
 
@@ -89,7 +93,7 @@ private:
     OptimizationMatrix optmat;
 
     inline bool isInsideMap(const Entity &e) {
-        return Rect(Pt(0,0), optmat.getMapSize()).isInside( Rect(e.pos, e.d->getSize()) );
+        return Rect(xy(0,0), optmat.getMapSize()).isInside( Rect(e.pos, e.d->getSize()) );
     }
 
     bool computeEntityCollisions(const Entity *e, set<Entity *> &collidingEntities);

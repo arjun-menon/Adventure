@@ -36,8 +36,8 @@ public:
         sf::Texture* tex = fileTexMap[file];
 
         sf::Vector2u sz = tex->getSize();
-        Dim size( static_cast<float>( sz.x ),
-                  static_cast<float>( sz.y ) );
+        xy size( static_cast<float>( sz.x ),
+                 static_cast<float>( sz.y ) );
 
         return shared_ptr<Tex>( new TexImpl(tex, size) );
     }
@@ -46,10 +46,10 @@ public:
         renderWindow->setMouseCursorVisible( visibility );
     }
 
-    void drawImage(const Tex &tex, Pt pos, bool flip=false, float angle=0.0f) {
+    void drawImage(const Tex &tex, xy pos, bool flip=false, float angle=0.0f) {
         sf::Sprite sprite( *(dynamic_cast<const TexImpl&>(tex).tex) );
-        sprite.setPosition( pos.x + (flip ? tex.getSize().w : 0) ,
-                            windowProperties.dim.h - tex.getSize().h - pos.y );
+        sprite.setPosition( pos.x + (flip ? tex.getSize().x : 0) ,
+                            windowProperties.size.y - tex.getSize().y - pos.y );
         sprite.setRotation(angle);
         if(flip) {
             sprite.setScale(-1, 1);
@@ -57,17 +57,17 @@ public:
         renderWindow->draw(sprite);
     }
 
-    void drawText(string line, Pt pos, Color color=Color(), float fontSize=15.0f) {
+    void drawText(string line, xy pos, Color color=Color(), float fontSize=15.0f) {
         sf::Text textToDraw(line, sf::Font::getDefaultFont(), static_cast<unsigned int>(fontSize));
         textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
         textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
         renderWindow->draw(textToDraw);
     }
 
-    void drawBox(Pt pos, Dim size, Color fillColor, Color outlineColor, float outlineThickness) {
+    void drawBox(xy pos, xy size, Color fillColor, Color outlineColor, float outlineThickness) {
         sf::RectangleShape rectangle;
-        rectangle.setPosition ( sf::Vector2f( pos.x,  windowProperties.dim.h - pos.y) );
-        rectangle.setSize     ( sf::Vector2f(size.w, -size.h) );
+        rectangle.setPosition ( sf::Vector2f( pos.x,  windowProperties.size.y - pos.y) );
+        rectangle.setSize     ( sf::Vector2f( size.x, -size.y ) );
         rectangle.setFillColor( sf::Color( fillColor.r, fillColor.g, fillColor.b, fillColor.a) );
         rectangle.setOutlineThickness( outlineThickness );
         rectangle.setOutlineColor( sf::Color(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a) );
@@ -95,15 +95,15 @@ private:
     public:
         sf::Texture* tex;
 
-        TexImpl(sf::Texture* tex, Dim size) :
+        TexImpl(sf::Texture* tex, xy size) :
             tex(tex), size(size) {}
 
-        const Dim getSize() const {
+        const xy getSize() const {
             return size;
         }
 
     private:
-        Dim size;
+        xy size;
     };
 
     unique_ptr<GameMain> gameMain;
@@ -118,8 +118,8 @@ private:
                 windowProperties.fullscreen = true;
         }
         else if( argc == 4 && !strcmp(argv[1], "-r") ) {
-            windowProperties.dim= Dim( static_cast<float>( atoi(argv[2]) ),
-                                       static_cast<float>( atoi(argv[3]) ) );
+            windowProperties.size = xy( static_cast<float>( atoi(argv[2]) ),
+                                        static_cast<float>( atoi(argv[3]) ) );
         }
     }
 
@@ -127,13 +127,14 @@ private:
     {
         if(windowProperties.fullscreen) {
             sf::VideoMode best_mode = sf::VideoMode::getFullscreenModes()[0];
-            windowProperties.dim.w = static_cast<float>( best_mode.width );
-            windowProperties.dim.h = static_cast<float>( best_mode.height );
+            windowProperties.size.x = static_cast<float>( best_mode.width );
+            windowProperties.size.y = static_cast<float>( best_mode.height );
             return new sf::RenderWindow(best_mode, windowProperties.title, sf::Style::Fullscreen);
         }
         else
             return new sf::RenderWindow(
-                sf::VideoMode( static_cast<int>( windowProperties.dim.w ), static_cast<int>( windowProperties.dim.h ), 32),
+                sf::VideoMode( static_cast<int>( windowProperties.size.x ),
+                               static_cast<int>( windowProperties.size.y ), 32),
                     windowProperties.title );
     }
 

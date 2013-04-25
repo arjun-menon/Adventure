@@ -8,13 +8,13 @@
 class StaticColoredBox : public Entity
 {
 public:
-    StaticColoredBox(Pt pos, Dim sz) : Entity(new ColoredBox(sz), pos) {}
+    StaticColoredBox(xy pos, xy sz) : Entity(new ColoredBox(sz), pos) {}
 };
 
 class DynamicColoredBox : public DynamicEntity
 {
 public:
-    DynamicColoredBox(Pt pos, Dim sz, float friction, float gravity) :
+    DynamicColoredBox(xy pos, xy sz, float friction, float gravity) :
         DynamicEntity(new ColoredBox(sz), pos, friction, gravity) {}
 };
 
@@ -31,11 +31,11 @@ class TestBed : public Steppable
     Entity *a, *b, *c;
 
 public:
-    TestBed() : m( Sys()->getWindowProperties().dim, 32 ) {
-        a = new StaticColoredBox( Pt(10, 10) , Dim(200, 100) );
-        b = new StaticColoredBox( Pt(220, 210) , Dim(100, 100) );
-        b = new DynamicColoredBox( Pt(220, 210) , Dim(100, 100), 0.1f, 0.2f );
-        c = new DynamicColoredBox( Pt(300, 170) , Dim(10, 10), 0.1f, 0.05f );
+    TestBed() : m( Sys()->getWindowProperties().size, 32 ) {
+        a = new StaticColoredBox( xy(10, 10) , xy(200, 100) );
+        b = new StaticColoredBox( xy(220, 210) , xy(100, 100) );
+        b = new DynamicColoredBox( xy(220, 210) , xy(100, 100), 0.1f, 0.2f );
+        c = new DynamicColoredBox( xy(300, 170) , xy(10, 10), 0.1f, 0.05f );
 
         set<Entity *> collidingEntities;
         m.place(a, collidingEntities);
@@ -49,7 +49,7 @@ public:
         m.performPhysics();
 
         set<Entity *> collidingEntities;
-        m.entityMap.moveBy(b, Pt(5, 0), collidingEntities);
+        m.entityMap.moveBy(b, xy(5, 0), collidingEntities);
 
         m.step();
     }
@@ -91,13 +91,13 @@ public:
         if(level_file.fail())
             throw invalid_argument("Unable to open level file.");
 
-        Dim size;
+        xy size;
 
         string d;
         getline(level_file, d);
-        size.w = atoi(d.c_str());
+        size.x = atoi(d.c_str());
         getline(level_file, d);
-        size.h = atoi(d.c_str());
+        size.y = atoi(d.c_str());
 
         m = move( unique_ptr<SideScrollingMap>( new SideScrollingMap(size, 32) ) );
 
@@ -106,7 +106,7 @@ public:
         while(!level_file.eof())
         {
             string s;
-            Pt p;
+            xy p;
 
             getline(level_file, s, ',');
             if(level_file.eof())
@@ -162,7 +162,7 @@ WindowProperties GameMain::defaultWindowProperties()
     WindowProperties windowProperties;
 
     // Default window height & width:
-    windowProperties.dim = Dim(1024, 600);
+    windowProperties.size = xy(1024, 600);
     windowProperties.fullscreen = false;
 
     // Title
@@ -176,4 +176,3 @@ GameMain* GameMain::getSingleton() {
         GameMain::singleton = new GameMainImpl();
     return GameMain::singleton;
 }
-

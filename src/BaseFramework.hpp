@@ -24,7 +24,7 @@ using namespace std;
 
 struct WindowProperties
 {
-    Dim dim;
+    xy size;
     bool fullscreen;
     std::string title;
 };
@@ -39,9 +39,9 @@ public:
 
     virtual shared_ptr<Tex> loadTex(string file) = 0;
     virtual void setMouseCursorVisibility(bool visibility) = 0;
-    virtual void drawImage(const Tex &tex, Pt pos, bool flip=false, float angle=0.0f) = 0;
-    virtual void drawText(string line, Pt pos, Color color=Color(), float fontSize=15.0f) = 0;
-    virtual void drawBox(Pt pos, Dim size, Color fillColor=Color(255,255,255,0), Color outlineColor=Color(), float outlineThickness=1.0f) = 0;
+    virtual void drawImage(const Tex &tex, xy pos, bool flip=false, float angle=0.0f) = 0;
+    virtual void drawText(string line, xy pos, Color color=Color(), float fontSize=15.0f) = 0;
+    virtual void drawBox(xy pos, xy size, Color fillColor=Color(255,255,255,0), Color outlineColor=Color(), float outlineThickness=1.0f) = 0;
 
     virtual unsigned int random() = 0;
     virtual ~System() {}

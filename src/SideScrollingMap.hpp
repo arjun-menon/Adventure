@@ -15,7 +15,7 @@ class SideScrollingMap : public PhysicsMap
 
 public:
     //using PhysicsMap::PhysicsMap; // Inheriting constructors (C++11 - N2540)
-    SideScrollingMap(Dim worldSize, float optimizationFactor) :
+    SideScrollingMap(xy worldSize, float optimizationFactor) :
         PhysicsMap(worldSize, optimizationFactor) {}
 
     void step()

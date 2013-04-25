@@ -12,7 +12,7 @@
  */
 void OptimizationMatrix::insert(Entity *e)
 {
-    PtI bl = matrixBottomLeft( Rect(e->pos, e->d->getSize()) ), tr = matrixTopRight( Rect(e->pos, e->d->getSize()) );
+    xy_int bl = matrixBottomLeft( Rect(e->pos, e->d->getSize()) ), tr = matrixTopRight( Rect(e->pos, e->d->getSize()) );
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             mat.at(x,y).insert(e);
@@ -23,7 +23,7 @@ void OptimizationMatrix::insert(Entity *e)
  */
 void OptimizationMatrix::erase(Entity *e)
 {
-    PtI bl = matrixBottomLeft( Rect(e->pos, e->d->getSize()) ), tr = matrixTopRight( Rect(e->pos, e->d->getSize()) );
+    xy_int bl = matrixBottomLeft( Rect(e->pos, e->d->getSize()) ), tr = matrixTopRight( Rect(e->pos, e->d->getSize()) );
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             mat.at(x,y).erase(e);
@@ -36,7 +36,7 @@ set<Entity *> OptimizationMatrix::getEntities(Rect region)
 {
     set<Entity *> entities;
 
-    PtI bl = matrixBottomLeft(region), tr = matrixTopRight(region);
+    xy_int bl = matrixBottomLeft(region), tr = matrixTopRight(region);
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             if(!mat.at(x,y).empty())
@@ -102,7 +102,7 @@ void EntityMap::remove(Entity *e)
 /*
  * Move an existing entity `e` to a new position
  */
-bool EntityMap::move(Entity *e, Pt newPos,  set<Entity *> &collidingEntities)
+bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
 {
     if( entities.find(e) == entities.end() )
         throw logic_error("EntityMap::move -- attempt to move an entity that does not exist on the map");
@@ -112,7 +112,7 @@ bool EntityMap::move(Entity *e, Pt newPos,  set<Entity *> &collidingEntities)
 
     remove(e);
 
-    Pt oldPos = e->pos;
+    xy oldPos = e->pos;
     e->pos = newPos;
 
     if( !place(e, collidingEntities) ) {
@@ -133,7 +133,7 @@ bool EntityMap::move(Entity *e, Pt newPos,  set<Entity *> &collidingEntities)
  * If there is a collision, this function moves the entity slowly in small steps.
  * In each step, the entity is moved by a `short_distance`, until there is a collision.
  */
-bool EntityMap::moveBy(Entity *e, Pt distance,  set<Entity *> &collidingEntities)
+bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
 {
     if( !move(e, e->pos + distance, collidingEntities) )
     {
@@ -143,7 +143,7 @@ bool EntityMap::moveBy(Entity *e, Pt distance,  set<Entity *> &collidingEntities
         if(divisor == 0) // then get the other value:
             divisor = max( abs(distance.x), abs(distance.y) ) * 10;
 
-        Pt short_distance =  distance / divisor;
+        xy short_distance =  distance / divisor;
         while( move(e, e->pos + short_distance, collidingEntities) ) {}
 
         return false;

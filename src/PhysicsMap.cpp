@@ -50,7 +50,7 @@ void PhysicsMap::performPhysics()
          * apply gravity
          */
         collidingEntities.clear();
-        e->velocity += Pt(0, -1 * e->gravityFactor);
+        e->velocity += xy(0, -1 * e->gravityFactor);
         if( !entityMap.moveBy(e, e->velocity, collidingEntities) )
             e->velocity.y = 0;
 

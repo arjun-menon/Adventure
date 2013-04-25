@@ -10,10 +10,10 @@
 class DynamicEntity : public Entity
 {
 public:
-    Pt velocity;
+    xy velocity;
     const float groundFriction, gravityFactor;
 
-    DynamicEntity(DrawableAABB *d, Pt pos,
+    DynamicEntity(DrawableAABB *d, xy pos,
             const float groundfriction, const float gravityFactor) : Entity(d, pos),
         velocity(0.0f, 0.0f), groundFriction(groundfriction), gravityFactor(gravityFactor) {}
 
@@ -25,7 +25,7 @@ class PhysicsMap
 public:
     EntityMap entityMap;
 
-    PhysicsMap(Dim worldSize, float optimizationFactor) :
+    PhysicsMap(xy worldSize, float optimizationFactor) :
         entityMap(worldSize, optimizationFactor) {}
 
     bool place(Entity *e, set<Entity *> &collidingEntities); // override EntityMap

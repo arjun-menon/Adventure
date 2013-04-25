@@ -22,10 +22,10 @@ Color ColoredBox::randomColor() {
     return randomColor;
 }
 
-void SimpleImage::drawAt(Pt pos) {
+void SimpleImage::drawAt(xy pos) {
     Sys()->drawImage(*tex, pos);
 }
 
-void ColoredBox::drawAt(Pt pos) {
+void ColoredBox::drawAt(xy pos) {
     Sys()->drawBox( pos, size, color, color );
 }
