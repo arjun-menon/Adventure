@@ -8,7 +8,7 @@ bool PhysicsMap::place(Entity *e, set<Entity *> &collidingEntities)
 {
     cout<<"placing: "<< e <<endl;
 
-    if( !EntityMap::place(e, collidingEntities) )
+    if( !entityMap.place(e, collidingEntities) )
         return false;
 
     if( dynamic_cast<DynamicEntity *>(e) != nullptr )
@@ -22,7 +22,7 @@ void PhysicsMap::remove(Entity *e)
     if( dynamic_cast<DynamicEntity *>(e) != nullptr )
         dynamicEntities.erase( dynamic_cast<DynamicEntity *>(e) );
 
-    EntityMap::remove(e);
+    entityMap.remove(e);
 }
 
 float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
@@ -51,7 +51,7 @@ void PhysicsMap::performPhysics()
          */
         collidingEntities.clear();
         e->velocity += Pt(0, -1 * e->gravityFactor);
-        if( !moveBy(e, e->velocity, collidingEntities) )
+        if( !entityMap.moveBy(e, e->velocity, collidingEntities) )
             e->velocity.y = 0;
 
         /*
@@ -59,6 +59,6 @@ void PhysicsMap::performPhysics()
          */
         collidingEntities.clear();
         e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->groundFriction);
-        moveBy(e, e->velocity, collidingEntities);
+        entityMap.moveBy(e, e->velocity, collidingEntities);
     }
 }

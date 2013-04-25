@@ -20,11 +20,13 @@ public:
     virtual ~DynamicEntity() {}
 };
 
-class PhysicsMap : public EntityMap
+class PhysicsMap
 {
 public:
+    EntityMap entityMap;
+
     PhysicsMap(Dim worldSize, float optimizationFactor) :
-        EntityMap(worldSize, optimizationFactor) {}
+        entityMap(worldSize, optimizationFactor) {}
 
     bool place(Entity *e, set<Entity *> &collidingEntities); // override EntityMap
     void remove(Entity *e); // override EntityMap

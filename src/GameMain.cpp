@@ -34,8 +34,7 @@ public:
     TestBed() : m( Sys()->getWindowProperties().dim, 32 ) {
         a = new StaticColoredBox( Pt(10, 10) , Dim(200, 100) );
         b = new StaticColoredBox( Pt(220, 210) , Dim(100, 100) );
-        //b = new DynamicColoredBox( Pt(220, 210) , Dim(100, 100), 0.1f, 0.2f );
-        //c = new StaticColoredBox( Pt(300, 170) , Dim(10, 10) );
+        b = new DynamicColoredBox( Pt(220, 210) , Dim(100, 100), 0.1f, 0.2f );
         c = new DynamicColoredBox( Pt(300, 170) , Dim(10, 10), 0.1f, 0.05f );
 
         set<Entity *> collidingEntities;
@@ -49,8 +48,8 @@ public:
     void step() {
         m.performPhysics();
 
-        //set<Entity *> collidingEntities;
-        //m.moveBy(b, Pt(5, 0), collidingEntities);
+        set<Entity *> collidingEntities;
+        m.entityMap.moveBy(b, Pt(5, 0), collidingEntities);
 
         m.step();
     }

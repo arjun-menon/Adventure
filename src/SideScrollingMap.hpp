@@ -23,7 +23,7 @@ public:
         performPhysics();
 
         // Invoke step() on each entity:
-        for(auto e : getEntities())
+        for(auto e : entityMap.getEntities())
             e->d->drawAt(e->pos);
     }
 };
