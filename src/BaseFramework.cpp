@@ -42,10 +42,6 @@ public:
         return shared_ptr<Tex>( new TexImpl(tex, size) );
     }
 
-    void setMouseCursorVisibility(bool visibility) {
-        renderWindow->setMouseCursorVisible( visibility );
-    }
-
     void drawImage(const Tex &tex, xy pos, bool flip=false, float angle=0.0f) {
         sf::Sprite sprite( *(dynamic_cast<const TexImpl&>(tex).tex) );
         sprite.setPosition( pos.x + (flip ? tex.getSize().x : 0) ,
@@ -74,12 +70,27 @@ public:
         renderWindow->draw(rectangle);
     }
 
-    void exit() {
-        renderWindow->close();
+    void setMouseCursorVisibility(bool visibility) {
+        renderWindow->setMouseCursorVisible( visibility );
+    }
+
+    virtual void getInput(InputCallbacks *callbacks) {
+        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W) )
+            callbacks->upKey();
+        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A) )
+            callbacks->leftKey();
+        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D) )
+            callbacks->rightKey();
+        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S) )
+            callbacks->downKey();
     }
 
     unsigned int random() {
         return static_cast<unsigned int>( rng() );
+    }
+
+    void exit() {
+        renderWindow->close();
     }
 
 private:

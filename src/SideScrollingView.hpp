@@ -21,8 +21,6 @@ public:
     void render()
     {
         if(physicsMap != nullptr) {
-            physicsMap->performPhysics();
-
             if(pivot == nullptr) {
                 // Invoke drawAt() naively on each entity:
                 for(auto e : physicsMap->entityMap.getEntities())

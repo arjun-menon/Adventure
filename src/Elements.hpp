@@ -127,4 +127,15 @@ public:
 
 // Button...
 
+class InputCallbacks
+{
+public:
+    virtual void upKey() {}
+    virtual void leftKey() {}
+    virtual void rightKey() {}
+    virtual void downKey() {}
+
+    virtual ~InputCallbacks() {}
+};
+
 #endif /* ELEMENTS_HPP_ */

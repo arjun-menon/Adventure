@@ -14,3 +14,5 @@ SideScrollingView: takes a PhysicsMap & a single _pivot_ Entity -- and draws map
 add consts to Tex -- i.e. ptr<const Tex>
 
 velocity transfer upon collision
+
+In SideScrollingMap, you might want to request const references to PhysicsMap & pivot (as initializers).

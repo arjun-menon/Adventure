@@ -39,12 +39,16 @@ public:
     const WindowProperties& getWindowProperties() { return windowProperties; }
 
     virtual shared_ptr<Tex> loadTex(string file) = 0;
-    virtual void setMouseCursorVisibility(bool visibility) = 0;
+
     virtual void drawImage(const Tex &tex, xy pos, bool flip=false, float angle=0.0f) = 0;
     virtual void drawText(string line, xy pos, Color color=Color(), float fontSize=15.0f) = 0;
     virtual void drawBox(xy pos, xy size, Color fillColor=Color(255,255,255,0), Color outlineColor=Color(), float outlineThickness=1.0f) = 0;
 
+    virtual void setMouseCursorVisibility(bool visibility) = 0;
+    virtual void getInput(InputCallbacks *callbacks) = 0;
+
     virtual unsigned int random() = 0;
+    virtual void exit() = 0;
     virtual ~System() {}
 };
 

@@ -12,7 +12,7 @@ public:
 };
 
 DynamicEntityCharacteristics dChar1(0.1f, 0.2f, 5.0f);
-DynamicEntityCharacteristics dChar2(0.1f, 0.2f, 5.0f, 0.3f, 1.0f);
+DynamicEntityCharacteristics dChar2(0.1f, 0.2f, 5.0f, 0.3f, 8.0f);
 
 class DynamicColoredBox : public DynamicEntity
 {
@@ -52,6 +52,8 @@ public:
 
     void step()
     {
+        physicsMap.performPhysics();
+
         static set<Entity *> collidingEntities;
         collidingEntities.clear();
         physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
@@ -60,7 +62,7 @@ public:
     }
 };
 
-class OldGameMap : public Steppable
+class OldGameMap : public Steppable, public InputCallbacks
 {
     DynamicEntity *pivot = nullptr;
     unique_ptr<PhysicsMap> physicsMap;
@@ -149,9 +151,13 @@ public:
         ssv.pivot = pivot;
     }
 
-    void step() {
-        physicsMap->walkRight(pivot);
+    void upKey() { physicsMap->jump(pivot); }
+    void leftKey() { physicsMap->walkLeft(pivot); }
+    void rightKey() { physicsMap->walkRight(pivot); }
 
+    void step() {
+        Sys()->getInput(this);
+        physicsMap->performPhysics();
         ssv.render();
     }
 };
