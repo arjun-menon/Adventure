@@ -43,7 +43,7 @@ public:
 class DrawableAABB : public Drawable
 {
 public:
-    virtual xy getSize() = 0;
+    virtual const xy getSize() const = 0;
 };
 
 /*
@@ -55,7 +55,7 @@ class SimpleImage : public DrawableAABB
 
 public:
     inline SimpleImage(shared_ptr<Tex> tex) : tex(tex) {}
-    inline xy getSize() { return tex->getSize(); }
+    inline const xy getSize() const { return tex->getSize(); }
 
     void drawAt(xy pos);
 };
@@ -74,7 +74,7 @@ public:
     inline ColoredBox(xy size, Color color) : size(size), color(color) {}
     inline ColoredBox(xy size) : ColoredBox(size, randomColor()) {}
 
-    inline xy getSize() { return size; }
+    inline const xy getSize() const { return size; }
     void drawAt(xy pos);
 };
 
