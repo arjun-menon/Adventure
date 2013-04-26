@@ -50,6 +50,12 @@ public:
     inline bool operator==(const xyPolymorphic &other) const {
         return x == other.x && y == other.y;
     }
+
+    inline string toString() {
+        stringstream s;
+        s<<"(x = "<<x<<", "<<"y = "<<y<<")";
+        return s.str();
+    }
 };
 
 typedef xyPolymorphic<float> xy;
