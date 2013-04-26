@@ -135,18 +135,18 @@ bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
  */
 bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
 {
-    if( !move(e, e->pos + distance, collidingEntities) )
-    {
-        collidingEntities.clear();
+    if( move(e, e->pos + distance, collidingEntities) )
+        return true;
 
-        float divisor = min( abs(distance.x), abs(distance.y) );
-        if(divisor == 0) // then get the other value:
-            divisor = max( abs(distance.x), abs(distance.y) ) * 10;
+    /*
+    collidingEntities.clear();
 
-        xy short_distance =  distance / divisor;
-        while( move(e, e->pos + short_distance, collidingEntities) ) {}
+    float divisor = min( abs(distance.x), abs(distance.y) );
+    if(divisor == 0) // then get the other value:
+        divisor = max( abs(distance.x), abs(distance.y) ) * 10;
 
-        return false;
-    }
-    return true;
+    xy short_distance =  distance / divisor;
+    while( move(e, e->pos + short_distance, collidingEntities) ) {}
+    */
+    return false;
 }

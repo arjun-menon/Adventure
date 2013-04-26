@@ -1,4 +1,6 @@
 
+Implement Entity::moveBy
+
 Time-based FPS-independent physics
 
 step_multiple(...) -- use variadic templates
