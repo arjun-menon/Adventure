@@ -6,8 +6,6 @@
 
 bool PhysicsMap::place(Entity *e, set<Entity *> &collidingEntities)
 {
-    cout<<"placing: "<< e <<endl;
-
     if( !entityMap.place(e, collidingEntities) )
         return false;
 
@@ -25,6 +23,44 @@ void PhysicsMap::remove(Entity *e)
     entityMap.remove(e);
 }
 
+void PhysicsMap::performPhysics()
+{
+    for(auto e : dynamicEntities)
+    {
+        limitVelocity(*e);
+
+        static set<Entity *> collidingEntities; // let's reuse it (therefore static)
+
+        /*
+         * apply gravity
+         */
+        collidingEntities.clear();
+        e->velocity += xy(0, -1 * e->dynamicChars.gravityFactor);
+        if( !entityMap.moveBy(e, e->velocity, collidingEntities) ) {
+            e->velocity.y = 0;
+            groundContact = true;
+        }
+        else
+            groundContact = false;
+
+        /*
+         * apply friction
+         */
+        collidingEntities.clear();
+        e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->dynamicChars.groundFriction);
+
+        entityMap.moveBy(e, e->velocity, collidingEntities);
+    }
+}
+
+void PhysicsMap::limitVelocity(DynamicEntity &e)
+{
+    float sign = (e.velocity.x >= 0) ? 1 : -1;
+
+    if( abs(e.velocity.x) > e.dynamicChars.maxHorizontalSpeed )
+        e.velocity.x = sign * e.dynamicChars.maxHorizontalSpeed;
+}
+
 float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
 {
     if( abs(horizontalVelocity) < groundFriction )
@@ -34,31 +70,3 @@ float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVeloci
     return horizontalVelocity - direction * groundFriction;
 }
 
-void PhysicsMap::performPhysics()
-{
-    for(auto e : dynamicEntities)
-    {
-        cout<<"dynamic: "<< e <<endl;
-//        DynamicEntityTrait *dynamicTrait = dynamic_cast<DynamicEntityTrait *>(e);
-//
-//        if(dynamicTrait == nullptr)
-//            throw logic_error("Non-dynamic entity in PhysicsMap.dynamicEntities set");
-
-        static set<Entity *> collidingEntities; // let's reuse it (therefore static)
-
-        /*
-         * apply gravity
-         */
-        collidingEntities.clear();
-        e->velocity += xy(0, -1 * e->gravityFactor);
-        if( !entityMap.moveBy(e, e->velocity, collidingEntities) )
-            e->velocity.y = 0;
-
-        /*
-         * apply friction
-         */
-        collidingEntities.clear();
-        e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->groundFriction);
-        entityMap.moveBy(e, e->velocity, collidingEntities);
-    }
-}

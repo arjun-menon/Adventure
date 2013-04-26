@@ -11,11 +11,14 @@ public:
     StaticColoredBox(xy pos, xy sz) : Entity(new ColoredBox(sz), pos) {}
 };
 
+DynamicEntityCharacteristics dChar1(0.1f, 0.2f, 5.0f);
+DynamicEntityCharacteristics dChar2(0.1f, 0.2f, 5.0f, 0.3f, 1.0f);
+
 class DynamicColoredBox : public DynamicEntity
 {
 public:
-    DynamicColoredBox(xy pos, xy sz, float friction, float gravity) :
-        DynamicEntity(new ColoredBox(sz), pos, friction, gravity) {}
+    DynamicColoredBox(xy pos, xy sz, const DynamicEntityCharacteristics &dynamicChars) :
+        DynamicEntity(new ColoredBox(sz), pos, dynamicChars) {}
 };
 
 class Steppable
@@ -27,7 +30,7 @@ public:
 
 class TestBed : public Steppable
 {
-    SideScrollingView scv;
+    SideScrollingView ssv;
     PhysicsMap physicsMap;
     Entity *a, *b, *c;
 
@@ -36,17 +39,15 @@ public:
     {
         a = new StaticColoredBox( xy(10, 10) , xy(200, 100) );
         b = new StaticColoredBox( xy(220, 210) , xy(100, 100) );
-        b = new DynamicColoredBox( xy(220, 210) , xy(100, 100), 0.1f, 0.2f );
-        c = new DynamicColoredBox( xy(300, 170) , xy(10, 10), 0.1f, 0.05f );
+        b = new DynamicColoredBox( xy(220, 210) , xy(100, 100), dChar1 );
+        c = new DynamicColoredBox( xy(300, 170) , xy(10, 10), dChar1 );
 
         set<Entity *> collidingEntities;
         physicsMap.place(a, collidingEntities);
         physicsMap.place(b, collidingEntities);
         physicsMap.place(c, collidingEntities);
 
-        dynamic_cast<DynamicEntity*>(c)->velocity.x = -4.0f;
-
-        scv.physicsMap = &physicsMap;
+        ssv.physicsMap = &physicsMap;
     }
 
     void step()
@@ -55,14 +56,15 @@ public:
         collidingEntities.clear();
         physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
 
-        scv.render();
+        ssv.render();
     }
 };
 
 class OldGameMap : public Steppable
 {
+    DynamicEntity *pivot = nullptr;
     unique_ptr<PhysicsMap> physicsMap;
-    SideScrollingView scv;
+    SideScrollingView ssv;
 
 public:
     OldGameMap()
@@ -108,8 +110,6 @@ public:
 
         set<Entity *> collidingEntities;
 
-        Entity *pivot = nullptr;
-
         while(!level_file.eof())
         {
             string s;
@@ -129,8 +129,10 @@ public:
 
             Entity *e = nullptr;
 
-            if(s == "Player")
-                pivot = e = new DynamicEntity(d, p, 0.1f, 0.2f);
+            if(s == "Player") {
+                pivot = new DynamicEntity(d, p, dChar2);
+                e = pivot;
+            }
             else
                 e = new Entity(d, p);
 
@@ -143,13 +145,14 @@ public:
         level_file.close();
 
         // setup scv
-        scv.physicsMap = &*physicsMap;
-        scv.pivot = pivot;
+        ssv.physicsMap = &*physicsMap;
+        ssv.pivot = pivot;
     }
 
     void step() {
-        //physicsMap->performPhysics();
-        scv.render();
+        physicsMap->walkRight(pivot);
+
+        ssv.render();
     }
 };
 
