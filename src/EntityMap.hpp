@@ -17,6 +17,7 @@ public:
     xy pos;
 
     Entity(DrawableAABB *d, xy pos) : d(d), pos(pos) {}
+    inline const Rect getRect() { return Rect(pos, d->getSize()); }
 
     virtual ~Entity() {}
 };
