@@ -27,7 +27,8 @@ public:
                     e->d->drawAt(e->pos);
             }
             else {
-                xy viewport = calculateViewport(pivot->pos,
+                xy viewport = calculateViewport(
+                        pivot->pos + pivot->d->getSize() / 2,
                         physicsMap->entityMap.getMapSize());
 
                 // Invoke drawAt(pos - viewport) on each entity:
