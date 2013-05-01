@@ -51,7 +51,7 @@ public:
         return x == other.x && y == other.y;
     }
 
-    inline string toString() {
+    inline string toString() const {
         stringstream s;
         s<<"(x = "<<x<<", "<<"y = "<<y<<")";
         return s.str();
@@ -98,7 +98,7 @@ public:
         return ( this->isPartiallyInside(rect) || rect.isPartiallyInside(*this) );
     }
 
-    inline xyPolymorphic<T> getOppositeCorner() {
+    inline xyPolymorphic<T> getOppositeCorner() const {
         return xyPolymorphic<T>(pos.x + size.x, pos.y + size.y);
     }
 
