@@ -23,33 +23,37 @@ void PhysicsMap::remove(Entity *e)
     entityMap.remove(e);
 }
 
+float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
+{
+    if( abs(horizontalVelocity) < groundFriction )
+        return 0;
+
+    float direction = horizontalVelocity < 0 ? -1.0f : 1.0f;
+    return horizontalVelocity - direction * groundFriction;
+}
+
 void PhysicsMap::performPhysics()
 {
     for(auto e : dynamicEntities)
     {
-        limitVelocity(*e);
-
         static set<Entity *> collidingEntities; // let's reuse it (therefore static)
 
-        /*
-         * apply gravity
-         */
+        limitVelocity(*e);
+        e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->dynamicChars.groundFriction); // apply friction
+        e->velocity.y -= e->dynamicChars.gravityFactor; // apply gravity
+        const float x = e->velocity.x, y = e->velocity.y;
+
         collidingEntities.clear();
-        e->velocity += xy(0, -1 * e->dynamicChars.gravityFactor);
-        if( !entityMap.moveBy(e, e->velocity, collidingEntities) ) {
+        if( !entityMap.moveBy(e, xy(0, y), collidingEntities) ) {
             e->velocity.y = 0;
-            groundContact = true;
+            groundContact = y < 0;
         }
         else
             groundContact = false;
 
-        /*
-         * apply friction
-         */
         collidingEntities.clear();
-        e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->dynamicChars.groundFriction);
-
-        entityMap.moveBy(e, e->velocity, collidingEntities);
+        if( !entityMap.moveBy(e, xy(x, 0), collidingEntities) )
+            e->velocity.x = 0;
     }
 }
 
@@ -60,13 +64,3 @@ void PhysicsMap::limitVelocity(DynamicEntity &e)
     if( abs(e.velocity.x) > e.dynamicChars.maxHorizontalSpeed )
         e.velocity.x = sign * e.dynamicChars.maxHorizontalSpeed;
 }
-
-float PhysicsMap::calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
-{
-    if( abs(horizontalVelocity) < groundFriction )
-        return 0;
-
-    float direction = horizontalVelocity < 0 ? -1.0f : 1.0f;
-    return horizontalVelocity - direction * groundFriction;
-}
-

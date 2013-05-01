@@ -69,7 +69,6 @@ private:
     bool groundContact;
 
     void limitVelocity(DynamicEntity &e);
-    static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction);
 };
 
 #endif /* PHYSICSMAP_HPP_ */
