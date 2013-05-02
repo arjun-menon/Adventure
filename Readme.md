@@ -1,6 +1,6 @@
 Building on Debian/Ubuntu Linux
 --------------------------------
-First get these packages:
+First install the following packages:
 
         sudo apt-get install build-essential cmake libfreetype6-dev libglew1.5-dev libjpeg62-dev libpng12-dev libsndfile1-dev libxrandr-dev libopenal-dev
 
@@ -10,7 +10,7 @@ Then get SFML 2.0 RC from [this PPA](https://launchpad.net/~sonkun/+archive/sfml
         sudo apt-get update
         sudo apt-get install libsfml-dev
 
-You also need to have g++ 4.6 or higher for full [C++11](http://en.wikipedia.org/wiki/C++11) support. On older Ubuntu-based distributons, the following PPA can be used to obtain [the latest](http://askubuntu.com/questions/61254/how-to-update-gcc-to-the-latest-versionin-this-case-4-7-in-ubuntu-10-04) versions of the GCC toolchain:
+You also need to have g++ 4.6 or higher for proper [C++11](http://en.wikipedia.org/wiki/C++11) support. On older Ubuntu-based distributons, [the following PPA](https://launchpad.net/~ubuntu-toolchain-r/+archive/test) can be used to obtain [the latest](http://askubuntu.com/questions/61254/how-to-update-gcc-to-the-latest-versionin-this-case-4-7-in-ubuntu-10-04) version of the GCC toolchain:
 
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
@@ -32,4 +32,4 @@ Additionally, if you have multiple versions of GCC installed, g++ 4.6 might not 
 
 - **Speeding up the build process:** Select one of the appropriate options from: *Project -> Properties -> C/C++ Build -> (main page) -> Behavior (tab) -> Build settings -> Enable parallel build*.
 
-- **Dealing with an out-of-sync index:** Every now and then, the Eclipse C++ indexer will go haywire and start reporting various segments of your code as erroneous even though everything compiles fine. There is an easy [fix](http://stackoverflow.com/a/3040761) to this: Close Eclipse; go to your workspace directory; delete everything under `$workspace\.metadata\.plugins\org.eclipse.cdt.core`; restart Eclipse. The indexer will run again, and everything should be back to normal.
+- **Dealing with an out-of-sync index:** Every now and then, the Eclipse C++ indexer will go haywire and start reporting various segments of your code as erroneous even though everything compiles fine. There is [an easy fix](http://stackoverflow.com/a/3040761) to this: Close Eclipse; go to your workspace directory; delete everything under `$workspace\.metadata\.plugins\org.eclipse.cdt.core`; restart Eclipse. The indexer will run again, and everything should be back to normal.
