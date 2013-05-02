@@ -72,7 +72,7 @@ public:
     const Color color;
 
     inline ColoredBox(xy size, Color color) : size(size), color(color) {}
-    inline ColoredBox(xy size) : ColoredBox(size, randomColor()) {}
+    inline ColoredBox(xy size) : size(size), color(randomColor()) {}
 
     inline const xy getSize() const { return size; }
     void drawAt(xy pos);

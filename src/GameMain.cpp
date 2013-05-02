@@ -64,12 +64,12 @@ public:
 
 class OldGameMap : public Steppable, public InputCallbacks
 {
-    DynamicEntity *pivot = nullptr;
+    DynamicEntity *pivot;
     unique_ptr<PhysicsMap> physicsMap;
     SideScrollingView ssv;
 
 public:
-    OldGameMap()
+    OldGameMap() : pivot(nullptr)
     {
         // get images:
         map<const string, shared_ptr<Tex>> images;
