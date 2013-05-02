@@ -44,9 +44,14 @@ void PhysicsMap::performPhysics()
         const float x = e->velocity.x, y = e->velocity.y;
 
         collidingEntities.clear();
-        if( !entityMap.moveBy(e, xy(0, y), collidingEntities) ) {
-            e->velocity.y = 0;
-            groundContact = y < 0;
+        if( !entityMap.moveBy(e, xy(0, y), collidingEntities) )
+        {
+            if(y < 0) {
+                groundContact = true;
+                e->velocity.y = (-1 * y) * e->dynamicChars.bouncyFactor;
+            }
+            else
+                e->velocity.y = 0;
         }
         else
             groundContact = false;

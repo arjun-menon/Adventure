@@ -7,25 +7,32 @@
 
 #include "EntityMap.hpp"
 
-struct DynamicEntityCharacteristics
+class DynamicEntityCharacteristics
 {
+public:
     const float groundFriction,
                 gravityFactor,
                 maxHorizontalSpeed,
                 horizontalWalkStep,
-                jumpStep;
+                jumpStep,
+                bouncyFactor;
 
     DynamicEntityCharacteristics(
             const float groundFriction,
             const float gravityFactor,
             const float maxHorizontalSpeed,
             const float horizontalWalkStep = 0.0f,
-            const float jumpStep = 0.0f) :
+            const float jumpStep = 0.0f,
+            const float bouncyFactor = 0.0f) :
                 groundFriction(groundFriction),
                 gravityFactor(gravityFactor),
                 maxHorizontalSpeed(maxHorizontalSpeed),
                 horizontalWalkStep(horizontalWalkStep),
-                jumpStep(jumpStep) {}
+                jumpStep(jumpStep),
+                bouncyFactor( sanitizeBouncyFactor(bouncyFactor) ) {}
+
+private:
+    inline static float sanitizeBouncyFactor(float bouncyFactor) { return bouncyFactor > 1.0f ? 1.0f : bouncyFactor; }
 };
 
 class DynamicEntity : public Entity
