@@ -1,6 +1,27 @@
-Game.run
+# Compiled Object files
+*.slo
+*.lo
+*.o
 
-# Various Build Directories
-Debug
-Release
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Text Editor Backup files
+*~
+
+# KDE 4 Directory file
+*.directory
+
+# Eclipse binary output
+/Debug
+/Release
+
+# Makefile output
 obj
+Game.run
