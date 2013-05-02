@@ -1,0 +1,6 @@
+Game.run
+
+# Various Build Directories
+Debug
+Release
+obj

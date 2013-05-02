@@ -1,0 +1,18 @@
+
+Implement Entity::moveBy
+
+Time-based FPS-independent physics
+
+step_multiple(...) -- use variadic templates
+
+~TexImpl: frees the Tex
+
+Maybe the Entity class needs protected mutable data members & public const getters
+
+SideScrollingView: takes a PhysicsMap & a single _pivot_ Entity -- and draws map "around" it. 
+
+add consts to Tex -- i.e. ptr<const Tex>
+
+velocity transfer upon collision
+
+In SideScrollingMap, you might want to request const references to PhysicsMap & pivot (as initializers).
