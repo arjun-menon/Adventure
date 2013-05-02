@@ -133,12 +133,14 @@ bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
  * If there is a collision, this function moves the entity slowly in small steps.
  * In each step, the entity is moved by a `short_distance`, until there is a collision.
  */
-bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
-{
+//bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
+//{
+    // ### create a new function: "move as close as possible to" that does what below should have done ###
+
+    /*
     if( move(e, e->pos + distance, collidingEntities) )
         return true;
 
-    /*
     collidingEntities.clear();
 
     float divisor = min( abs(distance.x), abs(distance.y) );
@@ -147,6 +149,7 @@ bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities
 
     xy short_distance =  distance / divisor;
     while( move(e, e->pos + short_distance, collidingEntities) ) {}
-    */
+
     return false;
-}
+    */
+//}

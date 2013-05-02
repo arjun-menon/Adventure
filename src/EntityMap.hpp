@@ -80,7 +80,9 @@ public:
     void remove(Entity *e);
 
     bool move(Entity *e, xy newPos,  set<Entity *> &collidingEntities);
-    bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities);
+    inline bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities) {
+        return move(e, e->pos + distance, collidingEntities);
+    }
 
 private:
     set<Entity *> entities;
