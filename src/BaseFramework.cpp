@@ -149,6 +149,25 @@ private:
                     windowProperties.title );
     }
 
+    string getFPS(int currentTime)
+    {
+        static const int updateFrequency = 10;
+        static int lastUpdate = 0,
+                lastFrameTime = 0,
+                duration = 0, fps = 0;
+        duration = currentTime - lastFrameTime;
+        if(duration && !lastUpdate) {
+            fps = 1000 / duration;
+            lastUpdate = updateFrequency;
+        }
+        lastFrameTime = currentTime;
+        lastUpdate--;
+
+        stringstream s;
+        s<<fps;
+        return s.str();
+    }
+
     void main(int argc, char *argv[])
     {
         windowProperties = GameMain::defaultWindowProperties();
@@ -163,6 +182,8 @@ private:
         {
             gameMain = unique_ptr<GameMain>( GameMain::getSingleton() );
 
+            sf::Clock clock;
+
             while( renderWindow->isOpen() )
             {
                 sf::Event event;
@@ -175,6 +196,10 @@ private:
                 renderWindow->clear();
 
                 gameMain->step();
+
+                Sys()->drawText(getFPS( clock.getElapsedTime().asMilliseconds() ),
+                        xy(Sys()->getWindowProperties().size.x - 30, 10));
+
                 renderWindow->display();
             }
         }
