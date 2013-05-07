@@ -12,7 +12,7 @@ public:
 };
 
 DynamicEntityCharacteristics dChar1(0.1f, 0.2f, 5.0f);
-DynamicEntityCharacteristics dChar2(0.1f, 0.2f, 5.0f, 0.3f, 15.0f);
+DynamicEntityCharacteristics dChar2(0.1f, 0.2f, 5.0f, 0.3f, 11.0f);
 
 class DynamicColoredBox : public DynamicEntity
 {

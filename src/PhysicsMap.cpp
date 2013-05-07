@@ -23,7 +23,7 @@ void PhysicsMap::remove(Entity *e)
     entityMap.remove(e);
 }
 
-float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
+static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
 {
     if( abs(horizontalVelocity) < groundFriction )
         return 0;
@@ -36,22 +36,24 @@ void PhysicsMap::performPhysics()
 {
     for(auto e : dynamicEntities)
     {
-        static set<Entity *> collidingEntities; // let's reuse it (therefore static)
-
         limitVelocity(*e);
         e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->dynamicChars.groundFriction); // apply friction
         e->velocity.y -= e->dynamicChars.gravityFactor; // apply gravity
         const float x = e->velocity.x, y = e->velocity.y;
 
+        static set<Entity *> collidingEntities; // let's reuse it (therefore static)
         collidingEntities.clear();
+
         if( !entityMap.moveBy(e, xy(0, y), collidingEntities) )
         {
-            if(y < 0) {
+            if(y < 0) { // moving down
                 groundContact = true;
                 e->velocity.y = (-1 * y) * e->dynamicChars.bouncyFactor;
             }
-            else
+            else { // moving up
+                groundContact = false;
                 e->velocity.y = 0;
+            }
         }
         else
             groundContact = false;

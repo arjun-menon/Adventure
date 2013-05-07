@@ -108,7 +108,7 @@ public:
 typedef RectPolymorphic<float> Rect;
 
 /*
- * Selection math functions for xyPolymorphic-derived types.
+ * A few math functions for xyPolymorphic-derived types.
  */
 
 inline xy ceil(xy val) {

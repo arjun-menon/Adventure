@@ -16,7 +16,7 @@ You also need to have g++ 4.6 or higher for proper [C++11](http://en.wikipedia.o
         sudo apt-get update
         sudo apt-get install g++-4.6
 
-Additionally, if you have multiple versions of GCC installed, g++ 4.6 might not be your default version of g++. In these cases, it might be better to specify the version of g++ explicitly in your compiler command as `g++-4.6`.
+Additionally, if you have multiple versions of GCC installed, g++ 4.6 might not be your default version of g++. In these cases, it might be necessary to specify the version of g++ explicitly in your compiler command as `g++-4.6`.
 
 ### Eclipse Configuration
 
