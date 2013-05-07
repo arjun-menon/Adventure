@@ -7,7 +7,7 @@
 /*
  * Pick a random color.
  *
- * We'd like a light shade, so we subtract a small number from Color's default values
+ * We'd like a light shade, so we subtract a small random number from Color's default values
  */
 Color ColoredBox::randomColor() {
     Color randomColor;
@@ -22,10 +22,10 @@ Color ColoredBox::randomColor() {
     return randomColor;
 }
 
-void SimpleImage::drawAt(xy pos) {
-    Sys()->drawImage(*tex, pos);
+void ColoredBox::drawAt(xy pos) {
+    Sys()->drawBox(pos, size, fillColor, outlineColor, outlineThickness);
 }
 
-void ColoredBox::drawAt(xy pos) {
-    Sys()->drawBox( pos, size, color, color );
+void Image::drawAt(xy pos) {
+    Sys()->drawImage(*tex, pos, flip, angle);
 }

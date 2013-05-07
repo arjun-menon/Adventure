@@ -47,81 +47,44 @@ public:
 };
 
 /*
- * SimpleImage - an image.
- */
-class SimpleImage : public DrawableAABB
-{
-    shared_ptr<Tex> tex;
-
-public:
-    inline SimpleImage(shared_ptr<Tex> tex) : tex(tex) {}
-    inline const xy getSize() const { return tex->getSize(); }
-
-    void drawAt(xy pos);
-};
-
-/*
- * Draws a box - as a placeholder for an EntityAABB.
+ * A colored box - could be used as a placeholder for an image.
  */
 class ColoredBox : public DrawableAABB
 {
+    const xy size;
+
     static Color randomColor();
 
 public:
-    const xy size;
-    const Color color;
+    Color fillColor, outlineColor;
+    float outlineThickness;
 
-    inline ColoredBox(xy size, Color color) : size(size), color(color) {}
-    inline ColoredBox(xy size) : size(size), color(randomColor()) {}
+    inline ColoredBox(xy size, Color fillColor=randomColor(), Color outlineColor=randomColor(), float outlineThickness=1.0f) : 
+            size(size), fillColor(fillColor), outlineColor(outlineColor), outlineThickness(outlineThickness) {}
 
-    inline const xy getSize() const { return size; }
+    const xy getSize() const { return size; }
     void drawAt(xy pos);
 };
 
-
 /*
-class Image : public EntityAABB
+ * Image - an image.
+ */
+class Image : public DrawableAABB
 {
-    xy  pos;
-    xy size;
-
     shared_ptr<Tex> tex;
+
+public:
     bool flip;
     float angle;
 
-public:
-    inline Image(shared_ptr<Tex> tex, bool flip=false, float angle=0.0f) :
+    inline Image(shared_ptr<Tex> tex, bool flip=false, float angle=0.0f) : 
         tex(tex), flip(flip), angle(angle) {}
 
-    inline Image(string file, bool flip=false, float angle=0.0f) : flip(flip), angle(angle) {
-        tex = Sys()->loadTex(file);
-    }
-
-    void step();
-
-    inline const xy&  getPos () { return pos;  }
-    inline const xy& getSize() { return size; }
-
-    inline void setPos (xy  pos)  { this->pos = pos; }
-    inline void setFlip(bool flip) { this->flip = flip; }
-    inline void setAngle(float angle) { this->angle = angle; }
+    const xy getSize() const { return tex->getSize(); }
+    void drawAt(xy pos);
 };
 
-class Animation : public EntityAABB
-{
-    xy  pos;
-    xy size;
-
-    // TODO Implement
-
-public:
-    inline const xy&  getPos () { return pos;  }
-    inline const xy& getSize() { return size; }
-
-    inline void setPos (xy  pos)  { this->pos = pos; }
-};
-*/
-// Sprite...
+// Animated Sprite...
 
 // TrailingCursor...
 

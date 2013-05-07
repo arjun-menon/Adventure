@@ -127,7 +127,7 @@ public:
             getline(level_file, d);
             p.y = atoi(d.c_str());
 
-            DrawableAABB *d = new SimpleImage( images.at(s) );
+            DrawableAABB *d = new Image( images.at(s) );
 
             Entity *e = nullptr;
 
