@@ -22,51 +22,33 @@ public:
     virtual ~Entity() {}
 };
 
+/*
+ * Matrix - a generic matrix class.
+ */
 template<class T>
-struct matrix
+class Matrix
 {
-    xy size;
+    xy sz;
     vector< vector<T> > m;
 
-    matrix() : size(xy(0,0)) {}
+public:
+    Matrix() : sz(xy(0,0)) {}
 
-    void resize(const xy &size)
+    void resize(const xy &new_size)
     {
-        this->size = size;
+        sz = new_size;
 
-        if(size.x != m.size())
-            m.resize( static_cast<unsigned int>(size.x) );
+        if(sz.x != m.size())
+            m.resize( static_cast<unsigned int>(sz.x) );
 
         for(auto col = m.begin(); col != m.end(); col++)
-            if(size.y != col->size())
-                col->resize( static_cast<unsigned int>(size.y) );
-
-        this->size = size;
+            if(sz.y != col->size())
+                col->resize( static_cast<unsigned int>(sz.y) );
     }
 
-    T& at(int x, int y) { return (m.at(x)).at(y); }
-};
+    const xy size() { return size; }
 
-class OptimizationMatrix
-{
-public:
-    inline OptimizationMatrix(xy mapSize, const float optimizationFactor) :
-    mapSize(mapSize), optimizationFactor(optimizationFactor) { mat.resize( ceil( mapSize/optimizationFactor ) ); }
-
-    inline void resizeMap(xy newMapSize) { mat.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
-    inline const xy& getMapSize() { return mapSize; }
-
-    void insert(Entity *e);
-    void erase(Entity *e);
-    set<Entity *> getEntities(Rect region);
-
-private:
-    matrix< set<Entity *> > mat;
-
-    xy mapSize;
-    const float optimizationFactor;
-
-    inline xy_int matrixPos(const xy &pos) { return floor_int( pos / optimizationFactor ); }
+    vector<T>& operator[] (const unsigned int x) { return m.at(x); }
 };
 
 class EntityMap
@@ -86,13 +68,38 @@ public:
 
 private:
     set<Entity *> entities;
-    OptimizationMatrix optmat;
 
     inline bool isInsideMap(const Entity &e) {
         return Rect(xy(0,0), optmat.getMapSize()).isInside( Rect(e.pos, e.d->getSize()) );
     }
 
     bool computeEntityCollisions(const Entity *e, set<Entity *> &collidingEntities);
+
+    /*
+     * OptimizationMatrix - used to efficiently track neighbouring entities.
+     */
+    class OptimizationMatrix
+    {
+    public:
+        inline OptimizationMatrix(xy mapSize, const float optimizationFactor) :
+        mapSize(mapSize), optimizationFactor(optimizationFactor) { matrix.resize( ceil( mapSize/optimizationFactor ) ); }
+
+        inline void resizeMap(xy newMapSize) { matrix.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
+        inline const xy& getMapSize() { return mapSize; }
+
+        void insert(Entity *e);
+        void erase(Entity *e);
+        set<Entity *> getEntities(Rect region);
+
+    private:
+        Matrix< set<Entity *> > matrix;
+
+        xy mapSize;
+        const float optimizationFactor;
+
+        inline xy_int matrixPos(const xy &pos) { return floor_int( pos / optimizationFactor ); }
+    }
+    optmat;
 };
 
 #endif /* ENTITYMAP_HPP_ */

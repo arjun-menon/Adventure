@@ -5,48 +5,6 @@
 #include "EntityMap.hpp"
 
 /*
- * Insert an entity in the optimization matrix.
- *
- * Note: This function does not check for collisions.
- *       To check for collisions, use EntityMap::place().
- */
-void OptimizationMatrix::insert(Entity *e)
-{
-    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            mat.at(x,y).insert(e);
-}
-
-/*
- * Remove entity from optimization matrix.
- */
-void OptimizationMatrix::erase(Entity *e)
-{
-    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            mat.at(x,y).erase(e);
-}
-
-/*
- * Get all the entities that fall within a certain (rectangular) region.
- */
-set<Entity *> OptimizationMatrix::getEntities(Rect region)
-{
-    set<Entity *> entities;
-
-    xy_int bl = matrixPos(region.pos), tr = matrixPos(region.pos + region.size);
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            if(!mat.at(x,y).empty())
-                for(auto e : mat.at(x,y))
-                    entities.insert(e);
-
-    return entities;
-}
-
-/*
  * Computes which entities in the map intersect `EntityAABB *e`
  *
  * Returns `false` if there is a collision.
@@ -153,3 +111,45 @@ bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
     return false;
     */
 //}
+
+/*
+ * Insert an entity in the optimization matrix.
+ *
+ * Note: This function does not check for collisions.
+ *       To check for collisions, use EntityMap::place().
+ */
+void EntityMap::OptimizationMatrix::insert(Entity *e)
+{
+    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
+            matrix[x][y].insert(e);
+}
+
+/*
+ * Remove entity from optimization matrix.
+ */
+void EntityMap::OptimizationMatrix::erase(Entity *e)
+{
+    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
+            matrix[x][y].erase(e);
+}
+
+/*
+ * Get all the entities that fall within a certain (rectangular) region.
+ */
+set<Entity *> EntityMap::OptimizationMatrix::getEntities(Rect region)
+{
+    set<Entity *> entities;
+
+    xy_int bl = matrixPos(region.pos), tr = matrixPos(region.pos + region.size);
+    for(int x = bl.x ; x <= tr.x ; x++)
+        for(int y = bl.y ; y <= tr.y ; y++)
+            if(!matrix[x][y].empty())
+                for(auto e : matrix[x][y])
+                    entities.insert(e);
+
+    return entities;
+}
