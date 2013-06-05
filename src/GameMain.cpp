@@ -12,7 +12,7 @@ public:
 };
 
 DynamicEntityCharacteristics dChar1(0.1f, 0.2f, 5.0f);
-DynamicEntityCharacteristics dChar2(0.1f, 0.2f, 5.0f, 0.3f, 11.0f);
+DynamicEntityCharacteristics dChar2(0.15f, 0.2f, 12.0f, 0.5f, 11.0f);
 
 class DynamicColoredBox : public DynamicEntity
 {
@@ -127,7 +127,8 @@ public:
             getline(level_file, d);
             p.y = atoi(d.c_str());
 
-            DrawableAABB *d = new Image( images.at(s) );
+            //DrawableAABB *d = new Image( images.at(s) );
+            DrawableAABB *d = new ColoredBox( images.at(s)->getSize() );
 
             Entity *e = nullptr;
 
@@ -190,7 +191,7 @@ WindowProperties GameMain::defaultWindowProperties()
     WindowProperties windowProperties;
 
     // Default window height & width:
-    windowProperties.size = xy(1024, 600);
+    windowProperties.size = xy(640, 480);
     windowProperties.fullscreen = false;
 
     // Title
