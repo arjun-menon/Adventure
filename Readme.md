@@ -5,17 +5,17 @@ First install the following packages:
         sudo apt-get install build-essential cmake libfreetype6-dev libglew1.5-dev libjpeg62-dev libpng12-dev libsndfile1-dev libxrandr-dev libopenal-dev
 
 Then get SFML 2.0 RC from [this PPA](https://launchpad.net/~sonkun/+archive/sfml-stable), like so:
-```bash
+
         sudo add-apt-repository ppa:sonkun/sfml-development #ppa:sonkun/sfml-stable
         sudo apt-get update
         sudo apt-get install libsfml-dev
-```
+
 You also need to have g++ 4.6 or higher for proper [C++11](http://en.wikipedia.org/wiki/C++11) support. On older Ubuntu-based distributons, [the following PPA](https://launchpad.net/~ubuntu-toolchain-r/+archive/test) can be used to obtain [the latest](http://askubuntu.com/questions/61254/how-to-update-gcc-to-the-latest-versionin-this-case-4-7-in-ubuntu-10-04) version of the GCC toolchain:
-```bash
+
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get update
         sudo apt-get install g++-4.6
-```
+
 Additionally, if you have multiple versions of GCC installed, g++ 4.6 might not be your default version of g++. In these cases, it might be necessary to specify the version of g++ explicitly in your compiler command as `g++-4.6`.
 
 ### Eclipse Configuration
