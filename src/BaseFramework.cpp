@@ -54,7 +54,7 @@ public:
     }
 
     void drawText(string line, xy pos, Color color=Color(), float fontSize=15.0f) {
-        sf::Text textToDraw(line, sf::Font::getDefaultFont(), static_cast<unsigned int>(fontSize));
+        sf::Text textToDraw(line, defaultFont, static_cast<unsigned int>(fontSize));
         textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
         textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
         renderWindow->draw(textToDraw);
@@ -120,6 +120,8 @@ private:
     unique_ptr<GameMain> gameMain;
     unique_ptr<sf::RenderWindow> renderWindow;
 
+    sf::Font defaultFont;
+
     std::minstd_rand0 rng;
 
     void handleCmdlineArgs(int argc, char *argv[])
@@ -177,6 +179,9 @@ private:
         renderWindow = unique_ptr<sf::RenderWindow>( createRenderWindow() );
         renderWindow->clear();
         renderWindow->setFramerateLimit( 60 );
+
+        // setup the default Font
+        defaultFont.loadFromFile("assets/fonts/opensans-regular-webfont.ttf");
 
         try
         {
