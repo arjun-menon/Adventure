@@ -1,13 +1,16 @@
 /*
- * BaseFramework.cpp
+ * PlatformInterface.cpp
  */
+
+#include "stdinclude.hpp"
+#include "GeometricPrimitives.hpp"
+#include "Elements.hpp"
+#include "PlatformInterface.hpp"
 
 #include <chrono>
 #include <random>
 
 #include <SFML/Graphics.hpp>
-
-#include "BaseFramework.hpp"
 
 class SystemImpl : public System
 {

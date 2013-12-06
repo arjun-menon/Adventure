@@ -2,6 +2,11 @@
  * PhysicsMap.cpp
  */
 
+#include "stdinclude.hpp"
+#include "GeometricPrimitives.hpp"
+#include "Elements.hpp"
+#include "PlatformInterface.hpp"
+#include "EntityMap.hpp"
 #include "PhysicsMap.hpp"
 
 bool PhysicsMap::place(Entity *e, set<Entity *> &collidingEntities)

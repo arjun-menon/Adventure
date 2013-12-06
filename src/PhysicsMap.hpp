@@ -5,8 +5,6 @@
 #ifndef PHYSICSMAP_HPP_
 #define PHYSICSMAP_HPP_
 
-#include "EntityMap.hpp"
-
 class DynamicEntityCharacteristics
 {
 public:

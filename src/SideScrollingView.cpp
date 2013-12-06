@@ -1,10 +1,13 @@
 /*
  * SideScrollingView.cpp
- *
- *  Created on: May 23, 2013
- *      Author: arjun
  */
 
+#include "stdinclude.hpp"
+#include "GeometricPrimitives.hpp"
+#include "Elements.hpp"
+#include "PlatformInterface.hpp"
+#include "EntityMap.hpp"
+#include "PhysicsMap.hpp"
 #include "SideScrollingView.hpp"
 
 static inline xy calculateViewport(const xy &pivotPosition, const xy &mapSize)

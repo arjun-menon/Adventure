@@ -2,6 +2,10 @@
  * EntityMap.cpp
  */
 
+#include "stdinclude.hpp"
+#include "GeometricPrimitives.hpp"
+#include "Elements.hpp"
+#include "PlatformInterface.hpp"
 #include "EntityMap.hpp"
 
 /*
@@ -87,7 +91,7 @@ bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
 /*
  * Move entity *e as close as possible by `distance` until there until there is a collision.
  *
- * First it attempts a naïve move. If there are no collisions, then it is successful.
+ * First it attempts a naive move. If there are no collisions, then it is successful.
  * If there is a collision, this function moves the entity slowly in small steps.
  * In each step, the entity is moved by a `short_distance`, until there is a collision.
  */

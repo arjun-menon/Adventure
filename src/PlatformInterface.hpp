@@ -1,27 +1,9 @@
 /*
- * BaseFramework.hpp
+ * PlatformInterface.hpp
  */
 
-#ifndef BASEFRAMEWORK_HPP_
-#define BASEFRAMEWORK_HPP_
-
-#include <stdexcept>
-#include <memory>
-#include <functional>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <list>
-#include <set>
-#include <map>
-#include <cstring>
-#include <cmath>
-
-using namespace std;
-
-#include "Elements.hpp"
+#ifndef PLATFORMINTERFACE_HPP_
+#define PLATFORMINTERFACE_HPP_
 
 struct WindowProperties
 {
@@ -80,4 +62,4 @@ private:
     static GameMain* singleton;
 };
 
-#endif /* BASEFRAMEWORK_HPP_ */
+#endif /* PLATFORMINTERFACE_HPP_ */

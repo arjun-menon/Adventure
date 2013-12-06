@@ -2,7 +2,10 @@
  * Elements.cpp
  */
 
-#include "BaseFramework.hpp"
+#include "stdinclude.hpp"
+#include "GeometricPrimitives.hpp"
+#include "Elements.hpp"
+#include "PlatformInterface.hpp"
 
 /*
  * Pick a random color.
@@ -12,7 +15,8 @@
 Color ColoredBox::randomColor() {
     Color randomColor;
 
-    std::function<unsigned char (unsigned char)> random_number = [](unsigned char range) { return Sys()->random() % range + 1; };
+    std::function<unsigned char (unsigned char)> random_number =
+            [](unsigned char range) { return Sys()->random() % range + 1; };
 
     unsigned char range = 100;
     randomColor.r -= random_number(range);

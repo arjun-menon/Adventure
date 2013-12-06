@@ -2,8 +2,6 @@
  * EntityMap.hpp
  */
 
-#include "BaseFramework.hpp"
-
 #ifndef ENTITYMAP_HPP_
 #define ENTITYMAP_HPP_
 

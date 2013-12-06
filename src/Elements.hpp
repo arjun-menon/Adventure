@@ -5,8 +5,6 @@
 #ifndef ELEMENTS_HPP_
 #define ELEMENTS_HPP_
 
-#include "GeometricPrimitives.hpp"
-
 /*
  * Color - RBG color with alpha channel.
  */

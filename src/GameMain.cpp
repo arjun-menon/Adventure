@@ -1,8 +1,13 @@
 /*
- * Main.cpp
+ * GameMain.cpp
  */
 
-#include "BaseFramework.hpp"
+#include "stdinclude.hpp"
+#include "GeometricPrimitives.hpp"
+#include "Elements.hpp"
+#include "PlatformInterface.hpp"
+#include "EntityMap.hpp"
+#include "PhysicsMap.hpp"
 #include "SideScrollingView.hpp"
 
 class StaticColoredBox : public Entity
@@ -169,12 +174,10 @@ GameMain* GameMain::singleton = nullptr;
 
 class GameMainImpl : public GameMain
 {
-    bool loaded;
-
     unique_ptr<Steppable> whatever;
 
 public:
-    GameMainImpl() : loaded(false)
+    GameMainImpl()
     {
         //whatever = unique_ptr<Steppable>( new TestBed() );
         whatever = unique_ptr<Steppable>( new OldGameMap() );

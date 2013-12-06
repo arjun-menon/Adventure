@@ -1,14 +1,9 @@
 /*
  * SideScrollingView.hpp
- *
- *  Created on: 25-Apr-2013
- *      Author: arjun
  */
 
 #ifndef SIDESCROLLINGVIEW_HPP_
 #define SIDESCROLLINGVIEW_HPP_
-
-#include "PhysicsMap.hpp"
 
 class SideScrollingView
 {
