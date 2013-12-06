@@ -93,6 +93,7 @@ public:
 class InputCallbacks
 {
 public:
+	virtual void escKey() {}
     virtual void upKey() {}
     virtual void leftKey() {}
     virtual void rightKey() {}

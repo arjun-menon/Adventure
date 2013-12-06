@@ -152,6 +152,8 @@ public:
         ssv.pivot = pivot;
     }
 
+    void escKey() { Sys()->exit(); }
+
     void upKey() { physicsMap->jump(pivot); }
     void leftKey() { physicsMap->walkLeft(pivot); }
     void rightKey() { physicsMap->walkRight(pivot); }

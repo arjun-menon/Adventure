@@ -75,6 +75,8 @@ public:
     }
 
     virtual void getInput(InputCallbacks *callbacks) {
+    	if( sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) )
+    		callbacks->escKey();
         if( sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W) )
             callbacks->upKey();
         if( sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A) )
