@@ -33,40 +33,99 @@ public:
     virtual ~Steppable() {}
 };
 
-class TestBed : public Steppable
+class TestBed : public Steppable, public InputCallbacks
 {
-    SideScrollingView ssv;
+    SideScrollingView sideScrollingView;
     PhysicsMap physicsMap;
-    Entity *a, *b, *c;
+    vector<StaticColoredBox> boxes;
+    DynamicEntity *pivot;
 
 public:
-    TestBed() : physicsMap( Sys()->getWindowProperties().size, 32 )
+    TestBed() : physicsMap( xy(2000,1000), 32 )
     {
-        a = new StaticColoredBox( xy(10, 10) , xy(200, 100) );
-        b = new StaticColoredBox( xy(220, 210) , xy(100, 100) );
-        b = new DynamicColoredBox( xy(220, 210) , xy(100, 100), dChar1 );
-        c = new DynamicColoredBox( xy(300, 170) , xy(10, 10), dChar1 );
+        boxes.push_back(StaticColoredBox( xy(10, 10) , xy(200, 100) ));
+        boxes.push_back(StaticColoredBox( xy(300, 210) , xy(100, 100) ));
+        boxes.push_back(StaticColoredBox( xy(500, 400) , xy(400, 100) ));
+        pivot = new DynamicColoredBox( xy(100, 170) , xy(25, 25), dChar2 );
 
         set<Entity *> collidingEntities;
-        physicsMap.place(a, collidingEntities);
-        physicsMap.place(b, collidingEntities);
-        physicsMap.place(c, collidingEntities);
+        for(int i = 0; i < boxes.size(); i++) {
+            cout<<&boxes[i]<<endl;
+            physicsMap.place(&boxes[i], collidingEntities);
+        }
+        for(auto box : boxes) {
+            cout<< typeid(box).name() <<endl;
+            cout<< typeid(&box).name() <<endl;
+            cout<< &box <<endl;
+        }
+        physicsMap.place(pivot, collidingEntities);
 
-        ssv.physicsMap = &physicsMap;
+        sideScrollingView.physicsMap = &physicsMap;
+        sideScrollingView.pivot = pivot;
     }
 
     void step()
     {
+        Sys()->getInput(this);
+
         physicsMap.performPhysics();
 
-        static set<Entity *> collidingEntities;
-        collidingEntities.clear();
-        physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
+//        static set<Entity *> collidingEntities;
+//        collidingEntities.clear();
+//        physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
 
-        ssv.render();
+        sideScrollingView.render();
+    }
+
+    void escKey() { Sys()->exit(); }
+
+    void upKey() { physicsMap.jump(pivot); }
+    void leftKey() { physicsMap.walkLeft(pivot); }
+    void rightKey() { physicsMap.walkRight(pivot); }
+};
+
+GameMain* GameMain::singleton = nullptr;
+
+class GameMainImpl : public GameMain
+{
+    unique_ptr<Steppable> whatever;
+
+public:
+    GameMainImpl()
+    {
+        whatever = unique_ptr<Steppable>( new TestBed() );
+        //whatever = unique_ptr<Steppable>( new OldGameMap() );
+    }
+
+    void step() {
+        whatever->step();
+    }
+
+    ~GameMainImpl() {
     }
 };
 
+WindowProperties GameMain::defaultWindowProperties()
+{
+    WindowProperties windowProperties;
+
+    // Default window height & width:
+    windowProperties.size = xy(1024, 600);
+    windowProperties.fullscreen = false;
+
+    // Title
+    windowProperties.title = "Adventure";
+
+    return windowProperties;
+}
+
+GameMain* GameMain::getSingleton() {
+    if( GameMain::singleton == nullptr )
+        GameMain::singleton = new GameMainImpl();
+    return GameMain::singleton;
+}
+
+/*
 class OldGameMap : public Steppable, public InputCallbacks
 {
     DynamicEntity *pivot;
@@ -169,44 +228,4 @@ public:
         ssv.render();
     }
 };
-
-GameMain* GameMain::singleton = nullptr;
-
-class GameMainImpl : public GameMain
-{
-    unique_ptr<Steppable> whatever;
-
-public:
-    GameMainImpl()
-    {
-        //whatever = unique_ptr<Steppable>( new TestBed() );
-        whatever = unique_ptr<Steppable>( new OldGameMap() );
-    }
-
-    void step() {
-        whatever->step();
-    }
-
-    ~GameMainImpl() {
-    }
-};
-
-WindowProperties GameMain::defaultWindowProperties()
-{
-    WindowProperties windowProperties;
-
-    // Default window height & width:
-    windowProperties.size = xy(1024, 600);
-    windowProperties.fullscreen = false;
-
-    // Title
-    windowProperties.title = "Adventure";
-
-    return windowProperties;
-}
-
-GameMain* GameMain::getSingleton() {
-    if( GameMain::singleton == nullptr )
-        GameMain::singleton = new GameMainImpl();
-    return GameMain::singleton;
-}
+ */
