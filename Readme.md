@@ -20,13 +20,15 @@ Additionally, if you have multiple versions of GCC installed, g++ 4.6 might not 
 
 ### Eclipse Configuration
 
-- **Enabling C++11 support:**
+- **Enabling C++11 support:**- 
 
 	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Command*, change `g++` to `g++-4.6`. Do the same for *GCC C++ Linker* as well.
 
 	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Miscallaneous -> Other flags*, add the following flag: `-std=c++0x` (sets the standard to the then-yet-to-be-released ISO C++11).
 
 	- In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Compiler -> Preprocessor -> Defined Symbols (-D)*, add the following symbol: `__GXX_EXPERIMENTAL_CXX0X__` (enabling this macro is necessary for Eclipse to be able to parse the C++11 extensions in STL headers).
+	
+	- The above step might not fix all index issues. For OS X users, according [this guide](http://astrognomical.wordpress.com/2013/04/25/using-eclipse-cdt-with-gcc-4-8-and-c11-osx-10-8/): In *Project -> Properties -> C/C++ General > Preprocessor Include Paths*, under the *Providers* tab, ensure that **only** *CDT User Settings Entries* and *CDT GCC Built-in Compiler Settings* are checked. Then, disable the global provider for *CDT GCC Built-in Compiler Settings*, and append `-std=c++11` to the *"Command to get compiler specs"* so that it resembles something like `${COMMAND} -E -P -v -dD ${INPUTS} -std=c++11`.
 
 - **Linker settings:** In *Project -> Properties -> C/C++ Build -> Settings (page) -> Tool Settings (tab) -> GCC C++ Linker -> Libraries -> Libraries (-l)*, add the following libraries: `sfml-graphics`, `sfml-window` and `sfml-system`.
 
