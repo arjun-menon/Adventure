@@ -191,7 +191,7 @@ WindowProperties GameMain::defaultWindowProperties()
     WindowProperties windowProperties;
 
     // Default window height & width:
-    windowProperties.size = xy(640, 480);
+    windowProperties.size = xy(1024, 600);
     windowProperties.fullscreen = false;
 
     // Title
