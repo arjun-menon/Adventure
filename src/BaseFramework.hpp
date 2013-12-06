@@ -30,6 +30,18 @@ struct WindowProperties
     std::string title;
 };
 
+class InputCallbacks
+{
+public:
+    virtual void escKey() {}
+    virtual void upKey() {}
+    virtual void leftKey() {}
+    virtual void rightKey() {}
+    virtual void downKey() {}
+
+    virtual ~InputCallbacks() {}
+};
+
 class System
 {
 protected:
