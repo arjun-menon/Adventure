@@ -142,7 +142,10 @@ private:
             sf::VideoMode best_mode = sf::VideoMode::getFullscreenModes()[0];
             windowProperties.size.x = static_cast<float>( best_mode.width );
             windowProperties.size.y = static_cast<float>( best_mode.height );
-            return new sf::RenderWindow(best_mode, windowProperties.title, sf::Style::Fullscreen);
+            sf::RenderWindow *renderWindow = new sf::RenderWindow(
+            		best_mode, windowProperties.title, sf::Style::Fullscreen);
+            renderWindow->setVerticalSyncEnabled(true);
+            return renderWindow;
         }
         else
             return new sf::RenderWindow(
