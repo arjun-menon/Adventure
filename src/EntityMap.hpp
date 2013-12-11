@@ -52,7 +52,7 @@ public:
 class EntityMap
 {
 public:
-    inline EntityMap(xy worldSize, float optimizationFactor) : optmat(worldSize, optimizationFactor) {}
+    inline EntityMap(xy worldSize, unsigned int optimizationFactor) : optmat(worldSize, optimizationFactor) {}
     inline const xy& getMapSize() { return optmat.getMapSize(); }
     inline const set<Entity *> & getEntities() { return entities; }
 
@@ -60,9 +60,8 @@ public:
     void remove(Entity *e);
 
     bool move(Entity *e, xy newPos,  set<Entity *> &collidingEntities);
-    inline bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities) {
-        return move(e, e->pos + distance, collidingEntities);
-    }
+    bool moveTest(Entity *e, xy newPos);
+    bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities);
 
 private:
     set<Entity *> entities;
@@ -79,10 +78,17 @@ private:
     class OptimizationMatrix
     {
     public:
-        inline OptimizationMatrix(xy mapSize, const float optimizationFactor) :
-        mapSize(mapSize), optimizationFactor(optimizationFactor) { matrix.resize( ceil( mapSize/optimizationFactor ) ); }
+        inline OptimizationMatrix(xy mapSize, const unsigned int optimizationFactor) :
+                mapSize(mapSize), optimizationFactor(optimizationFactor) {
+            resizeMap(mapSize);
+        }
 
-        inline void resizeMap(xy newMapSize) { matrix.resize( ceil( (mapSize = newMapSize)/optimizationFactor ) ); }
+        inline void resizeMap(xy newMapSize) {
+            mapSize = newMapSize;
+            xyf mSize = xy_i2f(mapSize);
+            xyf matSize = ceil( mSize/float(optimizationFactor) );
+            matrix.resize( xy_f2i(matSize) );
+        }
         inline const xy& getMapSize() { return mapSize; }
 
         void insert(Entity *e);
@@ -93,9 +99,11 @@ private:
         Matrix< set<Entity *> > matrix;
 
         xy mapSize;
-        const float optimizationFactor;
+        const unsigned int optimizationFactor;
 
-        inline xy_int matrixPos(const xy &pos) { return floor_int( pos / optimizationFactor ); }
+        inline xy matrixPos(const xy &pos) {
+            return pos / optimizationFactor;
+        }
     }
     optmat;
 };

@@ -68,21 +68,25 @@ attempt to remove an entity that does not exist on the map");
 /*
  * Move an existing entity `e` to a new position
  */
-bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
+bool EntityMap::move(Entity *e, xy newPos, set<Entity *> &collidingEntities)
 {
     if( entities.find(e) == entities.end() )
         throw logic_error("EntityMap::move -- \
 attempt to move an entity that does not exist on the map");
 
+    // If `e` is already at `newPos`, don't do anything
     if(e->pos == newPos)
         return true;
 
+    // First remove `e` from the map
     remove(e);
 
     xy oldPos = e->pos;
     e->pos = newPos;
 
+    // Attempt to place `e` at `newPos`
     if( !place(e, collidingEntities) ) {
+        // If the above failed, then restore `e` to its old location
         e->pos = oldPos;
         set<Entity *> temp;
         if( !place(e, temp) ) // place it back
@@ -95,32 +99,67 @@ unexpected fatal error: trouble placing an entity back at the same position it w
 }
 
 /*
+ * Test whether a move will be possible (use sparingly)
+ *
+ * Note: This function should only be used when the move is never
+ * intended to be made. For intended moves, use `EntityMap::move`
+ */
+bool EntityMap::moveTest(Entity *e, xy newPos)
+{
+    if( entities.find(e) == entities.end() )
+        throw logic_error("EntityMap::move -- \
+attempt to move an entity that does not exist on the map");
+
+    remove(e);
+
+    xy oldPos = e->pos;
+    e->pos = newPos;
+
+    set<Entity *> collidingEntities;
+    bool success = place(e, collidingEntities);
+
+    if(success)
+        remove(e);
+    else
+        collidingEntities.clear();
+
+    e->pos = oldPos;
+    place(e, collidingEntities);
+
+    return success;
+}
+
+static int non_zero_abs_min(int a, int b)
+{
+    int r = min(abs(a), abs(b));
+    if( r == 0 )
+        r = max(abs(a), abs(b));
+    return r;
+}
+
+/*
  * Move entity *e as close as possible by `distance` until there until there is a collision.
  *
  * First it attempts a naive move. If there are no collisions, then it is successful.
  * If there is a collision, this function moves the entity slowly in small steps.
- * In each step, the entity is moved by a `short_distance`, until there is a collision.
+ * In each step, the entity is moved by `step_dist`, until there is a collision.
  */
-//bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
-//{
-    // ### create a new function: "move as close as possible to" that does what below should have done ###
-
-    /*
+bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
+{
     if( move(e, e->pos + distance, collidingEntities) )
         return true;
 
     collidingEntities.clear();
 
-    float divisor = min( abs(distance.x), abs(distance.y) );
-    if(divisor == 0) // then get the other value:
-        divisor = max( abs(distance.x), abs(distance.y) ) * 10;
+    int min_dist = non_zero_abs_min( abs(distance.x), abs(distance.y) );
+    xy step_dist = distance / min_dist;
 
-    xy short_distance =  distance / divisor;
-    while( move(e, e->pos + short_distance, collidingEntities) ) {}
+    if( move(e, e->pos + step_dist, collidingEntities) )
+        // tail recursive call:
+        return moveBy(e, distance - step_dist, collidingEntities);
 
     return false;
-    */
-//}
+}
 
 /*
  * Insert an entity in the optimization matrix.
@@ -130,7 +169,7 @@ unexpected fatal error: trouble placing an entity back at the same position it w
  */
 void EntityMap::OptimizationMatrix::insert(Entity *e)
 {
-    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
+    xy bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             matrix[x][y].insert(e);
@@ -141,7 +180,7 @@ void EntityMap::OptimizationMatrix::insert(Entity *e)
  */
 void EntityMap::OptimizationMatrix::erase(Entity *e)
 {
-    xy_int bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
+    xy bl = matrixPos(e->pos), tr = matrixPos(e->pos + e->d->getSize());
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             matrix[x][y].erase(e);
@@ -154,7 +193,7 @@ set<Entity *> EntityMap::OptimizationMatrix::getEntities(Rect region)
 {
     set<Entity *> entities;
 
-    xy_int bl = matrixPos(region.pos), tr = matrixPos(region.pos + region.size);
+    xy bl = matrixPos(region.pos), tr = matrixPos(region.pos + region.size);
     for(int x = bl.x ; x <= tr.x ; x++)
         for(int y = bl.y ; y <= tr.y ; y++)
             if(!matrix[x][y].empty())
