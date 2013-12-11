@@ -28,12 +28,12 @@ void PhysicsMap::remove(Entity *e)
     entityMap.remove(e);
 }
 
-static float calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
+static int calculatePostFrictionHorizontalVelocity(float horizontalVelocity, float groundFriction)
 {
     if( abs(horizontalVelocity) < groundFriction )
         return 0;
 
-    float direction = horizontalVelocity < 0 ? -1.0f : 1.0f;
+    int direction = horizontalVelocity < 0 ? -1 : 1;
     return horizontalVelocity - direction * groundFriction;
 }
 
@@ -42,30 +42,27 @@ void PhysicsMap::performPhysics()
     for(auto e : dynamicEntities)
     {
         limitVelocity(*e);
-        e->velocity.x = calculatePostFrictionHorizontalVelocity(e->velocity.x, e->dynamicChars.groundFriction); // apply friction
-        e->velocity.y -= e->dynamicChars.gravityFactor; // apply gravity
-        const float x = e->velocity.x, y = e->velocity.y;
+
+        int &x = e->velocity.x,
+            &y = e->velocity.y;
+
+        x = calculatePostFrictionHorizontalVelocity(x, e->dynamicChars.groundFriction); // apply friction
+        y -= e->dynamicChars.gravityFactor; // apply gravity
 
         static set<Entity *> collidingEntities; // let's reuse it (therefore static)
         collidingEntities.clear();
 
-        if( !entityMap.moveBy(e, xy(0, y), collidingEntities) )
-        {
-            if(y < 0) { // moving down
-                groundContact = true;
-                e->velocity.y = (-1 * y) * e->dynamicChars.bouncyFactor;
-            }
-            else { // moving up
-                groundContact = false;
-                e->velocity.y = 0;
-            }
-        }
-        else
-            groundContact = false;
+        if( !entityMap.moveBy(e, e->velocity, collidingEntities) ) {
+            // There has been a collision...
 
-        collidingEntities.clear();
-        if( !entityMap.moveBy(e, xy(x, 0), collidingEntities) )
-            e->velocity.x = 0;
+            collidingEntities.clear();
+            if( !entityMap.moveBy(e, xy(0, y), collidingEntities) )
+                y = 0;
+
+            collidingEntities.clear(); // FIXME
+            if( !entityMap.moveBy(e, xy(x, 0), collidingEntities) )
+                x = 0;
+        }
     }
 }
 

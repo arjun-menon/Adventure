@@ -5,32 +5,25 @@
 #ifndef PHYSICSMAP_HPP_
 #define PHYSICSMAP_HPP_
 
-class DynamicEntityCharacteristics
+struct DynamicEntityCharacteristics
 {
-public:
-    const float groundFriction,
+    const int groundFriction,
                 gravityFactor,
                 maxHorizontalSpeed,
                 horizontalWalkStep,
-                jumpStep,
-                bouncyFactor;
+                jumpStep;
 
     DynamicEntityCharacteristics(
-            const float groundFriction,
-            const float gravityFactor,
-            const float maxHorizontalSpeed,
-            const float horizontalWalkStep = 0.0f,
-            const float jumpStep = 0.0f,
-            const float bouncyFactor = 0.0f) :
+            const int groundFriction,
+            const int gravityFactor,
+            const int maxHorizontalSpeed,
+            const int horizontalWalkSpeed = 0,
+            const int jumpStep = 0) :
                 groundFriction(groundFriction),
                 gravityFactor(gravityFactor),
                 maxHorizontalSpeed(maxHorizontalSpeed),
-                horizontalWalkStep(horizontalWalkStep),
-                jumpStep(jumpStep),
-                bouncyFactor( sanitizeBouncyFactor(bouncyFactor) ) {}
-
-private:
-    inline static float sanitizeBouncyFactor(float bouncyFactor) { return bouncyFactor > 1.0f ? 1.0f : bouncyFactor; }
+                horizontalWalkStep(groundFriction + horizontalWalkSpeed),
+                jumpStep(jumpStep) {}
 };
 
 class DynamicEntity : public Entity
@@ -38,7 +31,7 @@ class DynamicEntity : public Entity
     friend class PhysicsMap;
 
 public:
-    const DynamicEntityCharacteristics &dynamicChars;
+    const DynamicEntityCharacteristics dynamicChars;
 
     DynamicEntity(DrawableAABB *d, xy pos, const DynamicEntityCharacteristics &dynamicChars) :
         Entity(d, pos), dynamicChars(dynamicChars), velocity(0.0f, 0.0f) {}
@@ -54,8 +47,8 @@ class PhysicsMap
 public:
     EntityMap entityMap;
 
-    PhysicsMap(xy worldSize, float optimizationFactor) :
-        entityMap(worldSize, optimizationFactor), groundContact(false) {}
+    PhysicsMap(xy worldSize, int optimizationFactor) :
+        entityMap(worldSize, optimizationFactor) {}
 
     bool place(Entity *e, set<Entity *> &collidingEntities); // override EntityMap
     void remove(Entity *e); // override EntityMap
@@ -63,15 +56,18 @@ public:
     void performPhysics();
 
     inline void jump(DynamicEntity *e) {
-        if(groundContact)
+        if(!entityMap.moveTest(e, e->pos - xy(0, 1)))
             e->velocity.y += e->dynamicChars.jumpStep;
     }
-    inline void walkLeft(DynamicEntity *e)  { e->velocity.x -= e->dynamicChars.horizontalWalkStep; }
-    inline void walkRight(DynamicEntity *e) { e->velocity.x += e->dynamicChars.horizontalWalkStep; }
+    inline void walkLeft(DynamicEntity *e) {
+        e->velocity.x -= e->dynamicChars.horizontalWalkStep;
+    }
+    inline void walkRight(DynamicEntity *e) {
+        e->velocity.x += e->dynamicChars.horizontalWalkStep;
+    }
 
 private:
     set<DynamicEntity *> dynamicEntities;
-    bool groundContact;
 
     void limitVelocity(DynamicEntity &e);
 };
