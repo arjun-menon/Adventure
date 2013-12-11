@@ -43,7 +43,7 @@ class TestBed : public Steppable, public InputCallbacks
 public:
     TestBed() : physicsMap( xy(2000,1000), 32 )
     {
-        boxes.push_back(StaticColoredBox( xy(10, 10) , xy(200, 100) ));
+        boxes.push_back(StaticColoredBox( xy(0, 0) , xy(200, 100) ));
         boxes.push_back(StaticColoredBox( xy(300, 210) , xy(100, 100) ));
         boxes.push_back(StaticColoredBox( xy(500, 400) , xy(400, 100) ));
         pivot = new DynamicColoredBox( xy(100, 170) , xy(25, 25), dChar2 );
@@ -64,7 +64,28 @@ public:
 
         physicsMap.performPhysics();
 
+//        static set<Entity *> collidingEntities;
+//        collidingEntities.clear();
+//        physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
+
         sideScrollingView.render();
+
+        stringstream ss;
+        std::function<void (Entity*)> sscat = [&ss](Entity *e) {
+            Rect rect = e->getRect();
+            xy exterm = rect.pos + rect.size;
+            ss<<" is at ("<<rect.pos.x<<","<<rect.pos.y<<"), "<<
+                    "has size ("<<rect.size.x<<","<<rect.size.y<<") and "<<
+                    "and upper-right corner is at ("<<exterm.x<<","<<exterm.y<<")\n";
+        };
+
+        for(int i = 0; i < boxes.size(); i++) {
+            ss<<"Box["<<i<<"]";
+            sscat(&boxes[i]);
+        }
+        ss<<"Pivot";
+        sscat(pivot);
+        Sys()->drawText(ss.str(), xy(10,10));
     }
 
     void escKey() { Sys()->exit(); }
