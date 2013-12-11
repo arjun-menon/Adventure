@@ -16,8 +16,13 @@ public:
     StaticColoredBox(xy pos, xy sz) : Entity(new ColoredBox(sz), pos) {}
 };
 
-DynamicEntityCharacteristics dChar1(0.1f, 0.2f, 5.0f);
-DynamicEntityCharacteristics dChar2(0.15f, 0.2f, 12.0f, 0.5f, 11.0f);
+DynamicEntityCharacteristics pivotDynaChars(
+        1, // groundFriction
+        1, // gravityFactor
+        12, // maxHorizontalSpeed
+        2, // horizontalWalkStep
+        25 // jumpStep
+        );
 
 class DynamicColoredBox : public DynamicEntity
 {
@@ -41,12 +46,13 @@ class TestBed : public Steppable, public InputCallbacks
     DynamicEntity *pivot;
 
 public:
-    TestBed() : physicsMap( xy(2000,1000), 32 )
+    TestBed() : physicsMap( xy(1024, 600), 32 )
     {
-        boxes.push_back(StaticColoredBox( xy(0, 0) , xy(200, 100) ));
-        boxes.push_back(StaticColoredBox( xy(300, 210) , xy(100, 100) ));
+        boxes.push_back(StaticColoredBox( xy(1, 1) , xy(200, 100) ));
+        boxes.push_back(StaticColoredBox( xy(270, 140) , xy(100, 20) ));
+        boxes.push_back(StaticColoredBox( xy(300, 290) , xy(100, 100) ));
         boxes.push_back(StaticColoredBox( xy(500, 400) , xy(400, 100) ));
-        pivot = new DynamicColoredBox( xy(100, 170) , xy(25, 25), dChar2 );
+        pivot = new DynamicColoredBox( xy(100, 170) , xy(25, 25), pivotDynaChars );
 
         set<Entity *> collidingEntities;
         for(auto &box : boxes)
@@ -64,19 +70,14 @@ public:
 
         physicsMap.performPhysics();
 
-//        static set<Entity *> collidingEntities;
-//        collidingEntities.clear();
-//        physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
-
         sideScrollingView.render();
 
         stringstream ss;
         std::function<void (Entity*)> sscat = [&ss](Entity *e) {
             Rect rect = e->getRect();
             xy exterm = rect.pos + rect.size;
-            ss<<" is at ("<<rect.pos.x<<","<<rect.pos.y<<"), "<<
-                    "has size ("<<rect.size.x<<","<<rect.size.y<<") and "<<
-                    "and upper-right corner is at ("<<exterm.x<<","<<exterm.y<<")\n";
+            ss<<" is at "<<rect.pos<<" and has size "<<rect.size<<
+                    " and its upper-right corner is at "<<exterm<<"\n";
         };
 
         for(int i = 0; i < boxes.size(); i++) {
@@ -95,48 +96,6 @@ public:
     void rightKey() { physicsMap.walkRight(pivot); }
 };
 
-GameMain* GameMain::singleton = nullptr;
-
-class GameMainImpl : public GameMain
-{
-    unique_ptr<Steppable> whatever;
-
-public:
-    GameMainImpl()
-    {
-        whatever = unique_ptr<Steppable>( new TestBed() );
-        //whatever = unique_ptr<Steppable>( new OldGameMap() );
-    }
-
-    void step() {
-        whatever->step();
-    }
-
-    ~GameMainImpl() {
-    }
-};
-
-WindowProperties GameMain::defaultWindowProperties()
-{
-    WindowProperties windowProperties;
-
-    // Default window height & width:
-    windowProperties.size = xy(1024, 600);
-    windowProperties.fullscreen = false;
-
-    // Title
-    windowProperties.title = "Adventure";
-
-    return windowProperties;
-}
-
-GameMain* GameMain::getSingleton() {
-    if( GameMain::singleton == nullptr )
-        GameMain::singleton = new GameMainImpl();
-    return GameMain::singleton;
-}
-
-/*
 class OldGameMap : public Steppable, public InputCallbacks
 {
     DynamicEntity *pivot;
@@ -208,7 +167,7 @@ public:
             Entity *e = nullptr;
 
             if(s == "Player") {
-                pivot = new DynamicEntity(d, p, dChar2);
+                pivot = new DynamicEntity(d, p, pivotDynaChars);
                 e = pivot;
             }
             else
@@ -239,4 +198,44 @@ public:
         ssv.render();
     }
 };
- */
+
+GameMain* GameMain::singleton = nullptr;
+
+class GameMainImpl : public GameMain
+{
+    unique_ptr<Steppable> whatever;
+
+public:
+    GameMainImpl()
+    {
+        whatever = unique_ptr<Steppable>( new TestBed() );
+        //whatever = unique_ptr<Steppable>( new OldGameMap() );
+    }
+
+    void step() {
+        whatever->step();
+    }
+
+    ~GameMainImpl() {
+    }
+};
+
+WindowProperties GameMain::defaultWindowProperties()
+{
+    WindowProperties windowProperties;
+
+    // Default window height & width:
+    windowProperties.size = xy(1024, 600);
+    windowProperties.fullscreen = false;
+
+    // Title
+    windowProperties.title = "Adventure";
+
+    return windowProperties;
+}
+
+GameMain* GameMain::getSingleton() {
+    if( GameMain::singleton == nullptr )
+        GameMain::singleton = new GameMainImpl();
+    return GameMain::singleton;
+}
