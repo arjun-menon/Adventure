@@ -57,7 +57,7 @@ public:
     Color fillColor, outlineColor;
     float outlineThickness;
 
-    inline ColoredBox(xy size, Color fillColor=randomColor(), Color outlineColor=randomColor(), float outlineThickness=1.0f) : 
+    inline ColoredBox(xy size, Color fillColor=randomColor(), Color outlineColor=Color(255,255,255), float outlineThickness=1.0f) :
             size(size), fillColor(fillColor), outlineColor(outlineColor), outlineThickness(outlineThickness) {}
 
     const xy getSize() const { return size; }

@@ -18,10 +18,10 @@ Color ColoredBox::randomColor() {
     std::function<unsigned char (unsigned char)> random_number =
             [](unsigned char range) { return Sys()->random() % range + 1; };
 
-    unsigned char range = 100;
-    randomColor.r -= random_number(range);
-    randomColor.g -= random_number(range);
-    randomColor.b -= random_number(range);
+    unsigned char k = 50;
+    randomColor.r -= k + random_number(k);
+    randomColor.g -= k + random_number(k);
+    randomColor.b -= k + random_number(k);
 
     return randomColor;
 }
