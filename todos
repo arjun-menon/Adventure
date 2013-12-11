@@ -1,0 +1,12 @@
+
+Entity::pos should be private & EntityMap should be a friend of Entity
+Entity's position should be set only while it is being inserted into an EntityMap,
+	only have a getPos() and pos should not be changeable except through the move function
+		this would obviate the need for certain checks & also make things safer...
+
+C++11 move semantics:
+	...
+
+port to SDL
+use SDL's flip
+use SDL rectangle intersection function
