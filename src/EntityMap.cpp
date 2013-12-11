@@ -16,14 +16,16 @@
 bool EntityMap::computeEntityCollisions(const Entity *e, set<Entity *> &collidingEntities)
 {
     if( collidingEntities.size() != 0 )
-        throw logic_error("EntityMap::computeEntityCollisions -- non-empty EntityCollision collidingEntities set");
+        throw logic_error("EntityMap::computeEntityCollisions -- \
+non-empty EntityCollision collidingEntities set");
 
     if( !isInsideMap(*e) )
         return false;
 
     set<Entity *> entities = optmat.getEntities( Rect(e->pos, e->d->getSize()) );
     for(auto m_e : entities)
-        if( Rect(e->pos, e->d->getSize()).doesIntersect( Rect(m_e->pos, m_e->d->getSize()) ) )
+        if( Rect(e->pos, e->d->getSize()).
+                doesIntersect( Rect(m_e->pos, m_e->d->getSize()) ) )
             collidingEntities.insert(m_e);
 
     if( !collidingEntities.empty() )
@@ -38,7 +40,8 @@ bool EntityMap::computeEntityCollisions(const Entity *e, set<Entity *> &collidin
 bool EntityMap::place(Entity *e,  set<Entity *> &collidingEntities)
 {
     if( entities.find(e) != entities.end() )
-        throw logic_error("EntityMap::place -- attempt to place an existing entity on the map");
+        throw logic_error("EntityMap::place -- \
+attempt to place an existing entity on the map");
 
     if( !computeEntityCollisions(e, collidingEntities) )
         return false;
@@ -55,7 +58,8 @@ bool EntityMap::place(Entity *e,  set<Entity *> &collidingEntities)
 void EntityMap::remove(Entity *e)
 {
     if( entities.find(e) == entities.end() )
-        throw logic_error("EntityMap::remove -- attempt to remove an entity that does not exist on the map");
+        throw logic_error("EntityMap::remove -- \
+attempt to remove an entity that does not exist on the map");
 
     optmat.erase(e);
     entities.erase(e);
@@ -67,7 +71,8 @@ void EntityMap::remove(Entity *e)
 bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
 {
     if( entities.find(e) == entities.end() )
-        throw logic_error("EntityMap::move -- attempt to move an entity that does not exist on the map");
+        throw logic_error("EntityMap::move -- \
+attempt to move an entity that does not exist on the map");
 
     if(e->pos == newPos)
         return true;
@@ -81,7 +86,8 @@ bool EntityMap::move(Entity *e, xy newPos,  set<Entity *> &collidingEntities)
         e->pos = oldPos;
         set<Entity *> temp;
         if( !place(e, temp) ) // place it back
-            throw logic_error("EntityMap::move -- unexpected fatal error: trouble placing an entity back at the same position it was moved from.");
+            throw logic_error("EntityMap::move -- \
+unexpected fatal error: trouble placing an entity back at the same position it was moved from.");
         return false;
     }
 

@@ -74,7 +74,7 @@ private:
     bool computeEntityCollisions(const Entity *e, set<Entity *> &collidingEntities);
 
     /*
-     * OptimizationMatrix - used to efficiently track neighbouring entities.
+     * OptimizationMatrix - used to efficiently track neighboring entities.
      */
     class OptimizationMatrix
     {

@@ -25,7 +25,7 @@ public:
 };
 
 /*
- * Entity - something that can be drawn
+ * Drawable - something that can be drawn
  */
 class Drawable
 {
@@ -35,8 +35,8 @@ public:
 };
 
 /*
- * DrawableAABB - a Drawable with a queryable rectangular size.
- *                an Axis-Aligned Bounding Box (AABB) Drawable.
+ * DrawableAABB - a Drawable xis-Aligned Bounding Box (AABB)
+ *                        with a queryable height & width.
  */
 class DrawableAABB : public Drawable
 {
