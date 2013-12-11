@@ -74,24 +74,24 @@ public:
 
     inline bool isInside(const xyPolymorphic<T> &pt) const {
         return pt.x >= pos.x && pt.y >= pos.y
-            && pt.x <= (pos.x + size.x - PT_SZ)
-            && pt.y <= (pos.y + size.y - PT_SZ);
+            && pt.x <= (pos.x + size.x + PT_SZ)
+            && pt.y <= (pos.y + size.y + PT_SZ);
     }
 
     inline bool isInside(const RectPolymorphic<T> &rect) const {
         // check if all of the four corners of rect are within this Rect
         return isInside( rect.pos ) &&
-               isInside( rect.pos + xy(rect.size.x - PT_SZ, 0) ) &&
-               isInside( rect.pos + xy(0, rect.size.y - PT_SZ) ) &&
-               isInside( rect.pos + xy(rect.size.x - PT_SZ, rect.size.y - PT_SZ) );
+               isInside( rect.pos + xy(rect.size.x + PT_SZ, 0) ) &&
+               isInside( rect.pos + xy(0, rect.size.y + PT_SZ) ) &&
+               isInside( rect.pos + xy(rect.size.x + PT_SZ, rect.size.y + PT_SZ) );
     }
 
     inline bool isPartiallyInside(const RectPolymorphic<T> &rect) const {
         // check if any of the four corners of rect are within this Rect
         return isInside( rect.pos ) ||
-               isInside( rect.pos + xy(rect.size.x - PT_SZ, 0) ) ||
-               isInside( rect.pos + xy(0, rect.size.y - PT_SZ) ) ||
-               isInside( rect.pos + xy(rect.size.x - PT_SZ, rect.size.y - PT_SZ) );
+               isInside( rect.pos + xy(rect.size.x + PT_SZ, 0) ) ||
+               isInside( rect.pos + xy(0, rect.size.y + PT_SZ) ) ||
+               isInside( rect.pos + xy(rect.size.x + PT_SZ, rect.size.y + PT_SZ) );
     }
 
     inline bool doesIntersect(const RectPolymorphic<T> &rect) const {
