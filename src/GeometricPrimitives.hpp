@@ -58,8 +58,10 @@ public:
     }
 };
 
-typedef xyPolymorphic<float> xy;
-typedef xyPolymorphic<int> xy_int;
+template <typename T>
+inline std::ostream& operator<<(std::ostream &strm, const xyPolymorphic<T> &k) {
+    return strm << "(" << k.x << ", " << k.y << ")";
+}
 
 template <class T>
 class RectPolymorphic
@@ -81,17 +83,17 @@ public:
     inline bool isInside(const RectPolymorphic<T> &rect) const {
         // check if all of the four corners of rect are within this Rect
         return isInside( rect.pos ) &&
-               isInside( rect.pos + xy(rect.size.x + PT_SZ, 0) ) &&
-               isInside( rect.pos + xy(0, rect.size.y + PT_SZ) ) &&
-               isInside( rect.pos + xy(rect.size.x + PT_SZ, rect.size.y + PT_SZ) );
+               isInside( rect.pos + xyPolymorphic<T>(rect.size.x + PT_SZ, 0) ) &&
+               isInside( rect.pos + xyPolymorphic<T>(0, rect.size.y + PT_SZ) ) &&
+               isInside( rect.pos + xyPolymorphic<T>(rect.size.x + PT_SZ, rect.size.y + PT_SZ) );
     }
 
     inline bool isPartiallyInside(const RectPolymorphic<T> &rect) const {
         // check if any of the four corners of rect are within this Rect
         return isInside( rect.pos ) ||
-               isInside( rect.pos + xy(rect.size.x + PT_SZ, 0) ) ||
-               isInside( rect.pos + xy(0, rect.size.y + PT_SZ) ) ||
-               isInside( rect.pos + xy(rect.size.x + PT_SZ, rect.size.y + PT_SZ) );
+               isInside( rect.pos + xyPolymorphic<T>(rect.size.x + PT_SZ, 0) ) ||
+               isInside( rect.pos + xyPolymorphic<T>(0, rect.size.y + PT_SZ) ) ||
+               isInside( rect.pos + xyPolymorphic<T>(rect.size.x + PT_SZ, rect.size.y + PT_SZ) );
     }
 
     inline bool doesIntersect(const RectPolymorphic<T> &rect) const {
@@ -105,26 +107,37 @@ public:
     #undef PT_SZ
 };
 
-typedef RectPolymorphic<float> Rect;
-
 /*
  * A few math functions for xyPolymorphic-derived types.
  */
 
-inline xy ceil(xy val) {
-    return xy( ceil(val.x), ceil(val.y) );
+inline xyPolymorphic<float> ceil(xyPolymorphic<float> val) {
+    return xyPolymorphic<float>( ceil(val.x), ceil(val.y) );
 }
 
-inline xy floor(xy val) {
-    return xy( floor(val.x), floor(val.y) );
+inline xyPolymorphic<float> floor(xyPolymorphic<float> val) {
+    return xyPolymorphic<float>( floor(val.x), floor(val.y) );
 }
 
-inline xy_int ceil_int(xy val) {
-    return xy_int( static_cast<int>( ceil(val.x) ), static_cast<int>( ceil(val.y) ) );
+inline xyPolymorphic<int> ceil_int(xyPolymorphic<float> val) {
+    return xyPolymorphic<int>( static_cast<int>( ceil(val.x) ), static_cast<int>( ceil(val.y) ) );
 }
 
-inline xy_int floor_int(xy val) {
-    return xy_int( static_cast<int>( floor(val.x) ), static_cast<int>( floor(val.y) ) );
+inline xyPolymorphic<int> floor_int(xyPolymorphic<float> val) {
+    return xyPolymorphic<int>( static_cast<int>( floor(val.x) ), static_cast<int>( floor(val.y) ) );
 }
+
+typedef xyPolymorphic<int> xy;
+typedef xyPolymorphic<float> xyf;
+
+inline xyPolymorphic<float> xy_i2f(xyPolymorphic<int> k) {
+    return xyf(static_cast<float>(k.x), static_cast<float>(k.y));
+}
+inline xyPolymorphic<int> xy_f2i(xyPolymorphic<float> k) {
+    return xy(static_cast<int>(k.x), static_cast<int>(k.y));
+}
+
+typedef RectPolymorphic<int> Rect;
+typedef RectPolymorphic<float> Rectf;
 
 #endif /* GEOMETRICPRIMITIVES_HPP_ */
