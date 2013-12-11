@@ -49,23 +49,8 @@ public:
         pivot = new DynamicColoredBox( xy(100, 170) , xy(25, 25), dChar2 );
 
         set<Entity *> collidingEntities;
-//        for(int i = 0; i < boxes.size(); i++) {
-//            cout<<&boxes[i]<<endl;
-//        }
-//        cout<<"-----------------\n";
-//        for(vector<StaticColoredBox>::iterator it = boxes.begin();
-//                it != boxes.end(); it++) {
-//            cout<< &it << " - " << &(*it) <<endl;
-//        }
-//        cout<<"-----------------\n";
-//        for(auto box : boxes) {
-//            cout<< &box <<endl;
-//        }
-//        cout<<"-----------------\n";
-        for(auto &box : boxes) {
-//            cout<< &box <<endl;
+        for(auto &box : boxes)
             physicsMap.place(&box, collidingEntities);
-        }
 
         physicsMap.place(pivot, collidingEntities);
 
@@ -79,28 +64,7 @@ public:
 
         physicsMap.performPhysics();
 
-//        static set<Entity *> collidingEntities;
-//        collidingEntities.clear();
-//        physicsMap.entityMap.moveBy(b, xy(5, 0), collidingEntities);
-
         sideScrollingView.render();
-
-        Entity *e;
-
-        stringstream ss;
-        std::function<void (Entity*)> sscat = [&ss](Entity *e) {
-            Rect rect = e->getRect();
-            ss<<" is at ("<<rect.pos.x<<","<<rect.pos.y<<") and "<<
-                    "has size ("<<rect.size.x<<","<<rect.size.y<<")\n";
-        };
-
-        for(int i = 0; i < boxes.size(); i++) {
-            ss<<"Box["<<i<<"]";
-            sscat(&boxes[i]);
-        }
-        ss<<"Pivot";
-        sscat(pivot);
-        Sys()->drawText(ss.str(), xy(10,10));
     }
 
     void escKey() { Sys()->exit(); }
