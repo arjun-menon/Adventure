@@ -5,7 +5,7 @@
 #ifndef GEOMETRICPRIMITIVES_HPP_
 #define GEOMETRICPRIMITIVES_HPP_
 
-template <class T>
+template <typename T>
 class xyPolymorphic
 {
 public:
@@ -63,7 +63,7 @@ inline std::ostream& operator<<(std::ostream &strm, const xyPolymorphic<T> &k) {
     return strm << "(" << k.x << ", " << k.y << ")";
 }
 
-template <class T>
+template <typename T>
 class RectPolymorphic
 {
 public:
@@ -106,6 +106,11 @@ public:
 
     #undef PT_SZ
 };
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream &strm, const RectPolymorphic<T> &rect) {
+    return strm << "[pos" << rect.pos << ", size" << rect.size << "]";
+}
 
 /*
  * A few math functions for xyPolymorphic-derived types.
