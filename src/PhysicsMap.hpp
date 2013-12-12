@@ -44,10 +44,12 @@ private:
 
 class PhysicsMap
 {
+    const static int defaultOptimizationFactor = 32;
+
 public:
     EntityMap entityMap;
 
-    PhysicsMap(xy worldSize, int optimizationFactor) :
+    PhysicsMap(xy worldSize, int optimizationFactor = defaultOptimizationFactor) :
         entityMap(worldSize, optimizationFactor) {}
 
     bool place(Entity *e, set<Entity *> &collidingEntities); // override EntityMap
