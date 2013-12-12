@@ -9,9 +9,9 @@ class SideScrollingView
 {
 public:
     PhysicsMap* physicsMap;
-    Entity* pivot;
+    Entity* player;
 
-    SideScrollingView() : physicsMap(nullptr), pivot(nullptr) {}
+    SideScrollingView() : physicsMap(nullptr), player(nullptr) {}
 
     void render();
 };

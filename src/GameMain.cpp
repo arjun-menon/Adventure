@@ -16,7 +16,7 @@ public:
     StaticColoredBox(xy pos, xy sz) : Entity(new ColoredBox(sz), pos) {}
 };
 
-DynamicEntityCharacteristics pivotDynaChars(
+DynamicEntityCharacteristics playerDynamicChars(
         1, // groundFriction
         1, // gravityFactor
         12, // maxHorizontalSpeed
@@ -43,25 +43,26 @@ class TestBed : public Steppable, public InputCallbacks
     SideScrollingView sideScrollingView;
     PhysicsMap physicsMap;
     vector<StaticColoredBox> boxes;
-    DynamicEntity *pivot;
+    DynamicEntity *player;
 
 public:
-    TestBed() : physicsMap( xy(1023, 600) ) // Sys()->getWindowProperties().size)
+    TestBed() : physicsMap(Sys()->getWindowProperties().size)
     {
-        boxes.push_back(StaticColoredBox( xy(1, 1) , xy(200, 100) ));
+        boxes.push_back(StaticColoredBox( xy(0, 1) , xy(200, 100) ));
+        boxes.push_back(StaticColoredBox( xy(202, 0) , xy(500, 3) ));
         boxes.push_back(StaticColoredBox( xy(270, 140) , xy(100, 20) ));
         boxes.push_back(StaticColoredBox( xy(300, 290) , xy(100, 100) ));
         boxes.push_back(StaticColoredBox( xy(500, 400) , xy(400, 100) ));
-        pivot = new DynamicColoredBox( xy(100, 170) , xy(25, 25), pivotDynaChars );
+        player = new DynamicColoredBox( xy(100, 170) , xy(25, 25), playerDynamicChars );
 
         set<Entity *> collidingEntities;
         for(auto &box : boxes)
             physicsMap.place(&box, collidingEntities);
 
-        physicsMap.place(pivot, collidingEntities);
+        physicsMap.place(player, collidingEntities);
 
         sideScrollingView.physicsMap = &physicsMap;
-        sideScrollingView.pivot = pivot;
+        sideScrollingView.player = player;
     }
 
     void step()
@@ -76,33 +77,33 @@ public:
         std::function<void (Entity*)> sscat = [&ss](Entity *e) {
             Rect rect = e->getRect();
             xy exterm = rect.pos + rect.size;
-            ss<<" has "<<rect<<" and its upper-right corner is at "<<exterm<<"\n";
+            ss<<" has "<<rect<<" and upper-right corner at "<<exterm<<"\n";
         };
 
         for(int i = 0; i < boxes.size(); i++) {
             ss<<"Box["<<i<<"]";
             sscat(&boxes[i]);
         }
-        ss<<"Pivot";
-        sscat(pivot);
+        ss<<"Player";
+        sscat(player);
         Sys()->drawText(ss.str(), xy(10,10));
     }
 
     void escKey() { Sys()->exit(); }
 
-    void upKey() { physicsMap.jump(pivot); }
-    void leftKey() { physicsMap.walkLeft(pivot); }
-    void rightKey() { physicsMap.walkRight(pivot); }
+    void upKey() { physicsMap.jump(player); }
+    void leftKey() { physicsMap.walkLeft(player); }
+    void rightKey() { physicsMap.walkRight(player); }
 };
 
 class OldGameMap : public Steppable, public InputCallbacks
 {
-    DynamicEntity *pivot;
+    DynamicEntity *player;
     unique_ptr<PhysicsMap> physicsMap;
     SideScrollingView ssv;
 
 public:
-    OldGameMap() : pivot(nullptr)
+    OldGameMap() : player(nullptr)
     {
         // get images:
         map<const string, shared_ptr<Tex>> images;
@@ -166,8 +167,8 @@ public:
             Entity *e = nullptr;
 
             if(s == "Player") {
-                pivot = new DynamicEntity(d, p, pivotDynaChars);
-                e = pivot;
+                player = new DynamicEntity(d, p, playerDynamicChars);
+                e = player;
             }
             else
                 e = new Entity(d, p);
@@ -182,14 +183,14 @@ public:
 
         // setup scv
         ssv.physicsMap = &*physicsMap;
-        ssv.pivot = pivot;
+        ssv.player = player;
     }
 
     void escKey() { Sys()->exit(); }
 
-    void upKey() { physicsMap->jump(pivot); }
-    void leftKey() { physicsMap->walkLeft(pivot); }
-    void rightKey() { physicsMap->walkRight(pivot); }
+    void upKey() { physicsMap->jump(player); }
+    void leftKey() { physicsMap->walkLeft(player); }
+    void rightKey() { physicsMap->walkRight(player); }
 
     void step() {
         Sys()->getInput(this);
