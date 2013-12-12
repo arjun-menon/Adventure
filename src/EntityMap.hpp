@@ -73,8 +73,12 @@ private:
         xy mapSize;
         const unsigned int optimizationFactor;
 
-        inline xy optMatPos(const xy &pos) {
-            return pos / optimizationFactor;
+        SubMatrixRef< set<Entity *> > submat(xy pos, xy sz) {
+            xy start = pos / optimizationFactor;
+            // NOTE: start + (sz / opt..) - xy(1, 1) will give us a different `end`.
+            //       (pos + sz) below must be added first before being divided, for the right `end`.
+            xy end = (pos + sz) / optimizationFactor - start + xy(1, 1);
+            return SubMatrixRef< set<Entity *> >(matrix, Rect(start, end));
         }
     }
     optmat;
