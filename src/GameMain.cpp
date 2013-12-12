@@ -46,7 +46,7 @@ class TestBed : public Steppable, public InputCallbacks
     DynamicEntity *pivot;
 
 public:
-    TestBed() : physicsMap( xy(1024, 600), 32 )
+    TestBed() : physicsMap( xy(1023, 600) ) // Sys()->getWindowProperties().size)
     {
         boxes.push_back(StaticColoredBox( xy(1, 1) , xy(200, 100) ));
         boxes.push_back(StaticColoredBox( xy(270, 140) , xy(100, 20) ));
@@ -76,8 +76,7 @@ public:
         std::function<void (Entity*)> sscat = [&ss](Entity *e) {
             Rect rect = e->getRect();
             xy exterm = rect.pos + rect.size;
-            ss<<" is at "<<rect.pos<<" and has size "<<rect.size<<
-                    " and its upper-right corner is at "<<exterm<<"\n";
+            ss<<" has "<<rect<<" and its upper-right corner is at "<<exterm<<"\n";
         };
 
         for(int i = 0; i < boxes.size(); i++) {
