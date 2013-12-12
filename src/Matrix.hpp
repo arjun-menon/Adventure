@@ -124,9 +124,8 @@ public:
         unsigned int i, j;
         const unsigned int max_row_len;
 
-        iterator(SubMatrixRef &smr, unsigned int i, unsigned int j) : smr(smr), i(i), j(j) {
-            max_row_len = smr.rect.pos.y + smr.rect.size.y;
-        }
+        iterator(SubMatrixRef &smr, unsigned int i, unsigned int j) : smr(smr),
+                i(i), j(j), max_row_len(smr.rect.pos.y + smr.rect.size.y) {}
 
         iterator(const iterator& it) : smr(it.smr), i(it.i), j(it.j), max_row_len(it.max_row_len) {}
 
