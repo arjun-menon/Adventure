@@ -9,6 +9,41 @@
 #include "EntityMap.hpp"
 
 /*
+ * Insert an entity in the optimization matrix.
+ *
+ * Note: This function does not check for collisions.
+ *       To check for collisions, use EntityMap::place().
+ */
+void OptimizationMatrix::insert(Entity *e)
+{
+    for(auto &s : submat(e->pos, e->d->getSize()))
+        s.insert(e);
+}
+
+/*
+ * Remove entity from optimization matrix.
+ */
+void OptimizationMatrix::erase(Entity *e)
+{
+    for(auto &s : submat(e->pos, e->d->getSize()))
+        s.erase(e);
+}
+
+/*
+ * Get all the entities that fall within a certain (rectangular) region.
+ */
+set<Entity *> OptimizationMatrix::getEntities(Rect region)
+{
+    set<Entity *> entities;
+
+    for(auto &s : submat(region.pos, region.size))
+        for(auto e : s)
+            entities.insert(e);
+
+    return entities;
+}
+
+/*
  * Computes which entities in the map intersect `EntityAABB *e`
  *
  * Returns `false` if there is a collision.
@@ -159,40 +194,4 @@ bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities
         return moveBy(e, distance - step_dist, collidingEntities);
 
     return false;
-}
-
-/*
- * Insert an entity in the optimization matrix.
- *
- * Note: This function does not check for collisions.
- *       To check for collisions, use EntityMap::place().
- */
-void EntityMap::OptimizationMatrix::insert(Entity *e)
-{
-    for(auto &s : submat(e->pos, e->d->getSize()))
-        s.insert(e);
-}
-
-/*
- * Remove entity from optimization matrix.
- */
-void EntityMap::OptimizationMatrix::erase(Entity *e)
-{
-    for(auto &s : submat(e->pos, e->d->getSize()))
-        s.erase(e);
-}
-
-/*
- * Get all the entities that fall within a certain (rectangular) region.
- */
-set<Entity *> EntityMap::OptimizationMatrix::getEntities(Rect region)
-{
-    set<Entity *> entities;
-
-    for(auto &s : submat(region.pos, region.size))
-        if(!s.empty())
-            for(auto e : s)
-                entities.insert(e);
-
-    return entities;
 }
