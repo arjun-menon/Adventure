@@ -179,7 +179,7 @@ static int non_zero_abs_min(int a, int b)
  * If there is a collision, this function moves the entity slowly in small steps.
  * In each step, the entity is moved by `step_dist`, until there is a collision.
  */
-bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities)
+bool EntityMap::moveByApprox(Entity *e, xy distance,  set<Entity *> &collidingEntities)
 {
     if( move(e, e->pos + distance, collidingEntities) )
         return true;
@@ -194,4 +194,34 @@ bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities
         return moveBy(e, distance - step_dist, collidingEntities);
 
     return false;
+}
+
+/*
+ * Check if `step_dist` is "within" `distance`.
+ *
+ * Here, "within" is defined as 'less than' or _not there yet_.
+ *
+ */
+inline static bool is_within(xy distance, xy step_dist)
+{
+    return abs(step_dist.x) < abs(distance.x) &&
+           abs(step_dist.y) < abs(distance.y);
+}
+
+bool EntityMap::moveBySmooth(Entity *e, xy distance,  set<Entity *> &collidingEntities)
+{
+    // BROKEN!
+
+    int min_dist = non_zero_abs_min( abs(distance.x), abs(distance.y) );
+    xy step_dist = distance / min_dist;
+
+    if(is_within(distance, step_dist)) {
+        bool success = move(e, e->pos + step_dist, collidingEntities);
+        if(!success)
+            return false;
+        else // tail recursive call:
+            return moveBy(e, distance - step_dist, collidingEntities);
+    }
+    else
+        return move(e, e->pos + distance, collidingEntities);
 }

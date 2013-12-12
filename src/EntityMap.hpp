@@ -7,6 +7,8 @@
 
 #include "Matrix.hpp"
 
+//#define SMOOTH_MOTION // Define this for tunneling-free motion in EntityMap.
+
 /*
  * Entity - a DrawableAABB which has a position on an EntityMap.
  */
@@ -60,7 +62,7 @@ private:
 };
 
 /*
- * OptimizationMatrix - manage entities on a 2D plane, compute collisions, etc.
+ * EntityMap - manage entities on a 2D plane, compute collisions, etc.
  */
 class EntityMap
 {
@@ -84,7 +86,15 @@ public:
 
     bool move(Entity *e, xy newPos,  set<Entity *> &collidingEntities);
     bool moveTest(Entity *e, xy newPos);
-    bool moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities);
+    bool moveByApprox(Entity *e, xy distance, set<Entity *> &collidingEntities);
+    bool moveBySmooth(Entity *e, xy distance, set<Entity *> &collidingEntities);
+    inline bool moveBy(Entity *e, xy distance, set<Entity *> &collidingEntities) {
+#ifdef SMOOTH_MOTION
+        return moveBySmooth(e, distance, collidingEntities);
+#else
+        return moveByApprox(e, distance, collidingEntities);
+#endif
+    }
 };
 
 #endif /* ENTITYMAP_HPP_ */
