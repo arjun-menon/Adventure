@@ -5,6 +5,8 @@
 #ifndef ENTITYMAP_HPP_
 #define ENTITYMAP_HPP_
 
+#include "Matrix.hpp"
+
 /*
  * Entity - a DrawableAABB which has a position on an EntityMap.
  */
@@ -18,35 +20,6 @@ public:
     inline const Rect getRect() { return Rect(pos, d->getSize()); }
 
     virtual ~Entity() {}
-};
-
-/*
- * Matrix - a generic matrix class.
- */
-template<class T>
-class Matrix
-{
-    xy sz;
-    vector< vector<T> > m;
-
-public:
-    Matrix() : sz(xy(0,0)) {}
-
-    void resize(const xy &new_size)
-    {
-        sz = new_size;
-
-        if(sz.x != m.size())
-            m.resize( static_cast<unsigned int>(sz.x) );
-
-        for(auto col = m.begin(); col != m.end(); col++)
-            if(sz.y != col->size())
-                col->resize( static_cast<unsigned int>(sz.y) );
-    }
-
-    const xy size() { return size; }
-
-    vector<T>& operator[] (const unsigned int x) { return m.at(x); }
 };
 
 class EntityMap
@@ -85,9 +58,8 @@ private:
 
         inline void resizeMap(xy newMapSize) {
             mapSize = newMapSize;
-            xyf mSize = xy_i2f(mapSize);
-            xyf matSize = ceil( mSize/float(optimizationFactor) );
-            matrix.resize( xy_f2i(matSize) );
+            xy matrixSize = mapSize/optimizationFactor + xy(1, 1);
+            matrix.resize(matrixSize);
         }
         inline const xy& getMapSize() { return mapSize; }
 
@@ -101,7 +73,7 @@ private:
         xy mapSize;
         const unsigned int optimizationFactor;
 
-        inline xy matrixPos(const xy &pos) {
+        inline xy optMatPos(const xy &pos) {
             return pos / optimizationFactor;
         }
     }
