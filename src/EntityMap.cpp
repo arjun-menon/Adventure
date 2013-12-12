@@ -169,10 +169,8 @@ bool EntityMap::moveBy(Entity *e, xy distance,  set<Entity *> &collidingEntities
  */
 void EntityMap::OptimizationMatrix::insert(Entity *e)
 {
-    xy bl = optMatPos(e->pos), tr = optMatPos(e->pos + e->d->getSize());
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            matrix[x][y].insert(e);
+    for(auto &s : submat(e->pos, e->d->getSize()))
+        s.insert(e);
 }
 
 /*
@@ -180,10 +178,8 @@ void EntityMap::OptimizationMatrix::insert(Entity *e)
  */
 void EntityMap::OptimizationMatrix::erase(Entity *e)
 {
-    xy bl = optMatPos(e->pos), tr = optMatPos(e->pos + e->d->getSize());
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            matrix[x][y].erase(e);
+    for(auto &s : submat(e->pos, e->d->getSize()))
+        s.erase(e);
 }
 
 /*
@@ -193,12 +189,10 @@ set<Entity *> EntityMap::OptimizationMatrix::getEntities(Rect region)
 {
     set<Entity *> entities;
 
-    xy bl = optMatPos(region.pos), tr = optMatPos(region.pos + region.size);
-    for(int x = bl.x ; x <= tr.x ; x++)
-        for(int y = bl.y ; y <= tr.y ; y++)
-            if(!matrix[x][y].empty())
-                for(auto e : matrix.at(x, y))
-                    entities.insert(e);
+    for(auto &s : submat(region.pos, region.size))
+        if(!s.empty())
+            for(auto e : s)
+                entities.insert(e);
 
     return entities;
 }
