@@ -72,7 +72,7 @@ non-empty EntityCollision collidingEntities set");
 /*
  * Place an entity on the map
  */
-bool EntityMap::place(Entity *e,  set<Entity *> &collidingEntities)
+bool EntityMap::place(Entity *e, set<Entity *> &collidingEntities)
 {
     if( entities.find(e) != entities.end() )
         throw logic_error("EntityMap::place -- \
