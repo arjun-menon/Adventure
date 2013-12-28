@@ -4,7 +4,11 @@ Entity's position should be set only while it is being inserted into an EntityMa
 	only have a getPos() and pos should not be changeable except through the move function
 		this would obviate the need for certain checks & also make things safer...
 
-C++11 move semantics:
+Improve EntityMap routines so that we don't always need to create set<Entity *> &collidingEntities
+	Question - how do signal a collision? Would exceptions ever be a good/acceptable idea for this?
+	           What other ideal alternatives exist? 
+
+Use/implement C++11 move semantics:
 	...
 
 port to SDL
