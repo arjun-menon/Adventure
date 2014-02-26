@@ -107,6 +107,9 @@ inline std::ostream& operator<<(std::ostream &strm, const Matrix<T> &matrix) {
     return strm;
 }
 
+/*
+ * SubMatrixRef - light-weight ref to rectangular portion of Matrix.
+ */
 template<typename T>
 class SubMatrixRef
 {
