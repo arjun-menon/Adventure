@@ -80,7 +80,7 @@ public:
             ss<<" has "<<rect<<" and upper-right corner at "<<exterm<<"\n";
         };
 
-        for(int i = 0; i < boxes.size(); i++) {
+        for(unsigned int i = 0; i < boxes.size(); i++) {
             ss<<"Box["<<i<<"]";
             sscat(&boxes[i]);
         }
