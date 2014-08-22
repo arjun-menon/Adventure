@@ -45,12 +45,12 @@ public:
         return shared_ptr<Tex>( new TexImpl(tex, size) );
     }
 
-    void drawImage(const Tex &tex, xy pos, bool flip=false, float angle=0.0f) {
+    void drawImage(const Tex &tex, xy pos, bool horizontalFlip=false, float angle=0.0f) {
         sf::Sprite sprite( *(dynamic_cast<const TexImpl&>(tex).tex) );
-        sprite.setPosition( pos.x + (flip ? tex.getSize().x : 0) ,
+        sprite.setPosition( pos.x + (horizontalFlip ? tex.getSize().x : 0) ,
                             windowProperties.size.y - tex.getSize().y - pos.y );
         sprite.setRotation(angle);
-        if(flip) {
+        if(horizontalFlip) {
             sprite.setScale(-1, 1);
         }
         renderWindow->draw(sprite);
