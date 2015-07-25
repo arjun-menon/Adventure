@@ -3,7 +3,7 @@ OBJDIR := obj
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
 LD_FLAGS := -lsfml-graphics -lsfml-window -lsfml-system
-CC_FLAGS := -std=c++11 -Wall -O0 -g
+CC_FLAGS := -std=c++14 -Wall -O0 -g
 CXX := c++
 
 .PHONY: objects
