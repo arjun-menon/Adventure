@@ -3,8 +3,6 @@ project(Adventure)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall")
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lsfml-graphics -lsfml-window -lsfml-system")
-
 set(SOURCE_FILES
         src/PlatformInterface.cpp
         src/Elements.cpp
@@ -15,3 +13,5 @@ set(SOURCE_FILES
     )
 
 add_executable(Adventure ${SOURCE_FILES})
+
+target_link_libraries(Adventure sfml-graphics sfml-window sfml-system)
