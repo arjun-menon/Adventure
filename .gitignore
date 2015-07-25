@@ -24,7 +24,7 @@
 
 # Makefile output
 obj
-Game.run
+Adventure.exe
 
 # JetBrains IDEs (CLion, in this case)
 .idea/workspace.xml

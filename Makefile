@@ -1,4 +1,4 @@
-TARGET := Game.run
+TARGET := Adventure.exe
 OBJDIR := obj
 CPP_FILES := $(wildcard src/*.cpp)
 OBJ_FILES := $(addprefix $(OBJDIR)/,$(notdir $(CPP_FILES:.cpp=.o)))
