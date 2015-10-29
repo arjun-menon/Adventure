@@ -17,4 +17,11 @@ add_executable(Adventure ${SOURCE_FILES})
 set_property(TARGET Adventure PROPERTY CXX_STANDARD 14)
 set_property(TARGET Adventure PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(Adventure sfml-graphics sfml-window sfml-system)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    find_library(SDL2 SDL2)
+    if (NOT SDL2)
+        message(FATAL_ERROR "SDL2 not found.")
+    endif()
+endif()
+
+target_link_libraries(Adventure ${SDL2})
