@@ -66,7 +66,6 @@ public:
     }
 
     void drawBox(xy pos, xy size, Color fillColor, Color outlineColor, float outlineThickness) {
-        cout<<"x";
         SDL_Rect rect = {pos.x, pos.y, size.x, size.y};
 
         SDL_SetRenderDrawColor(renderContext, outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a);
@@ -82,6 +81,15 @@ public:
 //        rectangle.setOutlineThickness( outlineThickness );
 //        rectangle.setOutlineColor( sf::Color(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a) );
 //        renderWindow->draw(rectangle);
+    }
+
+    static SDL_Rect getInnerRect(const SDL_Rect &rect) {
+        SDL_Rect innerRect;
+        innerRect.x = rect.x + 1;
+        innerRect.y = rect.y + 1;
+        innerRect.w = rect.w - 2;
+        innerRect.h = rect.h - 2;
+        return innerRect;
     }
 
     void setMouseCursorVisibility(bool visibility) {
@@ -156,23 +164,20 @@ private:
 
     void createWindowAndContext()
     {
+        if (SDL_Init(SDL_INIT_VIDEO) != 0){
+            throw runtime_error(string("SDL_Init Error: ") + SDL_GetError());
+        }
+
         if(windowProperties.fullscreen) {
-            // TODO
             throw invalid_argument("Unimplemented");
-//            sf::VideoMode best_mode = sf::VideoMode::getFullscreenModes()[0];
-//            windowProperties.size.x = static_cast<float>( best_mode.width );
-//            windowProperties.size.y = static_cast<float>( best_mode.height );
-//            sf::RenderWindow *renderWindow = new sf::RenderWindow(
-//            		best_mode, windowProperties.title, sf::Style::Fullscreen);
-//            renderWindow->setVerticalSyncEnabled(true);
-//            return renderWindow;
         }
         else {
-            renderWindow = SDL_CreateWindow(windowProperties.title.c_str(),
-                                160, 100, // TODO
-                                static_cast<int>( windowProperties.size.x ),
-                                static_cast<int>( windowProperties.size.y ),
-                                SDL_WINDOW_SHOWN);
+//            renderWindow = SDL_CreateWindow(windowProperties.title.c_str(),
+//                                160, 100, // TODO
+//                                static_cast<int>( windowProperties.size.x ),
+//                                static_cast<int>( windowProperties.size.y ),
+//                                SDL_WINDOW_SHOWN);
+            renderWindow = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
             if (renderWindow == nullptr){
                 throw invalid_argument(string("SDL_CreateWindow Error: ") + SDL_GetError());
             }
@@ -205,15 +210,6 @@ private:
 //        return s.str();
 //    }
 
-    static SDL_Rect getInnerRect(const SDL_Rect &rect) {
-        SDL_Rect innerRect;
-        innerRect.x = rect.x + 1;
-        innerRect.y = rect.y + 1;
-        innerRect.w = rect.w - 2;
-        innerRect.h = rect.h - 2;
-        return innerRect;
-    }
-
     int platformMain(int argc, char *argv[])
     {
         windowProperties = GameMain::defaultWindowProperties();
@@ -239,6 +235,9 @@ private:
         {
             gameMain = unique_ptr<GameMain>( GameMain::getSingleton() );
             isRunning = true;
+            SDL_Rect rect1 = {100, 100, 100, 100};
+            SDL_Rect rect1_inner = getInnerRect(rect1);
+            SDL_Rect rect2 = {150, 160, 110, 100};
 
             while(isRunning)
             {
@@ -255,9 +254,21 @@ private:
 
                 SDL_RenderClear(renderContext);
 
-                gameMain->step();
+                //gameMain->step();
+
+                // Draw rect1
+                SDL_SetRenderDrawColor(renderContext, 0, 150, 0, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawRect(renderContext, &rect1);
+                SDL_SetRenderDrawColor(renderContext, 0, 0, 150, SDL_ALPHA_OPAQUE);
+                SDL_RenderFillRect(renderContext, &rect1_inner);
+
+                // Draw rect2
+                SDL_SetRenderDrawColor(renderContext, 200, 0, 0, SDL_ALPHA_OPAQUE);
+                SDL_RenderDrawRect(renderContext, &rect2);
+                SDL_SetRenderDrawColor(renderContext, 0, 0, 0, SDL_ALPHA_OPAQUE);
 
                 SDL_RenderPresent(renderContext);
+                SDL_Delay(30);
             }
 
             SDL_DestroyRenderer(renderContext);
@@ -288,4 +299,73 @@ int main(int argc, char *argv[]) {
     int retCode = sys->platformMain(argc, argv);
     delete SystemImpl::singleton;
     return retCode;
+
+    SDL_Window *win = nullptr;
+    SDL_Renderer *renderer = nullptr;
+
+    if (SDL_Init(SDL_INIT_VIDEO) != 0){
+        std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+
+    win = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
+    if (win == nullptr){
+        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == nullptr){
+        SDL_DestroyWindow(win);
+        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Rect rect1 = {100, 100, 100, 100};
+    SDL_Rect rect2 = {150, 160, 110, 100};
+
+    bool shouldExit = false;
+    SDL_Event sdl_event;
+
+    while(!shouldExit) {
+
+        while (SDL_PollEvent(&sdl_event)){
+            if (sdl_event.type == SDL_QUIT){
+                shouldExit = true;
+            }
+            if (sdl_event.type == SDL_KEYDOWN) {
+                if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
+                    shouldExit = true;
+                }
+            }
+        }
+
+        //First clear the renderer
+        SDL_RenderClear(renderer);
+
+        // Draw rect1
+        SDL_SetRenderDrawColor(renderer, 0, 150, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawRect(renderer, &rect1);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 150, SDL_ALPHA_OPAQUE);
+        SDL_Rect rect1_inner = SystemImpl::getInnerRect(rect1);
+        SDL_RenderFillRect(renderer, &rect1_inner);
+
+        // Draw rect2
+        SDL_SetRenderDrawColor(renderer, 200, 0, 0, SDL_ALPHA_OPAQUE);
+        SDL_RenderDrawRect(renderer, &rect2);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+
+        //Update the screen
+        SDL_RenderPresent(renderer);
+
+        // 30ms delay before re-rendering
+        SDL_Delay(30);
+    }
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(win);
+    SDL_Quit();
+    return EXIT_SUCCESS;
 }
