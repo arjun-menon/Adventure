@@ -20,45 +20,43 @@ public:
 
     ~SystemImpl() { }
 
-    shared_ptr<Tex> loadTex(const string file) {
-        // TODO
-        return nullptr;
-//        if( fileTexMap.find(file) == fileTexMap.end() ) {
-//            // Load the texture
-//            sf::Image image;
-//            if( !image.loadFromFile(file) )
-//                throw invalid_argument("Unable to open file: " + file);
-//
-//            sf::Texture* tex = new sf::Texture;
-//            if( !tex->loadFromImage(image) )
-//                throw runtime_error("Loading image from texture " + file + " failed.");
-//
-//            fileTexMap[file] = tex;
-//        }
-//
-//        sf::Texture* tex = fileTexMap[file];
-//
-//        sf::Vector2u sz = tex->getSize();
-//        xy size( static_cast<float>( sz.x ),
-//                 static_cast<float>( sz.y ) );
-//
-//        return shared_ptr<Tex>( new TexImpl(tex, size) );
+    Tex loadTex(const string imageFilePath) {
+        if(imageMap.find(imageFilePath) == imageMap.end() ) {
+            // Load SDL Surface
+            SDL_Surface *surface = SDL_LoadBMP(imageFilePath.c_str());
+            if (surface == nullptr){
+                throw runtime_error(string("Unable to load file: ") + SDL_GetError());
+            }
+
+            xy size(surface->w, surface->h);
+
+            SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surface);
+            SDL_FreeSurface(surface);
+            if(tex == nullptr) {
+                throw runtime_error("Loading texture from image " + imageFilePath + " failed.");
+            }
+
+            //imageMap[imageFilePath] = TexImpl(tex, size);
+        }
+
+        //return imageMap[imageFilePath];
+        return TexImpl(nullptr, xy(0, 0));
     }
 
     void drawImage(const Tex &tex, const xy pos, const bool horizontalFlip, const double angle) {
-//        // TODO
-//        sf::Sprite sprite( *(dynamic_cast<const TexImpl&>(tex).tex) );
-//        sprite.setPosition( pos.x + (horizontalFlip ? tex.getSize().x : 0) ,
-//                            windowProperties.size.y - tex.getSize().y - pos.y );
-//        sprite.setRotation(angle);
-//        if(horizontalFlip) {
-//            sprite.setScale(-1, 1);
-//        }
-//        window->draw(sprite);
+        SDL_Rect dstRect = { pos.x, pos.y, tex.getSize().x, tex.getSize().y };
+        SDL_Texture *texture = dynamic_cast<const TexImpl&>(tex).tex;
+
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+        if (horizontalFlip) {
+            flip = SDL_FLIP_HORIZONTAL;
+        }
+
+        SDL_RenderCopyEx(renderer, texture, NULL, &dstRect, angle, NULL, flip);
     }
 
     void drawText(const string line, const xy pos, const Color color=Color(), const float fontSize=15.0f) {
-//        // TODO
+//        TODO
 //        sf::Text textToDraw(line, defaultFont, static_cast<unsigned int>(fontSize));
 //        textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
 //        textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
@@ -121,8 +119,6 @@ private:
 
     static SystemImpl* singleton;
 
-    map<const string, SDL_Texture*> fileTexMap;
-
     class TexImpl : public Tex
     {
     public:
@@ -130,6 +126,8 @@ private:
 
         TexImpl(SDL_Texture* tex, xy size) :
             tex(tex), size(size) {}
+
+        TexImpl(const TexImpl &) = default;
 
         const xy getSize() const {
             return size;
@@ -140,6 +138,7 @@ private:
     };
 
     unique_ptr<GameMain> gameMain;
+    map<const string, TexImpl> imageMap;
     InputCallbacks *eventCallbacks;
 
     SDL_Window* window;

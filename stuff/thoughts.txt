@@ -17,7 +17,7 @@ velocity transfer upon collision
 
 In SideScrollingMap, you might want to request const references to PhysicsMap & pivot (as initializers).
 
-SystemImpl::TexImpl -- destructor that destroys & removes sf::Texture* from Sys()->fileTexMap.
+SystemImpl::TexImpl -- destructor that destroys & removes sf::Texture* from Sys()->imageMap.
 
 in Sys()->loadTex have a TransparencyColor argument
 
