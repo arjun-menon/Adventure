@@ -19,10 +19,10 @@ public:
 DynamicEntityCharacteristics playerDynamicChars(
         1, // groundFriction
         1, // gravityFactor
-        12, // maxHorizontalSpeed
-        2, // horizontalWalkStep
+        100, // maxHorizontalSpeed
+        20, // horizontalWalkStep
         25 // jumpStep
-        );
+    );
 
 class DynamicColoredBox : public DynamicEntity
 {
@@ -63,12 +63,12 @@ public:
 
         sideScrollingView.physicsMap = &physicsMap;
         sideScrollingView.player = player;
+
+        Sys()->setEventCallbacks(this);
     }
 
     void step()
     {
-        Sys()->getInput(this);
-
         physicsMap.performPhysics();
 
         sideScrollingView.render();

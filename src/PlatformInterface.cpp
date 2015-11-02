@@ -15,7 +15,7 @@
 class SystemImpl : public System
 {
 public:
-    SystemImpl() : gameMain(nullptr), renderWindow(nullptr), renderContext(nullptr), isRunning(false),
+    SystemImpl() : gameMain(nullptr), eventCallbacks(nullptr), window(nullptr), renderer(nullptr), isRunning(false),
                    rng(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())) { }
 
     ~SystemImpl() { }
@@ -54,7 +54,7 @@ public:
 //        if(horizontalFlip) {
 //            sprite.setScale(-1, 1);
 //        }
-//        renderWindow->draw(sprite);
+//        window->draw(sprite);
     }
 
     void drawText(string line, xy pos, Color color=Color(), float fontSize=15.0f) {
@@ -62,53 +62,49 @@ public:
 //        sf::Text textToDraw(line, defaultFont, static_cast<unsigned int>(fontSize));
 //        textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
 //        textToDraw.setPosition( static_cast<float>( pos.x ), static_cast<float>( pos.y ) );
-//        renderWindow->draw(textToDraw);
+//        window->draw(textToDraw);
     }
 
     void drawBox(xy pos, xy size, Color fillColor, Color outlineColor, float outlineThickness) {
-        SDL_Rect rect = {pos.x, pos.y, size.x, size.y};
+        SDL_Rect outlineRect = {pos.x, pos.y, size.x, size.y};
+        SDL_Rect fillRect = getInnerRect(outlineRect);
 
-        SDL_SetRenderDrawColor(renderContext, outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a);
-        SDL_RenderDrawRect(renderContext, &rect);
+        // Convert to cartesian coordinates
+        outlineRect = convertToCartesianCoordinates(outlineRect);
+        fillRect = convertToCartesianCoordinates(fillRect);
 
-        SDL_SetRenderDrawColor(renderContext, fillColor.r, fillColor.g, fillColor.b, fillColor.a);
-        SDL_Rect inner_rect = getInnerRect(rect);
-        SDL_RenderFillRect(renderContext, &inner_rect);
-//        sf::RectangleShape rectangle;
-//        rectangle.setPosition ( sf::Vector2f( pos.x,  windowProperties.size.y - pos.y) );
-//        rectangle.setSize     ( sf::Vector2f( size.x, -size.y ) );
-//        rectangle.setFillColor( sf::Color( fillColor.r, fillColor.g, fillColor.b, fillColor.a) );
-//        rectangle.setOutlineThickness( outlineThickness );
-//        rectangle.setOutlineColor( sf::Color(outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a) );
-//        renderWindow->draw(rectangle);
+        SDL_SetRenderDrawColor(renderer, outlineColor.r, outlineColor.g, outlineColor.b, outlineColor.a);
+        SDL_RenderDrawRect(renderer, &outlineRect);
+
+        SDL_SetRenderDrawColor(renderer, fillColor.r, fillColor.g, fillColor.b, fillColor.a);
+        SDL_RenderFillRect(renderer, &fillRect);
+
+        // Reset drawing color to opaque black
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+    }
+
+    SDL_Rect convertToCartesianCoordinates(const SDL_Rect &rect) {
+        SDL_Rect cartesianRect = {
+                rect.x,
+                windowProperties.size.y - rect.y,
+                rect.w,
+                - rect.h
+        };
+        return cartesianRect;
     }
 
     static SDL_Rect getInnerRect(const SDL_Rect &rect) {
-        SDL_Rect innerRect;
-        innerRect.x = rect.x + 1;
-        innerRect.y = rect.y + 1;
-        innerRect.w = rect.w - 2;
-        innerRect.h = rect.h - 2;
+        SDL_Rect innerRect = {
+                rect.x + 1,
+                rect.y,
+                rect.w - 2,
+                rect.h
+            };
         return innerRect;
     }
 
-    void setMouseCursorVisibility(bool visibility) {
-//        TODO
-//        renderWindow->setMouseCursorVisible( visibility );
-    }
-
-    virtual void getInput(InputCallbacks *callbacks) {
-//        TODO
-//    	if( sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) )
-//    		callbacks->escKey();
-//        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W) )
-//            callbacks->upKey();
-//        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A) )
-//            callbacks->leftKey();
-//        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D) )
-//            callbacks->rightKey();
-//        if( sf::Keyboard::isKeyPressed(sf::Keyboard::Down) || sf::Keyboard::isKeyPressed(sf::Keyboard::S) )
-//            callbacks->downKey();
+    virtual void setEventCallbacks(InputCallbacks *callbacks) {
+        eventCallbacks = callbacks;
     }
 
     unsigned int random() {
@@ -144,9 +140,10 @@ private:
     };
 
     unique_ptr<GameMain> gameMain;
+    InputCallbacks *eventCallbacks;
 
-    SDL_Window* renderWindow;
-    SDL_Renderer* renderContext;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
     bool isRunning;
 
     std::minstd_rand0 rng;
@@ -162,31 +159,34 @@ private:
         }
     }
 
-    void createWindowAndContext()
+    void initSDL()
     {
-        if (SDL_Init(SDL_INIT_VIDEO) != 0){
+        if (SDL_Init(SDL_INIT_VIDEO) != 0) {
             throw runtime_error(string("SDL_Init Error: ") + SDL_GetError());
         }
+    }
 
-        if(windowProperties.fullscreen) {
+    void createWindow() {
+        if (windowProperties.fullscreen) {
             throw invalid_argument("Unimplemented");
         }
         else {
-//            renderWindow = SDL_CreateWindow(windowProperties.title.c_str(),
-//                                160, 100, // TODO
-//                                static_cast<int>( windowProperties.size.x ),
-//                                static_cast<int>( windowProperties.size.y ),
-//                                SDL_WINDOW_SHOWN);
-            renderWindow = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
-            if (renderWindow == nullptr){
+            if ((window = SDL_CreateWindow(windowProperties.title.c_str(),
+                                           160, 100, // todo: window position
+                                           windowProperties.size.x,
+                                           windowProperties.size.y,
+                                           SDL_WINDOW_SHOWN)) == nullptr) {
                 throw invalid_argument(string("SDL_CreateWindow Error: ") + SDL_GetError());
             }
         }
+    }
 
-        SDL_Renderer* sdl_renderer = SDL_CreateRenderer(renderWindow, -1,
-                                         SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-        if (sdl_renderer == nullptr){
-            SDL_DestroyWindow(renderWindow);
+    void createRenderer() {
+        renderer = SDL_CreateRenderer(window, -1,
+                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+        if (renderer == nullptr){
+            SDL_DestroyWindow(window);
             throw invalid_argument(string("SDL_CreateRenderer Error: ") + SDL_GetError());
         }
     }
@@ -210,17 +210,44 @@ private:
 //        return s.str();
 //    }
 
+    void dispatchEvent(SDL_Event sdlEvent)
+    {
+        if (eventCallbacks == nullptr) {
+            return;
+        }
+        else if (sdlEvent.type == SDL_KEYDOWN) {
+            const SDL_Keycode key = sdlEvent.key.keysym.sym;
+
+            if(key == SDLK_ESCAPE) {
+                eventCallbacks->escKey();
+            }
+            else if(key == SDLK_UP || key == SDLK_w) {
+                eventCallbacks->upKey();
+            }
+            else if(key == SDLK_LEFT || key == SDLK_a) {
+                eventCallbacks->leftKey();
+            }
+            else if(key == SDLK_RIGHT || key == SDLK_d) {
+                eventCallbacks->rightKey();
+            }
+            else if(key == SDLK_DOWN || key == SDLK_s) {
+                eventCallbacks->downKey();
+            }
+        }
+    }
+
     int platformMain(int argc, char *argv[])
     {
         windowProperties = GameMain::defaultWindowProperties();
-
         handleCmdlineArgs(argc, argv);
 
         /*
          * Platform Setup
          */
         try {
-            createWindowAndContext();
+            initSDL();
+            createWindow();
+            createRenderer();
         }
         catch(exception &e) {
             cerr<<"Exception caught: "<<e.what()<<endl;
@@ -235,44 +262,29 @@ private:
         {
             gameMain = unique_ptr<GameMain>( GameMain::getSingleton() );
             isRunning = true;
-            SDL_Rect rect1 = {100, 100, 100, 100};
-            SDL_Rect rect1_inner = getInnerRect(rect1);
-            SDL_Rect rect2 = {150, 160, 110, 100};
 
             while(isRunning)
             {
-                SDL_Event sdl_event;
-                while( SDL_PollEvent(&sdl_event) )
+                SDL_Event sdlEvent;
+                while( SDL_PollEvent(&sdlEvent) )
                 {
-                    if( sdl_event.type == SDL_QUIT ) {
+                    if(sdlEvent.type == SDL_QUIT ) {
                         isRunning = false; break;
                     }
-                    else if (sdl_event.type == SDL_KEYDOWN && sdl_event.key.keysym.sym == SDLK_ESCAPE) {
-                        isRunning = false; break;
+                    else {
+                        dispatchEvent(sdlEvent);
                     }
                 }
 
-                SDL_RenderClear(renderContext);
+                SDL_RenderClear(renderer);
 
-                //gameMain->step();
+                gameMain->step();
 
-                // Draw rect1
-                SDL_SetRenderDrawColor(renderContext, 0, 150, 0, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawRect(renderContext, &rect1);
-                SDL_SetRenderDrawColor(renderContext, 0, 0, 150, SDL_ALPHA_OPAQUE);
-                SDL_RenderFillRect(renderContext, &rect1_inner);
-
-                // Draw rect2
-                SDL_SetRenderDrawColor(renderContext, 200, 0, 0, SDL_ALPHA_OPAQUE);
-                SDL_RenderDrawRect(renderContext, &rect2);
-                SDL_SetRenderDrawColor(renderContext, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-                SDL_RenderPresent(renderContext);
-                SDL_Delay(30);
+                SDL_RenderPresent(renderer);
             }
 
-            SDL_DestroyRenderer(renderContext);
-            SDL_DestroyWindow(renderWindow);
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
             SDL_Quit();
             return EXIT_SUCCESS;
         }
@@ -280,8 +292,8 @@ private:
         {
             cerr<<"Exception caught: "<<e.what()<<endl;
 
-            SDL_DestroyRenderer(renderContext);
-            SDL_DestroyWindow(renderWindow);
+            SDL_DestroyRenderer(renderer);
+            SDL_DestroyWindow(window);
             SDL_Quit();
             return EXIT_FAILURE;
         }
