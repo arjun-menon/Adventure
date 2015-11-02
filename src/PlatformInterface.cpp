@@ -45,7 +45,7 @@ public:
 //        return shared_ptr<Tex>( new TexImpl(tex, size) );
     }
 
-    void drawImage(const Tex &tex, xy pos, bool horizontalFlip=false, float angle=0.0f) {
+    void drawImage(const Tex &tex, const xy pos, const bool horizontalFlip, const double angle) {
 //        // TODO
 //        sf::Sprite sprite( *(dynamic_cast<const TexImpl&>(tex).tex) );
 //        sprite.setPosition( pos.x + (horizontalFlip ? tex.getSize().x : 0) ,
@@ -57,7 +57,7 @@ public:
 //        window->draw(sprite);
     }
 
-    void drawText(string line, xy pos, Color color=Color(), float fontSize=15.0f) {
+    void drawText(const string line, const xy pos, const Color color=Color(), const float fontSize=15.0f) {
 //        // TODO
 //        sf::Text textToDraw(line, defaultFont, static_cast<unsigned int>(fontSize));
 //        textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
@@ -65,7 +65,7 @@ public:
 //        window->draw(textToDraw);
     }
 
-    void drawBox(xy pos, xy size, Color fillColor, Color outlineColor, float outlineThickness) {
+    void drawBox(const xy pos, const xy size, const Color fillColor, const Color outlineColor, const float outlineThickness) {
         SDL_Rect outlineRect = {pos.x, pos.y, size.x, size.y};
         SDL_Rect fillRect = getInnerRect(outlineRect);
 
@@ -103,7 +103,7 @@ public:
         return innerRect;
     }
 
-    virtual void setEventCallbacks(InputCallbacks *callbacks) {
+    void setEventCallbacks(InputCallbacks *callbacks) {
         eventCallbacks = callbacks;
     }
 
@@ -311,73 +311,4 @@ int main(int argc, char *argv[]) {
     int retCode = sys->platformMain(argc, argv);
     delete SystemImpl::singleton;
     return retCode;
-
-    SDL_Window *win = nullptr;
-    SDL_Renderer *renderer = nullptr;
-
-    if (SDL_Init(SDL_INIT_VIDEO) != 0){
-        std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
-    win = SDL_CreateWindow("Hello World!", 100, 100, 640, 480, SDL_WINDOW_SHOWN);
-    if (win == nullptr){
-        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
-    renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == nullptr){
-        SDL_DestroyWindow(win);
-        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
-
-    SDL_Rect rect1 = {100, 100, 100, 100};
-    SDL_Rect rect2 = {150, 160, 110, 100};
-
-    bool shouldExit = false;
-    SDL_Event sdl_event;
-
-    while(!shouldExit) {
-
-        while (SDL_PollEvent(&sdl_event)){
-            if (sdl_event.type == SDL_QUIT){
-                shouldExit = true;
-            }
-            if (sdl_event.type == SDL_KEYDOWN) {
-                if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
-                    shouldExit = true;
-                }
-            }
-        }
-
-        //First clear the renderer
-        SDL_RenderClear(renderer);
-
-        // Draw rect1
-        SDL_SetRenderDrawColor(renderer, 0, 150, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawRect(renderer, &rect1);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 150, SDL_ALPHA_OPAQUE);
-        SDL_Rect rect1_inner = SystemImpl::getInnerRect(rect1);
-        SDL_RenderFillRect(renderer, &rect1_inner);
-
-        // Draw rect2
-        SDL_SetRenderDrawColor(renderer, 200, 0, 0, SDL_ALPHA_OPAQUE);
-        SDL_RenderDrawRect(renderer, &rect2);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-
-        //Update the screen
-        SDL_RenderPresent(renderer);
-
-        // 30ms delay before re-rendering
-        SDL_Delay(30);
-    }
-
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(win);
-    SDL_Quit();
-    return EXIT_SUCCESS;
 }
