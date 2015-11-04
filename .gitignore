@@ -29,4 +29,4 @@ Adventure.exe
 # JetBrains IDEs (CLion, in this case)
 .idea/workspace.xml
 .idea/tasks.xml
-
+.idea/Adventure.iml
