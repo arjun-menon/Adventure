@@ -20,8 +20,8 @@ public:
 
     ~SystemImpl() { }
 
-    Tex loadTex(const string imageFilePath) {
-        if(imageMap.find(imageFilePath) == imageMap.end() ) {
+    shared_ptr<Tex> loadTex(const string imageFilePath) {
+        if(texMap.find(imageFilePath) == texMap.end() ) {
             // Load SDL Surface
             SDL_Surface *surface = SDL_LoadBMP(imageFilePath.c_str());
             if (surface == nullptr){
@@ -36,16 +36,15 @@ public:
                 throw runtime_error("Loading texture from image " + imageFilePath + " failed.");
             }
 
-            //imageMap[imageFilePath] = TexImpl(tex, size);
+            texMap[imageFilePath] = shared_ptr<Tex>(new TexImpl(tex, size));
         }
 
-        //return imageMap[imageFilePath];
-        return TexImpl(nullptr, xy(0, 0));
+        return texMap[imageFilePath];
     }
 
     void drawImage(const Tex &tex, const xy pos, const bool horizontalFlip, const double angle) {
         SDL_Rect dstRect = { pos.x, pos.y, tex.getSize().x, tex.getSize().y };
-        SDL_Texture *texture = dynamic_cast<const TexImpl&>(tex).tex;
+        SDL_Texture *texture = dynamic_cast<const TexImpl&>(tex).texture;
 
         SDL_RendererFlip flip = SDL_FLIP_NONE;
         if (horizontalFlip) {
@@ -55,7 +54,7 @@ public:
         SDL_RenderCopyEx(renderer, texture, NULL, &dstRect, angle, NULL, flip);
     }
 
-    void drawText(const string line, const xy pos, const Color color=Color(), const float fontSize=15.0f) {
+    void drawText(const string line, const xy pos, const Color color, const float fontSize) {
 //        TODO
 //        sf::Text textToDraw(line, defaultFont, static_cast<unsigned int>(fontSize));
 //        textToDraw.setColor(sf::Color(color.r, color.g, color.b, color.a));
@@ -122,10 +121,10 @@ private:
     class TexImpl : public Tex
     {
     public:
-        SDL_Texture* tex;
+        SDL_Texture*texture;
 
         TexImpl(SDL_Texture* tex, xy size) :
-            tex(tex), size(size) {}
+                texture(tex), size(size) {}
 
         TexImpl(const TexImpl &) = default;
 
@@ -133,12 +132,16 @@ private:
             return size;
         }
 
+        ~TexImpl() {
+            SDL_DestroyTexture(texture);
+        }
+
     private:
         xy size;
     };
 
     unique_ptr<GameMain> gameMain;
-    map<const string, TexImpl> imageMap;
+    map<const string, shared_ptr<Tex>> texMap;
     InputCallbacks *eventCallbacks;
 
     SDL_Window* window;
