@@ -15,18 +15,6 @@ struct WindowProperties
     std::string title;
 };
 
-class InputCallbacks
-{
-public:
-    virtual void escKey() {}
-    virtual void upKey() {}
-    virtual void leftKey() {}
-    virtual void rightKey() {}
-    virtual void downKey() {}
-
-    virtual ~InputCallbacks() {}
-};
-
 class System
 {
 protected:
@@ -43,7 +31,7 @@ public:
     virtual void drawText(const string line, const xy pos, const Color color=Color(), const float fontSize=15.0f) = 0;
     virtual void drawBox(const xy pos, const xy size, const Color fillColor=Color(255,255,255,0), const Color outlineColor=Color(), const float outlineThickness=1.0f) = 0;
 
-    virtual void setEventCallbacks(InputCallbacks *callbacks) = 0;
+    virtual bool isPressed(int keyCode) = 0;
 
     virtual unsigned int random() = 0;
     virtual void exit() = 0;

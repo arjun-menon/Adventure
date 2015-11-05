@@ -9,6 +9,7 @@
 #include "EntityMap.hpp"
 #include "PhysicsMap.hpp"
 #include "SideScrollingView.hpp"
+#include <SDL2/SDL_keycode.h>
 
 class StaticColoredBox : public Entity
 {
@@ -19,8 +20,8 @@ public:
 DynamicEntityCharacteristics playerDynamicChars(
         1, // groundFriction
         1, // gravityFactor
-        100, // maxHorizontalSpeed
-        20, // horizontalWalkStep
+        12, // maxHorizontalSpeed
+        2, // horizontalWalkStep
         25 // jumpStep
     );
 
@@ -38,7 +39,7 @@ public:
     virtual ~Steppable() {}
 };
 
-class TestBed : public Steppable, public InputCallbacks
+class TestBed : public Steppable
 {
     SideScrollingView sideScrollingView;
     PhysicsMap physicsMap;
@@ -63,12 +64,12 @@ public:
 
         sideScrollingView.physicsMap = &physicsMap;
         sideScrollingView.player = player;
-
-        sys->setEventCallbacks(this);
     }
 
     void step()
     {
+        handleInput();
+
         physicsMap.performPhysics();
 
         sideScrollingView.render();
@@ -89,11 +90,21 @@ public:
         sys->drawText(ss.str(), xy(10,10));
     }
 
-    void escKey() { sys->exit(); }
-
-    void upKey() { physicsMap.jump(player); }
-    void leftKey() { physicsMap.walkLeft(player); }
-    void rightKey() { physicsMap.walkRight(player); }
+    void handleInput()
+    {
+        if(sys->isPressed(SDLK_ESCAPE)) {
+            sys->exit();
+        }
+        if(sys->isPressed(SDLK_UP) || sys->isPressed(SDLK_w)) {
+            physicsMap.jump(player);
+        }
+        if(sys->isPressed(SDLK_LEFT) || sys->isPressed(SDLK_a)) {
+            physicsMap.walkLeft(player);
+        }
+        if(sys->isPressed(SDLK_RIGHT) || sys->isPressed(SDLK_d)) {
+            physicsMap.walkRight(player);
+        }
+    }
 };
 
 GameMain* GameMain::singleton = nullptr;
@@ -106,7 +117,6 @@ public:
     GameMainImpl()
     {
         whatever = unique_ptr<Steppable>( new TestBed() );
-        //whatever = unique_ptr<Steppable>( new OldGameMap() );
     }
 
     void step() {

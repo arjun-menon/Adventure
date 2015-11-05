@@ -15,7 +15,7 @@
 class SystemImpl : public System
 {
 public:
-    SystemImpl() : gameMain(nullptr), eventCallbacks(nullptr), window(nullptr), renderer(nullptr), isRunning(false),
+    SystemImpl() : gameMain(nullptr), window(nullptr), renderer(nullptr), isRunning(false),
                    rng(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())) { }
 
     ~SystemImpl() { }
@@ -100,8 +100,8 @@ public:
         return innerRect;
     }
 
-    void setEventCallbacks(InputCallbacks *callbacks) {
-        eventCallbacks = callbacks;
+    bool isPressed(int keyCode) {  // keyCode is expecte to be an SDL_Keycode
+        return pressedKeys.find(keyCode) != pressedKeys.end();
     }
 
     unsigned int random() {
@@ -139,7 +139,8 @@ private:
 
     unique_ptr<GameMain> gameMain;
     map<const string, shared_ptr<Tex>> texMap;
-    InputCallbacks *eventCallbacks;
+    set<SDL_Keycode> pressedKeys;
+    set<SDL_Keycode> toUnpress;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -216,28 +217,42 @@ private:
 //        return s.str();
 //    }
 
-    void dispatchEvent(SDL_Event sdlEvent)
-    {
-        if (eventCallbacks == nullptr) {
-            return;
+    void processKeysToUnpress() {
+        for(SDL_Keycode keyToUnpress : toUnpress) {
+            if(isPressed(keyToUnpress))
+                pressedKeys.erase(keyToUnpress);
         }
-        else if (sdlEvent.type == SDL_KEYDOWN) {
-            const SDL_Keycode key = sdlEvent.key.keysym.sym;
+        toUnpress.clear();
+    }
 
-            if(key == SDLK_ESCAPE) {
-                eventCallbacks->escKey();
+    void handleEvents()
+    {
+        SDL_Event event;
+        set<SDL_Keycode> firstPress;
+
+        processKeysToUnpress();
+
+        while(SDL_PollEvent(&event))
+        {
+            const SDL_Keycode keyCode = event.key.keysym.sym;
+
+            if(event.type == SDL_QUIT) {
+                isRunning = false;
+                break;
             }
-            else if(key == SDLK_UP || key == SDLK_w) {
-                eventCallbacks->upKey();
+            else if(event.type == SDL_KEYDOWN && !isPressed(keyCode)) {
+                pressedKeys.insert(keyCode);
+                firstPress.insert(keyCode);
             }
-            else if(key == SDLK_LEFT || key == SDLK_a) {
-                eventCallbacks->leftKey();
-            }
-            else if(key == SDLK_RIGHT || key == SDLK_d) {
-                eventCallbacks->rightKey();
-            }
-            else if(key == SDLK_DOWN || key == SDLK_s) {
-                eventCallbacks->downKey();
+            else if(event.type == SDL_KEYUP && isPressed(keyCode)) {
+                if(firstPress.find(keyCode) == firstPress.end()) {
+                    pressedKeys.erase(keyCode);
+                }
+                else {
+                    // we got a KEYDOWN for this key during this frame, so do
+                    // not un-press it now, but schedule it to be un-pressed.
+                    toUnpress.insert(keyCode);
+                }
             }
         }
     }
@@ -270,16 +285,7 @@ private:
 
             while(isRunning)
             {
-                SDL_Event sdlEvent;
-                while( SDL_PollEvent(&sdlEvent) )
-                {
-                    if(sdlEvent.type == SDL_QUIT ) {
-                        isRunning = false; break;
-                    }
-                    else {
-                        dispatchEvent(sdlEvent);
-                    }
-                }
+                handleEvents();
 
                 SDL_RenderClear(renderer);
 
