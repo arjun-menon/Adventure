@@ -17,4 +17,5 @@ add_executable(Adventure ${SOURCE_FILES})
 set_property(TARGET Adventure PROPERTY CXX_STANDARD 14)
 set_property(TARGET Adventure PROPERTY CXX_STANDARD_REQUIRED ON)
 
-target_link_libraries(Adventure SDL2)
+#target_link_libraries(Adventure SDL2)
+set(CMAKE_EXE_LINKER_FLAGS "-framework SDL2")

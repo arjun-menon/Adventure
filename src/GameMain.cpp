@@ -46,7 +46,7 @@ class TestBed : public Steppable, public InputCallbacks
     DynamicEntity *player;
 
 public:
-    TestBed() : physicsMap(Sys()->getWindowProperties().size)
+    TestBed() : physicsMap(sys->getWindowProperties().size)
     {
         boxes.push_back(StaticColoredBox( xy(0, 1) , xy(200, 100) ));
         boxes.push_back(StaticColoredBox( xy(202, 0) , xy(500, 3) ));
@@ -64,7 +64,7 @@ public:
         sideScrollingView.physicsMap = &physicsMap;
         sideScrollingView.player = player;
 
-        Sys()->setEventCallbacks(this);
+        sys->setEventCallbacks(this);
     }
 
     void step()
@@ -86,10 +86,10 @@ public:
         }
         ss<<"Player";
         sscat(player);
-        Sys()->drawText(ss.str(), xy(10,10));
+        sys->drawText(ss.str(), xy(10,10));
     }
 
-    void escKey() { Sys()->exit(); }
+    void escKey() { sys->exit(); }
 
     void upKey() { physicsMap.jump(player); }
     void leftKey() { physicsMap.walkLeft(player); }
@@ -116,20 +116,6 @@ public:
     ~GameMainImpl() {
     }
 };
-
-WindowProperties GameMain::defaultWindowProperties()
-{
-    WindowProperties windowProperties;
-
-    // Default window height & width:
-    windowProperties.size = xy(1024, 600);
-    windowProperties.fullscreen = false;
-
-    // Title
-    windowProperties.title = "Adventure";
-
-    return windowProperties;
-}
 
 GameMain* GameMain::getSingleton() {
     if( GameMain::singleton == nullptr )

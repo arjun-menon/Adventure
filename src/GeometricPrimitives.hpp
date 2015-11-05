@@ -11,9 +11,7 @@ class xyPolymorphic
 public:
     T x, y;
 
-    inline xyPolymorphic() : x(0), y(0) {}
     inline xyPolymorphic(T x, T y) : x(x), y(y) {}
-    inline xyPolymorphic(const xyPolymorphic& other) : x(other.x), y(other.y) {}
 
     inline xyPolymorphic& operator=(const xyPolymorphic &other) {
         x = other.x;

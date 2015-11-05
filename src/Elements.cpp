@@ -16,7 +16,7 @@ Color ColoredBox::randomColor() {
     Color randomColor;
 
     std::function<unsigned char (unsigned char)> random_number =
-            [](unsigned char range) { return Sys()->random() % range + 1; };
+            [](unsigned char range) { return sys->random() % range + 1; };
 
     unsigned char k = 50;
     randomColor.r -= k + random_number(k);
@@ -27,9 +27,9 @@ Color ColoredBox::randomColor() {
 }
 
 void ColoredBox::drawAt(xy pos) {
-    Sys()->drawBox(pos, size, fillColor, outlineColor, outlineThickness);
+    sys->drawBox(pos, size, fillColor, outlineColor, outlineThickness);
 }
 
 void Image::drawAt(xy pos) {
-    Sys()->drawImage(*tex, pos, flip, angle);
+    sys->drawImage(*tex, pos, flip, angle);
 }

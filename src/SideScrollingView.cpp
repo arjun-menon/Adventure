@@ -12,26 +12,26 @@
 
 static inline xy calculateViewport(const xy &playerPosition, const xy &mapSize)
 {
-    xy v;
+    xy v(0, 0);
 
-    if(mapSize.x > Sys()->getWindowProperties().size.x)
+    if(mapSize.x > sys->getWindowProperties().size.x)
     {
-        int x_central_first = Sys()->getWindowProperties().size.x/2;
+        int x_central_first = sys->getWindowProperties().size.x/2;
         int x_central_last = mapSize.x - x_central_first;
 
         if(playerPosition.x > x_central_last)
-            v.x = mapSize.x - Sys()->getWindowProperties().size.x;
+            v.x = mapSize.x - sys->getWindowProperties().size.x;
         else if(playerPosition.x > x_central_first)
             v.x = playerPosition.x - x_central_first;
     }
 
-    if(mapSize.y > Sys()->getWindowProperties().size.y)
+    if(mapSize.y > sys->getWindowProperties().size.y)
     {
-        int y_central_first = Sys()->getWindowProperties().size.y/2;
+        int y_central_first = sys->getWindowProperties().size.y/2;
         int y_central_last = mapSize.y - y_central_first;
 
         if(playerPosition.y > y_central_last)
-            v.y = mapSize.y - Sys()->getWindowProperties().size.y;
+            v.y = mapSize.y - sys->getWindowProperties().size.y;
         else if(playerPosition.y > y_central_first)
             v.y = playerPosition.y - y_central_first;
     }

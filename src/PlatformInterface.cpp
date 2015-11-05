@@ -114,9 +114,6 @@ public:
 
 private:
     friend int main(int argc, char *argv[]);
-    friend System* Sys();
-
-    static SystemImpl* singleton;
 
     class TexImpl : public Tex
     {
@@ -154,7 +151,7 @@ private:
     {
         if( argc == 2 ) {
             if( !strcmp(argv[1], "-f") )
-                windowProperties.fullscreen = true;
+                windowProperties.fullScreen = true;
         }
         else if( argc == 4 && !strcmp(argv[1], "-r") ) {
             windowProperties.size = xy(atoi(argv[2]), atoi(argv[3]) );
@@ -168,13 +165,20 @@ private:
         }
     }
 
-    void createWindow() {
-        if (windowProperties.fullscreen) {
+    void setWindowProperties(const WindowProperties& windowProperties)
+    {
+        this->windowProperties = windowProperties;
+    }
+
+    void createWindow()
+    {
+        if (windowProperties.fullScreen) {
             throw invalid_argument("Unimplemented");
         }
         else {
             if ((window = SDL_CreateWindow(windowProperties.title.c_str(),
-                                           160, 100, // todo: window position
+                                           windowProperties.pos.x,
+                                           windowProperties.pos.y,
                                            windowProperties.size.x,
                                            windowProperties.size.y,
                                            SDL_WINDOW_SHOWN)) == nullptr) {
@@ -240,7 +244,6 @@ private:
 
     int platformMain(int argc, char *argv[])
     {
-        windowProperties = GameMain::defaultWindowProperties();
         handleCmdlineArgs(argc, argv);
 
         /*
@@ -302,15 +305,23 @@ private:
     }
 };
 
-SystemImpl* SystemImpl::singleton = nullptr;
-
-System* Sys() {
-    return SystemImpl::singleton;
+WindowProperties System::defaultWindowProperties() {
+    return WindowProperties(
+            xy(160, 100), // default window position
+            xy(800, 600),  // default window height & width
+            false, // full screen
+            "Adventure" // title
+    );
 }
 
+System* sys;
+
 int main(int argc, char *argv[]) {
-    SystemImpl *sys = SystemImpl::singleton = new SystemImpl();
-    int retCode = sys->platformMain(argc, argv);
-    delete SystemImpl::singleton;
+    SystemImpl *sysImpl = new SystemImpl();
+    sys = sysImpl;
+
+    int retCode = sysImpl->platformMain(argc, argv);
+
+    delete sysImpl;
     return retCode;
 }

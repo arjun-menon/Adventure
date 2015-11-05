@@ -7,8 +7,11 @@
 
 struct WindowProperties
 {
+    WindowProperties(const xy &pos, const xy &size, bool fullscreen, const string &title) :
+            pos(pos), size(size), fullScreen(fullscreen), title(title) {}
+    xy pos;
     xy size;
-    bool fullscreen;
+    bool fullScreen;
     std::string title;
 };
 
@@ -27,9 +30,11 @@ public:
 class System
 {
 protected:
-    WindowProperties windowProperties;
+    WindowProperties windowProperties = defaultWindowProperties();
 
 public:
+    static WindowProperties defaultWindowProperties();
+    virtual void setWindowProperties(const WindowProperties& windowProperties) = 0;
     const WindowProperties& getWindowProperties() { return windowProperties; }
 
     virtual shared_ptr<Tex> loadTex(string imageFilePath) = 0;
@@ -45,14 +50,14 @@ public:
     virtual ~System() {}
 };
 
-System* Sys(); // get pointer to concrete System singleton
+extern System* sys; // Concrete implementation of System initialized in main().
 
 class GameMain
 {
 public:
-    static WindowProperties defaultWindowProperties();
     static GameMain* getSingleton();
 
+    virtual void setup() {};
     virtual void step() = 0; // Called every frame.
 
     virtual ~GameMain() {}
