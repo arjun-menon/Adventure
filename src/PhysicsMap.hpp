@@ -58,18 +58,24 @@ public:
     void performPhysics();
 
     inline void jump(DynamicEntity *e) {
-        if(!entityMap.moveTest(e, e->pos - xy(0, 1)))
+        if(isOnGround(e))
             e->velocity.y += e->dynamicChars.jumpStep;
     }
+
     inline void walkLeft(DynamicEntity *e) {
         e->velocity.x -= e->dynamicChars.horizontalWalkStep;
     }
+
     inline void walkRight(DynamicEntity *e) {
         e->velocity.x += e->dynamicChars.horizontalWalkStep;
     }
 
 private:
     set<DynamicEntity *> dynamicEntities;
+
+    inline bool isOnGround(DynamicEntity *e) {
+        return !entityMap.moveTest(e, e->pos - xy(0, 1));
+    }
 
     void limitVelocity(DynamicEntity &e);
 };

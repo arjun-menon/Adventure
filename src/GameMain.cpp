@@ -46,6 +46,14 @@ class TestBed : public Steppable
     vector<StaticColoredBox> boxes;
     DynamicEntity *player;
 
+    bool random_bool() {
+        return sys->random(5) > 2;
+    }
+
+    char random_inc_or_dec() {
+        return (char)(random_bool() ? +1 : -1);
+    }
+
 public:
     TestBed() : physicsMap(sys->getWindowProperties().size)
     {
@@ -68,6 +76,12 @@ public:
 
     void step()
     {
+        for(StaticColoredBox box : boxes) {
+            dynamic_cast<ColoredBox *>(box.d)->fillColor.r +=  random_inc_or_dec();
+            dynamic_cast<ColoredBox *>(box.d)->fillColor.b +=  random_inc_or_dec();
+            dynamic_cast<ColoredBox *>(box.d)->fillColor.g +=  random_inc_or_dec();
+        }
+
         handleInput();
 
         physicsMap.performPhysics();

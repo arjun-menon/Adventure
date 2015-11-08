@@ -104,8 +104,12 @@ public:
         return pressedKeys.find(keyCode) != pressedKeys.end();
     }
 
+    unsigned int random(unsigned int range) {
+        return rng() % range;
+    }
+
     unsigned int random() {
-        return static_cast<unsigned int>( rng() );
+        return rng();
     }
 
     void exit() {

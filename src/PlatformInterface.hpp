@@ -33,6 +33,7 @@ public:
 
     virtual bool isPressed(int keyCode) = 0;
 
+    virtual unsigned int random(unsigned int range) = 0;
     virtual unsigned int random() = 0;
     virtual void exit() = 0;
     virtual ~System() {}

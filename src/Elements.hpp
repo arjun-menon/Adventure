@@ -51,8 +51,6 @@ class ColoredBox : public DrawableAABB
 {
     const xy size;
 
-    static Color randomColor();
-
 public:
     Color fillColor, outlineColor;
     float outlineThickness;
@@ -62,6 +60,8 @@ public:
 
     const xy getSize() const { return size; }
     void drawAt(xy pos);
+
+    static Color randomColor();
 };
 
 /*
