@@ -20,7 +20,7 @@ public:
 
     ~SystemImpl() { }
 
-    shared_ptr<Tex> loadTex(const string imageFilePath) {
+    shared_ptr<ImgTex> loadTex(const string imageFilePath) {
         if(texMap.find(imageFilePath) == texMap.end() ) {
             // Load SDL Surface
             SDL_Surface *surface = SDL_LoadBMP(imageFilePath.c_str());
@@ -34,13 +34,13 @@ public:
             if(tex == nullptr)
                 throw runtime_error("Loading texture from image " + imageFilePath + " failed.");
 
-            texMap[imageFilePath] = shared_ptr<Tex>(new TexImpl(tex, size));
+            texMap[imageFilePath] = shared_ptr<ImgTex>(new TexImpl(tex, size));
         }
 
         return texMap[imageFilePath];
     }
 
-    void drawImage(const Tex &tex, const xy pos, const bool horizontalFlip, const double angle) {
+    void drawImage(const ImgTex &tex, const xy pos, const bool horizontalFlip, const double angle) {
         SDL_Rect dstRect = { pos.x, pos.y, tex.getSize().x, tex.getSize().y };
         SDL_Texture *texture = dynamic_cast<const TexImpl&>(tex).texture;
 
@@ -110,7 +110,7 @@ public:
 private:
     friend int main(int argc, char *argv[]);
 
-    class TexImpl : public Tex
+    class TexImpl : public ImgTex
     {
     public:
         SDL_Texture*texture;
@@ -133,7 +133,7 @@ private:
     };
 
     unique_ptr<Game> game;
-    map<const string, shared_ptr<Tex>> texMap;
+    map<const string, shared_ptr<ImgTex>> texMap;
     set<SDL_Keycode> pressedKeys;
     set<SDL_Keycode> toUnpress;
 

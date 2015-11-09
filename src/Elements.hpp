@@ -15,13 +15,13 @@ struct Color
 };
 
 /*
- * Tex - a 2D texture.
+ * ImgTex - the texture of a 2D image.
  */
-class Tex
+class ImgTex
 {
 public:
     virtual const xy getSize() const = 0;
-    virtual ~Tex() {}
+    virtual ~ImgTex() {}
 };
 
 /*
@@ -35,8 +35,8 @@ public:
 };
 
 /*
- * DrawableAABB - a Drawable xis-Aligned Bounding Box (AABB)
- *                        with a queryable height & width.
+ * DrawableAABB - an Axis-Aligned Bounding Box (AABB) Drawable,
+ *                   with a height & width that can be queried.
  */
 class DrawableAABB : public Drawable
 {
@@ -69,13 +69,13 @@ public:
  */
 class Image : public DrawableAABB
 {
-    shared_ptr<Tex> tex;
+    shared_ptr<ImgTex> tex;
 
 public:
     bool flip;
     float angle;
 
-    inline Image(shared_ptr<Tex> tex, bool flip=false, float angle=0.0f) : 
+    inline Image(shared_ptr<ImgTex> tex, bool flip=false, float angle=0.0f) :
         tex(tex), flip(flip), angle(angle) {}
 
     const xy getSize() const { return tex->getSize(); }

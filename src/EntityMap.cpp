@@ -16,7 +16,7 @@
  */
 void OptimizationMatrix::insert(Entity *e)
 {
-    for(auto &s : submat(e->pos, e->d->getSize()))
+    for(auto &s : submat(e->pos, e->drawable->getSize()))
         s.insert(e);
 }
 
@@ -25,7 +25,7 @@ void OptimizationMatrix::insert(Entity *e)
  */
 void OptimizationMatrix::erase(Entity *e)
 {
-    for(auto &s : submat(e->pos, e->d->getSize()))
+    for(auto &s : submat(e->pos, e->drawable->getSize()))
         s.erase(e);
 }
 
@@ -57,10 +57,10 @@ non-empty EntityCollision collidingEntities set");
     if( !isInsideMap(*e) )
         return false;
 
-    set<Entity *> entities = optmat.getEntities( Rect(e->pos, e->d->getSize()) );
+    set<Entity *> entities = optmat.getEntities( Rect(e->pos, e->drawable->getSize()) );
     for(auto m_e : entities)
-        if( Rect(e->pos, e->d->getSize()).
-                doesIntersect( Rect(m_e->pos, m_e->d->getSize()) ) )
+        if( Rect(e->pos, e->drawable->getSize()).
+                doesIntersect( Rect(m_e->pos, m_e->drawable->getSize()) ) )
             collidingEntities.insert(m_e);
 
     return collidingEntities.empty();

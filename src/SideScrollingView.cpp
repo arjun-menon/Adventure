@@ -45,16 +45,16 @@ void SideScrollingView::render()
         if(player == nullptr) {
             // Invoke drawAt() naively on each entity:
             for(auto e : physicsMap->entityMap.getEntities())
-                e->d->drawAt(e->pos);
+                e->drawable->drawAt(e->pos);
         }
         else {
             xy viewport = calculateViewport(
-                    player->pos + player->d->getSize() / 2,
+                    player->pos + player->drawable->getSize() / 2,
                     physicsMap->entityMap.getMapSize());
 
             // Invoke drawAt(pos - viewport) on each entity:
             for(auto e : physicsMap->entityMap.getEntities())
-                e->d->drawAt(e->pos - viewport);
+                e->drawable->drawAt(e->pos - viewport);
         }
     }
 }

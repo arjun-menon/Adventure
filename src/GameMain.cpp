@@ -17,27 +17,21 @@ public:
     StaticColoredBox(xy pos, xy sz) : Entity(new ColoredBox(sz), pos) {}
 };
 
-DynamicEntityCharacteristics playerDynamicChars(
-        1, // groundFriction
-        1, // gravityFactor
-        12, // maxHorizontalSpeed
-        2, // horizontalWalkStep
-        25 // jumpStep
-    );
-
-class DynamicColoredBox : public DynamicEntity
-{
-public:
-    DynamicColoredBox(xy pos, xy sz, const DynamicEntityCharacteristics &dynamicChars) :
-        DynamicEntity(new ColoredBox(sz), pos, dynamicChars) {}
-};
-
 class TheGame : public Game
 {
     SideScrollingView sideScrollingView;
     PhysicsMap physicsMap;
     vector<StaticColoredBox> boxes;
     DynamicEntity *player;
+
+    const DynamicEntityCharacteristics playerDynamicChars =
+        DynamicEntityCharacteristics(
+            1, // groundFriction
+            1, // gravityFactor
+            12, // maxHorizontalSpeed
+            2, // horizontalWalkStep
+            25 // jumpStep
+        );
 
     bool random_bool() {
         return sys->random(5) > 2;
@@ -55,7 +49,7 @@ public:
         boxes.push_back( StaticColoredBox( xy(270, 140) , xy(100, 20) ) );
         boxes.push_back( StaticColoredBox( xy(300, 290) , xy(100, 100) ) );
         boxes.push_back( StaticColoredBox( xy(500, 400) , xy(400, 100) ) );
-        player = new DynamicColoredBox( xy(100, 170) , xy(25, 25), playerDynamicChars );
+        player = new DynamicEntity( new ColoredBox(xy(25, 25)), xy(100, 170), playerDynamicChars );
 
         set<Entity *> collidingEntities;
         for(auto &box : boxes)
@@ -70,9 +64,9 @@ public:
     void step()
     {
         for(StaticColoredBox box : boxes) {
-            dynamic_cast<ColoredBox *>(box.d)->fillColor.r +=  random_inc_or_dec();
-            dynamic_cast<ColoredBox *>(box.d)->fillColor.b +=  random_inc_or_dec();
-            dynamic_cast<ColoredBox *>(box.d)->fillColor.g +=  random_inc_or_dec();
+            dynamic_cast<ColoredBox *>(box.drawable)->fillColor.r +=  random_inc_or_dec();
+            dynamic_cast<ColoredBox *>(box.drawable)->fillColor.b +=  random_inc_or_dec();
+            dynamic_cast<ColoredBox *>(box.drawable)->fillColor.g +=  random_inc_or_dec();
         }
 
         handleInput();

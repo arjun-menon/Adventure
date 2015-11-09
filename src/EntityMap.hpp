@@ -15,11 +15,11 @@
 class Entity
 {
 public:
-    DrawableAABB *d;
+    DrawableAABB *drawable;
     xy pos;
 
-    Entity(DrawableAABB *d, xy pos) : d(d), pos(pos) {}
-    inline const Rect getRect() { return Rect(pos, d->getSize()); }
+    Entity(DrawableAABB *d, xy pos) : drawable(d), pos(pos) {}
+    inline const Rect getRect() { return Rect(pos, drawable->getSize()); }
 
     virtual ~Entity() {}
 };
@@ -71,7 +71,7 @@ private:
     OptimizationMatrix optmat;
 
     inline bool isInsideMap(const Entity &e) {
-        return Rect(xy(0,0), optmat.getMapSize()).isInside( Rect(e.pos, e.d->getSize()) );
+        return Rect(xy(0,0), optmat.getMapSize()).isInside( Rect(e.pos, e.drawable->getSize()) );
     }
 
     bool computeEntityCollisions(const Entity *e, set<Entity *> &collidingEntities);
