@@ -32,14 +32,7 @@ public:
         DynamicEntity(new ColoredBox(sz), pos, dynamicChars) {}
 };
 
-class Steppable
-{
-public:
-    virtual void step() = 0;
-    virtual ~Steppable() {}
-};
-
-class TestBed : public Steppable
+class TheGame : public Game
 {
     SideScrollingView sideScrollingView;
     PhysicsMap physicsMap;
@@ -55,13 +48,13 @@ class TestBed : public Steppable
     }
 
 public:
-    TestBed() : physicsMap(sys->getWindowProperties().size)
+    TheGame() : physicsMap(sys->windowProperties.size)
     {
-        boxes.push_back(StaticColoredBox( xy(0, 1) , xy(200, 100) ));
-        boxes.push_back(StaticColoredBox( xy(202, 0) , xy(500, 3) ));
-        boxes.push_back(StaticColoredBox( xy(270, 140) , xy(100, 20) ));
-        boxes.push_back(StaticColoredBox( xy(300, 290) , xy(100, 100) ));
-        boxes.push_back(StaticColoredBox( xy(500, 400) , xy(400, 100) ));
+        boxes.push_back( StaticColoredBox( xy(0, 1) , xy(200, 100) ) );
+        boxes.push_back( StaticColoredBox( xy(202, 0) , xy(500, 3) ) );
+        boxes.push_back( StaticColoredBox( xy(270, 140) , xy(100, 20) ) );
+        boxes.push_back( StaticColoredBox( xy(300, 290) , xy(100, 100) ) );
+        boxes.push_back( StaticColoredBox( xy(500, 400) , xy(400, 100) ) );
         player = new DynamicColoredBox( xy(100, 170) , xy(25, 25), playerDynamicChars );
 
         set<Entity *> collidingEntities;
@@ -119,30 +112,12 @@ public:
             physicsMap.walkRight(player);
         }
     }
-};
 
-GameMain* GameMain::singleton = nullptr;
-
-class GameMainImpl : public GameMain
-{
-    unique_ptr<Steppable> whatever;
-
-public:
-    GameMainImpl()
-    {
-        whatever = unique_ptr<Steppable>( new TestBed() );
-    }
-
-    void step() {
-        whatever->step();
-    }
-
-    ~GameMainImpl() {
+    ~TheGame() {
+        delete player;
     }
 };
 
-GameMain* GameMain::getSingleton() {
-    if( GameMain::singleton == nullptr )
-        GameMain::singleton = new GameMainImpl();
-    return GameMain::singleton;
+unique_ptr<Game> Game::setup() {
+    return unique_ptr<Game>(new TheGame());
 }

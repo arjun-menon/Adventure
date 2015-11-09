@@ -63,10 +63,8 @@ non-empty EntityCollision collidingEntities set");
                 doesIntersect( Rect(m_e->pos, m_e->d->getSize()) ) )
             collidingEntities.insert(m_e);
 
-    if( !collidingEntities.empty() )
-        return false;
+    return collidingEntities.empty();
 
-    return true;
 }
 
 /*

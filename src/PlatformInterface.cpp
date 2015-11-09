@@ -15,7 +15,7 @@
 class SystemImpl : public System
 {
 public:
-    SystemImpl() : gameMain(nullptr), window(nullptr), renderer(nullptr), isRunning(false),
+    SystemImpl() : game(nullptr), window(nullptr), renderer(nullptr), keepRunning(false),
                    rng(static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count())) { }
 
     ~SystemImpl() { }
@@ -24,17 +24,15 @@ public:
         if(texMap.find(imageFilePath) == texMap.end() ) {
             // Load SDL Surface
             SDL_Surface *surface = SDL_LoadBMP(imageFilePath.c_str());
-            if (surface == nullptr){
+            if (surface == nullptr)
                 throw runtime_error(string("Unable to load file: ") + SDL_GetError());
-            }
 
             xy size(surface->w, surface->h);
 
             SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surface);
             SDL_FreeSurface(surface);
-            if(tex == nullptr) {
+            if(tex == nullptr)
                 throw runtime_error("Loading texture from image " + imageFilePath + " failed.");
-            }
 
             texMap[imageFilePath] = shared_ptr<Tex>(new TexImpl(tex, size));
         }
@@ -47,9 +45,8 @@ public:
         SDL_Texture *texture = dynamic_cast<const TexImpl&>(tex).texture;
 
         SDL_RendererFlip flip = SDL_FLIP_NONE;
-        if (horizontalFlip) {
+        if (horizontalFlip)
             flip = SDL_FLIP_HORIZONTAL;
-        }
 
         SDL_RenderCopyEx(renderer, texture, NULL, &dstRect, angle, NULL, flip);
     }
@@ -81,23 +78,21 @@ public:
     }
 
     SDL_Rect convertToCartesianCoordinates(const SDL_Rect &rect) {
-        SDL_Rect cartesianRect = {
-                rect.x,
-                windowProperties.size.y - rect.y,
-                rect.w,
-                - rect.h
+        return (SDL_Rect) {
+            rect.x,
+            windowProperties.size.y - rect.y,
+            rect.w,
+            - rect.h
         };
-        return cartesianRect;
     }
 
     static SDL_Rect getInnerRect(const SDL_Rect &rect) {
-        SDL_Rect innerRect = {
-                rect.x + 1,
-                rect.y,
-                rect.w - 2,
-                rect.h
-            };
-        return innerRect;
+        return (SDL_Rect) {
+            rect.x + 1,
+            rect.y,
+            rect.w - 2,
+            rect.h
+        };
     }
 
     bool isPressed(int keyCode) {  // keyCode is expecte to be an SDL_Keycode
@@ -108,12 +103,8 @@ public:
         return rng() % range;
     }
 
-    unsigned int random() {
-        return rng();
-    }
-
     void exit() {
-        isRunning = false;
+        keepRunning = false;
     }
 
 private:
@@ -141,14 +132,14 @@ private:
         xy size;
     };
 
-    unique_ptr<GameMain> gameMain;
+    unique_ptr<Game> game;
     map<const string, shared_ptr<Tex>> texMap;
     set<SDL_Keycode> pressedKeys;
     set<SDL_Keycode> toUnpress;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
-    bool isRunning;
+    bool keepRunning;
 
     std::minstd_rand0 rng;
 
@@ -193,10 +184,9 @@ private:
     }
 
     void createRenderer() {
-        renderer = SDL_CreateRenderer(window, -1,
-                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
-        if (renderer == nullptr){
+        if (renderer == nullptr) {
             SDL_DestroyWindow(window);
             throw invalid_argument(string("SDL_CreateRenderer Error: ") + SDL_GetError());
         }
@@ -222,10 +212,10 @@ private:
 //    }
 
     void processKeysToUnpress() {
-        for(SDL_Keycode keyToUnpress : toUnpress) {
+        for(SDL_Keycode keyToUnpress : toUnpress)
             if(isPressed(keyToUnpress))
                 pressedKeys.erase(keyToUnpress);
-        }
+
         toUnpress.clear();
     }
 
@@ -241,7 +231,7 @@ private:
             const SDL_Keycode keyCode = event.key.keysym.sym;
 
             if(event.type == SDL_QUIT) {
-                isRunning = false;
+                keepRunning = false;
                 break;
             }
             else if(event.type == SDL_KEYDOWN && !isPressed(keyCode)) {
@@ -266,9 +256,10 @@ private:
         handleCmdlineArgs(argc, argv);
 
         /*
-         * Platform Setup
+         * Game Setup
          */
         try {
+            game = Game::setup();
             initSDL();
             createWindow();
             createRenderer();
@@ -284,16 +275,15 @@ private:
          */
         try
         {
-            gameMain = unique_ptr<GameMain>( GameMain::getSingleton() );
-            isRunning = true;
+            keepRunning = true;
 
-            while(isRunning)
+            while(keepRunning)
             {
                 handleEvents();
 
                 SDL_RenderClear(renderer);
 
-                gameMain->step();
+                game->step();
 
                 SDL_RenderPresent(renderer);
             }
@@ -316,12 +306,12 @@ private:
 };
 
 WindowProperties System::defaultWindowProperties() {
-    return WindowProperties(
+    return (WindowProperties) {
             xy(160, 100), // default window position
             xy(800, 600),  // default window height & width
             false, // full screen
             "Adventure" // title
-    );
+    };
 }
 
 System* sys;
