@@ -1,4 +1,4 @@
-This is a platformer game engine in the works. It uses [SDL 2.0](https://www.libsdl.org/) for rendering, and it's written in C++14 using [modern C++ practices](https://www.amazon.com/Effective-Modern-Specific-Ways-Improve/dp/1491903996?sa-no-redirect=1&pldnSite=1).
+This is a platformer game engine in the works. It uses [SDL 2.0](https://www.libsdl.org/) for rendering, and it's written in C++14 using [modern C++ practices](https://www.amazon.com/Effective-Modern-Specific-Ways-Improve/dp/1491903996?sa-no-redirect=1&pldnSite=1). This aims to implements an efficient collision detection system, side-scrolling platformer physics, etc.
 
 #### Reusable Header Files
 
